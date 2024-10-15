@@ -38,6 +38,14 @@ class SecondScreen extends StatelessWidget {
 
 
 
+
+
+
+
+        )
+
+
+
              // Display the passed message
             Container(
               child:ElevatedButton(
