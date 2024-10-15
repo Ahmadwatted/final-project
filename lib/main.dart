@@ -55,10 +55,90 @@ class _MyHomePageState extends State<MyHomePage> {
 
         child: Column(
 
+
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("email:",style:TextStyle(fontSize: 20,color: Colors.cyan), ),
-            Text("data")
+
+
+            Text("Email:",
+                style: TextStyle(
+                  color:Color(0xFFD2B48C), fontSize: 20)
+                ),
+            TextField(
+
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20), // Border radius
+                  borderSide: BorderSide(
+                   color: Colors.blue,width:120,
+
+
+                  )
+                ),
+                hintText: "enter your Email",
+                hintStyle: TextStyle(
+                  color: Color(0xFFD2B48C),fontSize: 20
+
+                )
+
+
+
+              ),
+
+            ),
+
+            Text("Password:",
+                style: TextStyle(
+                    color:Color(0xFFD2B48C), fontSize: 20)
+            ),
+            TextField(
+
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20), // Border radius
+                      borderSide: BorderSide(
+                        color: Colors.blue,width:120,
+
+
+                      )
+                  ),
+                  hintText: "enter your Password",
+                  hintStyle: TextStyle(
+                      color: Color(0xFFD2B48C),fontSize: 20
+
+                  )
+
+
+
+              ),
+
+            ),
+            SizedBox( height: 30,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+
+              children: [
+
+
+                ElevatedButton(
+
+                  onPressed: () {
+                    // Code to execute when the button is pressed
+                    print('Sign in');
+
+                  },
+                  child: Text('Sign in'),
+                ),
+                SizedBox(width: 10,),
+                ElevatedButton(
+                  onPressed: () {
+                    // Code to execute when the button is pressed
+                    print('Sign in');
+                  },
+                  child: Text("Register"),
+                ),
+              ],
+            ),
 
 
           ],
