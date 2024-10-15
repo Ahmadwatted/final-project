@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Views/RegisterPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'Ahmad'),
+      routes: {
+        '/Register' : (context) => SecondScreen(message: 'ahmad'),
+      },
     );
   }
 }
@@ -45,103 +50,120 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(
 
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      body: Container(
+        decoration: BoxDecoration(
 
-        title: Text(widget.title),
-      ),
-      body: Center(
-
-        child: Column(
-
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-
-
-            Text("Email:",
-                style: TextStyle(
-                  color:Color(0xFFD2B48C), fontSize: 20)
-                ),
-            TextField(
-
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20), // Border radius
-                  borderSide: BorderSide(
-                   color: Colors.blue,width:120,
-
-
-                  )
-                ),
-                hintText: "enter your Email",
-                hintStyle: TextStyle(
-                  color: Color(0xFFD2B48C),fontSize: 20
-
-                )
+          color: Colors.brown[400]
 
 
 
+        ),
+        child:  Center(
+
+          child: Column(
+
+
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+
+
+              Text("Email:",
+                  style: TextStyle(
+                      color:Colors.brown[100], fontSize: 20)
               ),
+              Container(
 
-            ),
+                width: 500,
+                child:TextField(
 
-            Text("Password:",
-                style: TextStyle(
-                    color:Color(0xFFD2B48C), fontSize: 20)
-            ),
-            TextField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20), // Border radius
+                          borderSide: BorderSide(
+                            color: Colors.blue,width:120,
 
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20), // Border radius
-                      borderSide: BorderSide(
-                        color: Colors.blue,width:120,
 
+                          )
+                      ),
+                      hintText: "enter your Email",
+                      hintStyle: TextStyle(
+                          color: Color(0xFFD2B48C),fontSize: 20
 
                       )
+
+
                   ),
-                  hintText: "enter your Password",
-                  hintStyle: TextStyle(
-                      color: Color(0xFFD2B48C),fontSize: 20
 
-                  )
-
-
-
+                ) ,
               ),
 
-            ),
-            SizedBox( height: 30,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
 
-              children: [
+              Text("Password:",
+
+                  style: TextStyle(
+                      color:Colors.brown[100], fontSize: 20)
+              ),
+              Container(
+                width: 500,
+                child: TextField(
+
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20), // Border radius
+                          borderSide: BorderSide(
+                            color: Colors.blue,width:120,
 
 
-                ElevatedButton(
+                          )
+                      ),
+                      hintText: "Enter your Password",
+                      hintStyle: TextStyle(
+                          color: Color(0xFFD2B48C),fontSize: 20
 
-                  onPressed: () {
-                    // Code to execute when the button is pressed
-                    print('Sign in');
+                      )
 
-                  },
-                  child: Text('Sign in'),
+
+
+                  ),
+
                 ),
-                SizedBox(width: 10,),
-                ElevatedButton(
-                  onPressed: () {
-                    // Code to execute when the button is pressed
-                    print('Sign in');
-                  },
-                  child: Text("Register"),
-                ),
-              ],
-            ),
+              ),
+
+              SizedBox(height: 30,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+
+                children: [
 
 
-          ],
+                  ElevatedButton(
+
+                    onPressed: () {
+                      // Code to execute when the button is pressed
+                      print('Sign in');
+
+                    },
+                    child: Text('Sign in'),
+                  ),
+                  SizedBox(width: 10,),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/Register',
+                      );
+                      // Code to execute when the button is pressed
+                      print('Sign in');
+                    },
+                    child: Text("Register"),
+                  ),
+                ],
+              ),
+
+
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
