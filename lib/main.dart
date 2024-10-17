@@ -37,139 +37,154 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
 
       body: Container(
-        decoration: BoxDecoration(
-
-          color: Colors.brown[400]
-
-
-
-        ),
-        child:  Center(
-
-          child: Column(
-
-
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-
-
-              Text("Email:",
-                  style: TextStyle(
-                      color:Colors.brown[100], fontSize: 20)
+        child: Column(
+          children: [
+            Container(
+              width: screenWidth,
+              height: screenHeight *0.3,
+              child: Align(
+                alignment: Alignment.center,
+                child: Image.asset('images and icons/log in icon.png'),
               ),
-              Container(
+            ),
+            Container(
+              height: screenHeight * 0.7,
+              width: screenWidth,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25),),
+                  color: Colors.brown[400]
+              ),
+              child:  Center(
 
-                width: 500,
-                child:TextField(
-
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20), // Border radius
-                          borderSide: BorderSide(
-                            color: Colors.blue,width:120,
+                child: Column(
 
 
-                          )
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+
+
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(25)),
                       ),
-                      hintText: "enter your Email",
-                      hintStyle: TextStyle(
-                          color: Color(0xFFD2B48C),fontSize: 20
+                      child: Padding(
+                        padding: EdgeInsets.all(15),
+                        child: Column(
+                          children: [
+                            Text("Email:",
+                                style: TextStyle(
+                                    color:Colors.brown[100], fontSize: 20)
+                            ),
+                            Container(
 
-                      )
+                              width: 500,
+                              child:TextField(
 
-
-                  ),
-
-                ) ,
-              ),
-
-
-              Text("Password:",
-
-                  style: TextStyle(
-                      color:Colors.brown[100], fontSize: 20)
-              ),
-              Container(
-                width: 500,
-                child: TextField(
-
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20), // Border radius
-                          borderSide: BorderSide(
-                            color: Colors.blue,width:120,
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20), // Border radius
+                                        borderSide: BorderSide(
+                                          color: Colors.blue,width:120,
 
 
-                          )
+                                        )
+                                    ),
+                                    hintText: "enter your Email",
+                                    hintStyle: TextStyle(
+                                        color: Color(0xFFD2B48C),fontSize: 20
+
+                                    )
+
+
+                                ),
+
+                              ) ,
+                            ),
+
+
+                            Text("Password:",
+
+                                style: TextStyle(
+                                    color:Colors.brown[100], fontSize: 20)
+                            ),
+                            Container(
+                              width: 500,
+                              child: TextField(
+
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20), // Border radius
+                                        borderSide: BorderSide(
+                                          color: Colors.blue,width:120,
+
+
+                                        )
+                                    ),
+                                    hintText: "Enter your Password",
+                                    hintStyle: TextStyle(
+                                        color: Color(0xFFD2B48C),fontSize: 20
+
+                                    )
+
+
+
+                                ),
+
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      hintText: "Enter your Password",
-                      hintStyle: TextStyle(
-                          color: Color(0xFFD2B48C),fontSize: 20
+                    ),
 
-                      )
+                    SizedBox(height: 30,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+
+                      children: [
 
 
+                        ElevatedButton(
 
-                  ),
+                          onPressed: () {
+                            // Code to execute when the button is pressed
+                            print('Sign in');
 
+                          },
+                          child: Text('Sign in'),
+                        ),
+                        SizedBox(width: 10,),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/Register',
+                            );
+                            // Code to execute when the button is pressed
+                            print('Sign in');
+                          },
+                          child: Text("Register"),
+                        ),
+                      ],
+                    ),
+
+
+                  ],
                 ),
               ),
-
-              SizedBox(height: 30,),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                children: [
-
-
-                  ElevatedButton(
-
-                    onPressed: () {
-                      // Code to execute when the button is pressed
-                      print('Sign in');
-
-                    },
-                    child: Text('Sign in'),
-                  ),
-                  SizedBox(width: 10,),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/Register',
-                      );
-                      // Code to execute when the button is pressed
-                      print('Sign in');
-                    },
-                    child: Text("Register"),
-                  ),
-                ],
-              ),
-
-
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), );
+    );
   }
 }
