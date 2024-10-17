@@ -38,6 +38,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  bool _isVisible = false;
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -46,6 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
 
       body: Container(
+        color: Colors.deepOrange[100],
         child: Column(
           children: [
             Container(
@@ -61,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: screenWidth,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25),),
-                  color: Colors.brown[400]
+                  color: Colors.brown[900]
               ),
               child:  Center(
 
@@ -80,10 +83,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: EdgeInsets.all(15),
                         child: Column(
                           children: [
-                            Text("Email:",
+                            Text("E-mail:",
                                 style: TextStyle(
-                                    color:Colors.brown[100], fontSize: 20)
+                                    color:Colors.deepOrange[100], fontSize: 20)
                             ),
+                            SizedBox(height: 5,),
                             Container(
 
                               width: 500,
@@ -98,9 +102,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                         )
                                     ),
-                                    hintText: "enter your Email",
+                                    hintText: "Enter your E-mail",
                                     hintStyle: TextStyle(
-                                        color: Color(0xFFD2B48C),fontSize: 20
+                                        color: Colors.deepOrange[100],fontSize: 20
 
                                     )
 
@@ -110,12 +114,83 @@ class _MyHomePageState extends State<MyHomePage> {
                               ) ,
                             ),
 
+                            SizedBox(height: 45,),
+                            Visibility(
+                              visible: _isVisible,
+                                child: Column(
+                                  children: [
+                                    Text("First Name:",
+                                        style: TextStyle(
+                                            color:Colors.deepOrange[100], fontSize: 20)
+                                    ),
+                                    SizedBox(height: 5,),
+                                    Container(
+
+                                      width: 500,
+                                      child:TextField(
+
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(20), // Border radius
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,width:120,
+
+
+                                                )
+                                            ),
+                                            hintText: "Enter your First Name",
+                                            hintStyle: TextStyle(
+                                                color: Colors.deepOrange[100],fontSize: 20
+
+                                            )
+
+
+                                        ),
+
+                                      ) ,
+                                    ),
+                                    SizedBox(height: 45,),
+                                    Text("Second Name:",
+                                        style: TextStyle(
+                                            color:Colors.deepOrange[100], fontSize: 20)
+                                    ),
+                                    SizedBox(height: 5,),
+                                    Container(
+
+                                      width: 500,
+                                      child:TextField(
+
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(20), // Border radius
+                                                borderSide: BorderSide(
+                                                  color: Colors.deepOrange, width:120,
+
+
+                                                )
+                                            ),
+                                            hintText: "Enter your Second Name",
+                                            hintStyle: TextStyle(
+                                                color: Colors.deepOrange[100],fontSize: 20
+
+                                            )
+
+
+                                        ),
+
+                                      ) ,
+                                    ),
+                                  ],
+                                ),
+                            ),
+                            SizedBox(height: 45,),
 
                             Text("Password:",
 
                                 style: TextStyle(
-                                    color:Colors.brown[100], fontSize: 20)
+                                    color:Colors.deepOrange[100], fontSize: 20)
                             ),
+                            SizedBox(height: 5,),
                             Container(
                               width: 500,
                               child: TextField(
@@ -131,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     ),
                                     hintText: "Enter your Password",
                                     hintStyle: TextStyle(
-                                        color: Color(0xFFD2B48C),fontSize: 20
+                                        color: Colors.deepOrange[100],fontSize: 20
 
                                     )
 
@@ -156,23 +231,36 @@ class _MyHomePageState extends State<MyHomePage> {
                         ElevatedButton(
 
                           onPressed: () {
-                            // Code to execute when the button is pressed
-                            print('Sign in');
 
                           },
-                          child: Text('Sign in'),
+
+                          child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Text('Sign-in'
+                                , style:TextStyle(
+                                  color: Colors.deepOrange[200], fontSize:20,
+                                  fontWeight: FontWeight.bold,
+
+                                )),
+                          ),
                         ),
                         SizedBox(width: 10,),
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/Register',
-                            );
+                            setState(() {
+                              _isVisible = ! _isVisible;
+                            });
                             // Code to execute when the button is pressed
-                            print('Sign in');
                           },
-                          child: Text("Register"),
+                          child: Padding(
+                              padding: EdgeInsets.all(10),
+                            child: Text("Register",
+                              style:TextStyle(
+                                color: Colors.deepOrange[200], fontSize:20,
+                                fontWeight: FontWeight.bold,
+                              )
+                            ),
+                          ),
                         ),
                       ],
                     ),
