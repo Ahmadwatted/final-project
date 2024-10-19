@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Views/RegisterPage.dart';
+import 'package:final_project/Views/MainAppPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(title: 'Ahmad'),
       routes: {
-        '/Register' : (context) => SecondScreen(message: 'ahmad'),
+        '/MainAppPage' : (context) => MainAppPage(title: 'MainAppPage',),
       },
     );
   }
@@ -49,9 +49,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
       body: Container(
         color: Colors.deepOrange[100],
+
         child: Column(
           children: [
             Container(
+
               width: screenWidth,
               height: screenHeight *0.3,
               child: Align(
@@ -83,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: EdgeInsets.all(15),
                         child: Column(
                           children: [
+
                             Text("E-mail:",
                                 style: TextStyle(
                                     color:Colors.deepOrange[100], fontSize: 20)
@@ -91,6 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             Container(
 
                               width: 500,
+
+
                               child:TextField(
 
                                 decoration: InputDecoration(
@@ -231,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ElevatedButton(
 
                           onPressed: () {
-
+                            Navigator.pushNamed(context, "/MainAppPage");
                           },
 
                           child: Padding(
