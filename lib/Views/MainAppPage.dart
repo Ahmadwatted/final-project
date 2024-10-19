@@ -22,10 +22,11 @@ class _MainAppPage extends State<MainAppPage> {
         height: screenHeight * 0.2,
         child: Column(
 
+
           children: [
 
             Container(
-
+            color: Colors.red,
               child: Align(
                 alignment: Alignment.topLeft,
 
