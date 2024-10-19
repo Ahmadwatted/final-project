@@ -236,7 +236,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         ElevatedButton(
 
                           onPressed: () {
-                            Navigator.pushNamed(context, "/MainAppPage");
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MainAppPage(
+                                        title: 'tomainapppage')),
+                              );
+
                           },
 
                           child: Padding(
