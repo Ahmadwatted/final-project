@@ -38,8 +38,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   bool _isVisible = false;
+  final _txtEmail = TextEditingController();
+  final _txtFirstName = TextEditingController();
+  final _txtSecondName = TextEditingController();
+  final _txtPassword = TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                             Text("E-mail:",
                                 style: TextStyle(
+
                                     color:Colors.deepOrange[100], fontSize: 20)
                             ),
                             SizedBox(height: 5,),
@@ -98,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
                               child:TextField(
+                                controller: _txtEmail,
 
                                 decoration: InputDecoration(
                                     border: OutlineInputBorder(
@@ -134,6 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                       width: 500,
                                       child:TextField(
+                                        controller: _txtFirstName,
 
                                         decoration: InputDecoration(
                                             border: OutlineInputBorder(
@@ -165,6 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                       width: 500,
                                       child:TextField(
+                                        controller: _txtSecondName,
 
                                         decoration: InputDecoration(
                                             border: OutlineInputBorder(
@@ -200,6 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             Container(
                               width: 500,
                               child: TextField(
+                                controller: _txtPassword,
 
                                 decoration: InputDecoration(
                                     border: OutlineInputBorder(
@@ -244,7 +254,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     builder: (context) => const MainAppPage(
                                         title: 'tomainapppage')),
                               );
-
 
                           },
 

@@ -14,6 +14,10 @@ class MainAppPage extends StatefulWidget {
 }
 
 class _MainAppPage extends State<MainAppPage> {
+  final _txtEmail = TextEditingController();
+  final _txtFirstname = TextEditingController();
+  final _txtSecondName = TextEditingController();
+  final _txtPassword = TextEditingController();
   @override
   Widget build(BuildContext context) {
 

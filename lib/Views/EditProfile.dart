@@ -14,6 +14,10 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfile extends State<EditProfile> {
+  final _txtEmail = TextEditingController();
+  final _txtFirstName = TextEditingController();
+  final _txtSecondName = TextEditingController();
+  final _txtPassword = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
