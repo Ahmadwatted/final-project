@@ -252,15 +252,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             AlertDialog(
                               title: Text('is this what your wrote?, email:$_txtEmail , password: $_txtPassword',),
                               actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'Cancel'),
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'OK'),
-                                  child: const Text('OK'),
-                                ),
-
+                                
+                                Text('sdasdasdasdasd')
+                                
+                                
+                                
+                                
                               ],
 
 
