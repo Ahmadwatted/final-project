@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:final_project/Views/EditProfile.dart';
+import 'package:final_project/Views/ListPage.dart';
+
 
 class MainAppPage extends StatefulWidget {
   const MainAppPage({super.key, required this.title});
@@ -12,34 +16,86 @@ class MainAppPage extends StatefulWidget {
 class _MainAppPage extends State<MainAppPage> {
   @override
   Widget build(BuildContext context) {
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      backgroundColor: Color(0xFFE3DFD6),
       body: Container(
-        color: Colors.deepOrange[100],
-        width: screenWidth,
-        height: screenHeight * 0.2,
+
+
         child: Column(
-
-
           children: [
+            SizedBox(height:20),
+            Row(
 
-            Container(
-            color: Colors.red,
-              child: Align(
-                alignment: Alignment.topLeft,
+              children: [
 
-                child: Image.asset('images and icons/App logo.png', width: 100,height: 100,),
 
-              ),
+
+
+
+
+
+
+
+              ],
+
+
+
+
+
+
 
             ),
           ],
         ),
       ),
 
+    bottomSheet: Container(
+     width: screenWidth,
+    height: 50,
 
+    child: Align(
+      alignment: Alignment.bottomLeft,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ElevatedButton(onPressed: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MainAppPage(
+                      title: 'tomainpage')),
+            );
+          }, child: Icon(Icons.home)),
+          ElevatedButton(onPressed: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const ListPage(
+                      title: 'toprofilepage')),
+            );
+          }, child: Icon(CupertinoIcons.list_bullet_indent)),
+          ElevatedButton(onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const EditProfile(
+                      title: 'toprofilepage')),
+            );
+          },
+              child: Icon(CupertinoIcons.profile_circled))
+
+
+
+        ],
+
+
+      ) ,
+    ),
+  ),
 
     );
   }
