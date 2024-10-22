@@ -40,6 +40,18 @@ class _EditProfile extends State<EditProfile> {
 
                 children: [
                   Icon(CupertinoIcons.profile_circled,size: 200,),
+                  Column(
+                    children: [
+                      Container(
+
+
+
+                      ),
+
+
+                    ],
+                  )
+
 
 
 
