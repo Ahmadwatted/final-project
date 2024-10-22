@@ -150,6 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   color: Colors.blue,width:120,
 
 
+
                                                 )
                                             ),
                                             hintText: "Enter your First Name",
@@ -246,7 +247,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
                         ElevatedButton(
 
+
                           onPressed: () {
+                            AlertDialog(
+                              title: Text('is this what your wrote?, email:$_txtEmail , password: $_txtPassword',),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'OK'),
+                                  child: const Text('OK'),
+                                ),
+
+                              ],
+
+
+
+
+                            );
+
 
                               Navigator.push(
                                 context,
@@ -254,6 +275,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     builder: (context) => const MainAppPage(
                                         title: 'tomainapppage')),
                               );
+
+
 
                           },
 
