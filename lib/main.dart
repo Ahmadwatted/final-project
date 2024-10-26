@@ -249,21 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
                           onPressed: () {
-                            AlertDialog(
-                              title: Text('is this what your wrote?, email:$_txtEmail , password: $_txtPassword',),
-                              actions: [
-                                
-                                Text('sdasdasdasdasd')
-                                
-                                
-                                
-                                
-                              ],
 
-
-
-
-                            );
 
 
                               Navigator.push(
