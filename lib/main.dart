@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/Views/MainAppPage.dart';
+import 'utils/Utils.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,10 +40,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _isVisible = false;
-  final _txtEmail = TextEditingController();
-  final _txtFirstName = TextEditingController();
-  final _txtSecondName = TextEditingController();
-  final _txtPassword = TextEditingController();
+  final TextEditingController _txtEmail = TextEditingController();
+  final TextEditingController _txtFirstName = TextEditingController();
+  final TextEditingController _txtSecondName = TextEditingController();
+  final TextEditingController _txtPassword = TextEditingController();
 
 
 
@@ -252,12 +253,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const MainAppPage(
                                         title: 'tomainapppage')),
                               );
+                            Utils.alert(_txtEmail.text,_txtPassword.text,context,_txtFirstName.text,_txtSecondName.text);
 
 
 
@@ -291,6 +294,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                         ),
+
                       ],
                     ),
 
