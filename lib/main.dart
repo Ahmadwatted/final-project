@@ -40,6 +40,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _isVisible = false;
+  bool _isRegister=false;
+
   final TextEditingController _txtEmail = TextEditingController();
   final TextEditingController _txtFirstName = TextEditingController();
   final TextEditingController _txtSecondName = TextEditingController();
@@ -53,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+
 
       body: Container(
         color: Colors.deepOrange[100],
@@ -239,7 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
 
-                    SizedBox(height: 30,),
+                    SizedBox(height: 20,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
 
@@ -254,13 +257,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const MainAppPage(
                                         title: 'tomainapppage')),
                               );
-                            Utils.alert(_txtEmail.text,_txtPassword.text,context,_txtFirstName.text,_txtSecondName.text);
+                              if(_isRegister)
+                                {
+                                  var ul= new Utils();
+                                  ul.showMyDialog(_txtEmail.text, _txtPassword.text, context, _txtFirstName.text, _txtSecondName.text);
+                                }
+
 
 
 
@@ -276,9 +285,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 )),
                           ),
                         ),
-                        SizedBox(width: 10,),
+                        SizedBox(width: 20,),
                         ElevatedButton(
                           onPressed: () {
+                            _isRegister=true;
                             setState(() {
                               _isVisible = ! _isVisible;
                             });
