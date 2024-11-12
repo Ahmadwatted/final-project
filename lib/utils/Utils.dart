@@ -1,6 +1,8 @@
 import 'package:final_project/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'DB.dart';
 class Utils{
 
   // static void alert(String _txtEmail,String _txtPassword, BuildContext context, String _txtFirstName,String _txtSecondName) {
@@ -50,7 +52,12 @@ class Utils{
                             child: const Text('Cancel'),
                           ),
                           TextButton(
-                            onPressed: () => Navigator.pop(context, 'Yes'),
+                            onPressed: () =>{
+                              insertUser("asd",'sad','asd'),
+                              Navigator.pop(context, 'Yes'),
+
+
+                          },
                             child: const Text('OK'),
                           ),
                         ],
