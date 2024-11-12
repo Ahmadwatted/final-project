@@ -52,9 +52,9 @@ class Utils{
                             child: const Text('Cancel'),
                           ),
                           TextButton(
-                            onPressed: () =>{
-                              insertUser("asd",'sad','asd'),
-                              Navigator.pop(context, 'Yes'),
+                            onPressed: () {
+                              insertUser("asd",'sad','asd');
+                              Navigator.pop(context, 'Yes');
 
 
                           },
