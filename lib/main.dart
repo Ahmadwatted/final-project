@@ -1,3 +1,4 @@
+import 'package:final_project/Models/User.dart';
 import 'package:final_project/utils/DB.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -303,7 +304,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                             title: 'tomainapppage')),
                                   );
                                   var ul= new Utils();
-                                  ul.showMyDialog(_txtEmail.text, _txtPassword.text, context, _txtFirstName.text, _txtSecondName.text);
+                                  var us=new User(_txtEmail.text, _txtPassword.text, context, _txtFirstName.text, _txtSecondName.text);
+                                  ul.showMyDialog(_txtEmail.text, _txtPassword.text, context, _txtFirstName.text, _txtSecondName.text, us);
                                 }
 
                             }
