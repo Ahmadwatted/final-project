@@ -1,3 +1,4 @@
+import 'package:final_project/utils/DB.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/Views/MainAppPage.dart';
@@ -247,9 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
 
                       children: [
-
-
-                        ElevatedButton(
+                        Visibility(visible: !_isVisible, child: ElevatedButton(
 
 
                           onPressed: () {
@@ -257,18 +256,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MainAppPage(
+                                      title: 'tomainapppage')),
+                            );
 
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const MainAppPage(
-                                        title: 'tomainapppage')),
-                              );
-                              if(_isRegister)
-                                {
-                                  var ul= new Utils();
-                                  ul.showMyDialog(_txtEmail.text, _txtPassword.text, context, _txtFirstName.text, _txtSecondName.text);
-                                }
 
 
 
@@ -277,6 +271,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                           child: Padding(
                             padding: EdgeInsets.all(10),
+
                             child: Text('Sign-in'
                                 , style:TextStyle(
                                   color: Colors.deepOrange[200], fontSize:20,
@@ -284,14 +279,36 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                 )),
                           ),
-                        ),
+                        ),),
+
+
+
+
                         SizedBox(width: 20,),
+
                         ElevatedButton(
                           onPressed: () {
                             _isRegister=true;
                             setState(() {
                               _isVisible = ! _isVisible;
-                            });
+
+
+                              if(!_isVisible)
+                                {
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const MainAppPage(
+                                            title: 'tomainapppage')),
+                                  );
+                                  var ul= new Utils();
+                                  ul.showMyDialog(_txtEmail.text, _txtPassword.text, context, _txtFirstName.text, _txtSecondName.text);
+                                }
+
+                            }
+
+                            );
                             // Code to execute when the button is pressed
                           },
                           child: Padding(
