@@ -1,4 +1,4 @@
-import 'package:final_project/Models/User.dart';
+import 'package:final_project/Models/user.dart';
 import 'package:final_project/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +32,7 @@ class Utils{
   // }
 
 
-  Future<void> showMyDialog(String _txtEmail,String _txtPassword, BuildContext context, String _txtFirstName,String _txtSecondName, User us) async {
+  Future<void> showMyDialog(String _txtEmail,String _txtPassword, BuildContext context, String _txtFirstName,String _txtSecondName, user us) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
