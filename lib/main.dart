@@ -44,10 +44,11 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isVisible = false;
   bool _isRegister=false;
 
-  final TextEditingController _txtEmail = TextEditingController();
-  final TextEditingController _txtFirstName = TextEditingController();
-  final TextEditingController _txtSecondName = TextEditingController();
-  final TextEditingController _txtPassword = TextEditingController();
+  final TextEditingController _txtemail = TextEditingController();
+  final TextEditingController _txtfirstName = TextEditingController();
+  final TextEditingController _txtsecondName = TextEditingController();
+  final TextEditingController _txtpassword = TextEditingController();
+  final TextEditingController _txtphoneNumber= TextEditingController();
 
 
 
@@ -67,10 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
 
               width: screenWidth,
-              height: screenHeight *0.3,
+              height: screenHeight *0.1,
               child: Align(
                 alignment: Alignment.center,
-                child: Image.asset('images and icons/log in icon.png'),
+                // child: Image.asset('images and icons/log in icon.png'),
               ),
             ),
             Container(
@@ -110,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
                               child:TextField(
-                                controller: _txtEmail,
+                                controller: _txtemail,
 
                                 decoration: InputDecoration(
                                     border: OutlineInputBorder(
@@ -147,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                       width: 500,
                                       child:TextField(
-                                        controller: _txtFirstName,
+                                        controller: _txtfirstName,
 
                                         decoration: InputDecoration(
                                             border: OutlineInputBorder(
@@ -180,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                       width: 500,
                                       child:TextField(
-                                        controller: _txtSecondName,
+                                        controller: _txtsecondName,
 
                                         decoration: InputDecoration(
                                             border: OutlineInputBorder(
@@ -202,6 +203,45 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                       ) ,
                                     ),
+                                    SizedBox(height: 45,),
+
+                                    Text("Phone Number:",
+                                        style: TextStyle(
+                                            color:Colors.deepOrange[100], fontSize: 20)
+                                    ),
+                                    SizedBox(height: 10,),
+                                    Container(
+                                      width: 500,
+                                      child:TextField(
+                                        controller: _txtphoneNumber,
+
+                                        decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(20), // Border radius
+                                                borderSide: BorderSide(
+                                                  color: Colors.deepOrange, width:120,
+
+
+                                                )
+                                            ),
+                                            hintText: "Enter your Phone Number",
+                                            hintStyle: TextStyle(
+                                                color: Colors.deepOrange[100],fontSize: 20
+
+                                            )
+
+
+                                        ),
+
+                                      ) ,
+
+
+
+
+
+
+
+                                    )
                                   ],
                                 ),
                             ),
@@ -216,7 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             Container(
                               width: 500,
                               child: TextField(
-                                controller: _txtPassword,
+                                controller: _txtpassword,
 
                                 decoration: InputDecoration(
                                     border: OutlineInputBorder(
@@ -296,6 +336,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
                               if(!_isVisible)
                                 {
+                                  user us=new user();
+                                  us.firstName=_txtfirstName.text;
+                                  us.secondName=_txtsecondName.text;
+                                  us.password=_txtpassword.text;
+                                  us.phoneNumber=_txtphoneNumber.text;
+
+
 
                                   Navigator.push(
                                     context,

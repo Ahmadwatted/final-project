@@ -32,36 +32,36 @@ class Utils{
   // }
 
 
-  Future<void> showMyDialog(String _txtEmail,String _txtPassword, BuildContext context, String _txtFirstName,String _txtSecondName, user us) async {
+  Future<void> showMyDialog(user us, BuildContext context) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Text('$_txtFirstName,$_txtSecondName are u sure about the info you have  entered'),
+          title:  Text('$us._txtfirstName,$us._txtsecondName are u sure about the info you have  entered'),
           content:  SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Email:$_txtEmail,\n your Password:$_txtPassword'),
+                Text('Email:$us._txtEmail,\n your Password:$us._txtPassword'),
                 Text('Would you like to approve these info?'),
               ],
             ),
           ),
           actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => MyHomePage(title: 'asdasd',))),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              insertUser(us);
-                              Navigator.pop(context, 'Yes');
+            TextButton(
+              onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => MyHomePage(title: 'asdasd',))),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                insertUser(us);
+                Navigator.pop(context, 'Yes');
 
 
-                          },
-                            child: const Text('OK'),
-                          ),
-                        ],
+              },
+              child: const Text('OK'),
+            ),
+          ],
 
 
         );
@@ -71,7 +71,7 @@ class Utils{
 
 
 
-  }
+}
 
 
 
