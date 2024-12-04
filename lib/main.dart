@@ -42,7 +42,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _isVisible = false;
-  bool _isRegister=false;
 
   final TextEditingController _txtemail = TextEditingController();
   final TextEditingController _txtfirstName = TextEditingController();
@@ -65,20 +64,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
         child: Column(
           children: [
+            // Container(
+            //
+            //   width: screenWidth,
+            //   height: screenHeight *0.1,
+            //   child: Align(
+            //     alignment: Alignment.center,
+            //     // child: Image.asset('images and icons/log in icon.png'),
+            //   ),
+            // ),
             Container(
-
-              width: screenWidth,
-              height: screenHeight *0.1,
-              child: Align(
-                alignment: Alignment.center,
-                // child: Image.asset('images and icons/log in icon.png'),
-              ),
-            ),
-            Container(
-              height: screenHeight * 0.7,
+              height: screenHeight * 1,
               width: screenWidth,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25),),
+                // borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25),),
                   color: Colors.brown[900]
               ),
               child:  Center(
@@ -329,7 +328,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                         ElevatedButton(
                           onPressed: () {
-                            _isRegister=true;
                             setState(() {
                               _isVisible = ! _isVisible;
 
