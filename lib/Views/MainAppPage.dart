@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:final_project/Views/Student/EditProfile.dart';
+import 'package:final_project/Views/EditProfile.dart';
 import 'package:final_project/Views/ListPage.dart';
 
 
