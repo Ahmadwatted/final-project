@@ -59,16 +59,16 @@ class _MyHomePageState extends State<MyHomePage> {
         color: Colors.deepOrange[100],
         child: Column(
           children: [
+            // Container(
+            //   width: screenWidth,
+            //   height: screenHeight * 0.1,
+            //   child: Align(
+            //     alignment: Alignment.center,
+            //     // child: Image.asset('images and icons/log in icon.png'),
+            //   ),
+            // ),
             Container(
-              width: screenWidth,
-              height: screenHeight * 0.1,
-              child: Align(
-                alignment: Alignment.center,
-                // child: Image.asset('images and icons/log in icon.png'),
-              ),
-            ),
-            Container(
-              height: screenHeight * 0.7,
+              height: screenHeight,
               width: screenWidth,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
@@ -304,15 +304,17 @@ class _MyHomePageState extends State<MyHomePage> {
                               us.phoneNumber = _txtphoneNumber.text;
                               us.email = _txtemail.text;
                               us.password = _txtpassword.text;
+                              us.userTypeID=2;
 
                               insertUser(us);
-
+/*
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const MainAppPage(
                                         title: 'tomainapppage')),
                               );
+                         */
                             },
                             child: Padding(
                               padding: EdgeInsets.all(10),

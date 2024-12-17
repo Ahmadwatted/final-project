@@ -4,7 +4,7 @@ import 'dart:convert';
 class user {
 
   user({
-    this.userTypeID=0,
+    this.userTypeID=2,
     this.userID=0,
     this.firstName = "",
     this.secondName = "",

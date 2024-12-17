@@ -36,33 +36,35 @@ Future<void> insertUser(user user) async {
   connectToMyDB();
 
   var result = await _conn.query(
-      'insert into users (firstName, password, secondName,email,phoneNumber,userTypeID, userID) values (?, ?,?,?,?,?,?)',
-      [user.firstName, user.password,user.secondName,user.email,user.phoneNumber,user.userTypeID,user.userID]);
+      'insert into users (firstName, password, secondName,email,phoneNumber,userTypeID) values (?, ?,?,?,?,?)',
+      [user.firstName, user.password,user.secondName,user.email,user.phoneNumber,user.userTypeID]);
+  // var result = await _conn.query(query);
+  // print(query);
   print('Inserted row id=${result.insertId}');
 
 
   //////////
 
-/*
-  // Query the database using a parameterized query
-  var results = await conn.query(
-      'select * from users where userID = ?', [6]);  // [result.insertId]
-  for (var row in results) {
-    print('Name: ${row[0]}, email: ${row[1]} age: ${row[2]}');
-  }
 
-  // Update some data
-  await conn.query('update users set firstName=? where userID=?', ['Bob', 5]);
+  //  // Query the database using a parameterized query
+  // var results = await _conn.query(
+  //      'select * from users where userID = ?', [6]);  // [result.insertId]
+  //  for (var row in results) {
+  //   print('Name: ${row[0]}, email: ${row[1]} age: ${row[2]}');
+  // }
+  //
+  // // Update some data
+  // await _conn.query('update users set firstName=? where userID=?', ['Bob', 5]);
+  //
+  //  // Query again database using a parameterized query
+  //  var results2 = await _conn.query(
+  //      'select * from users where userID = ?', [result.insertId]);
+  //  for (var row in results2) {
+  //   print('Name: ${row[0]}, email: ${row[1]} age: ${row[2]}');
+  // }
+  //
 
-  // Query again database using a parameterized query
-  var results2 = await conn.query(
-      'select * from users where userID = ?', [result.insertId]);
-  for (var row in results2) {
-    print('Name: ${row[0]}, email: ${row[1]} age: ${row[2]}');
-  }
-*/
-
-  // Finally, close the connection
+  //Finally, close the connection
   await _conn.close();
 
 }
