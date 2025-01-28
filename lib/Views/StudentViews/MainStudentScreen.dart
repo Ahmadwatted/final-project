@@ -1,0 +1,130 @@
+import 'package:flutter/material.dart';
+
+class MainStudentScreen extends StatelessWidget {
+  final String title;
+
+  const MainStudentScreen({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    final schedule = [
+      {'day': 'Sunday', 'classes': ['Mathematics', 'Computer Science']},
+      {'day': 'Monday', 'classes': ['Mathematics', 'Computer Science']},
+      {'day': 'Tuesday', 'classes': ['Physics', 'Literature']},
+      {'day': 'Wednesday', 'classes': ['Mathematics', 'Computer Science']},
+      {'day': 'Thursday', 'classes': ['Physics', 'Literature']},
+      {'day': 'Friday', 'classes': ['History']},
+    ];
+    final courses = [
+      {
+        'name': 'Mathematics',
+        'instructor': 'Dr. Smith',
+        'time': 'Mon/Wed 10:00 AM',
+        'color': Colors.blue[100],
+      },
+      {
+        'name': 'Physics',
+        'instructor': 'Prof. Johnson',
+        'time': 'Tue/Thu 2:00 PM',
+        'color': Colors.green[100],
+      },
+      {
+        'name': 'Computer Science',
+        'instructor': 'Dr. Williams',
+        'time': 'Mon/Wed 1:00 PM',
+        'color': Colors.purple[100],
+      },
+      {
+        'name': 'History',
+        'instructor': 'Prof. Davis',
+        'time': 'Fri 11:00 AM',
+        'color': Colors.orange[100],
+      },
+      {
+        'name': 'Literature',
+        'instructor': 'Dr. Brown',
+        'time': 'Tue/Thu 9:00 AM',
+        'color': Colors.pink[100],
+      },
+    ];
+    return Scaffold(
+      backgroundColor: Color(0xFFE3DFD6),
+      appBar: AppBar(
+        title: Text('Courses DashBoard'),
+      ),
+      body: SingleChildScrollView(
+
+        child: Padding(
+
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              // Courses Section
+              const Text(
+                'My Courses',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox( height: 16,),
+              SizedBox(
+                height: 150,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: courses.length,
+                  itemBuilder: (context, index) {
+                    final course = courses[index];
+                    return Container(
+                      width: 250,
+                      margin: const EdgeInsets.only(right: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: course['color'] as Color?,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            course['name'] as String,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(course['instructor'] as String),
+                          const SizedBox(height: 4),
+                          Text(course['time'] as String),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const Text(
+                'My Courses',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox( height: 16,),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+

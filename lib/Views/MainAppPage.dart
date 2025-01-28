@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:final_project/Views/EditProfile.dart';
 import 'package:final_project/Views/ListPage.dart';
+import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 
 
 class MainAppPage extends StatefulWidget {
@@ -14,10 +15,7 @@ class MainAppPage extends StatefulWidget {
 }
 
 class _MainAppPage extends State<MainAppPage> {
-  final _txtEmail = TextEditingController();
-  final _txtFirstname = TextEditingController();
-  final _txtSecondName = TextEditingController();
-  final _txtPassword = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
 
@@ -31,10 +29,28 @@ class _MainAppPage extends State<MainAppPage> {
 
         child: Column(
           children: [
-            SizedBox(height:20),
             Row(
 
               children: [
+                 ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MainStudentScreen(
+                              title: 'tomainapppage')),
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text('Sign-in',
+                        style: TextStyle(
+                          color: Colors.deepOrange[200],
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ),
+                ),
 
 
 
@@ -99,6 +115,7 @@ class _MainAppPage extends State<MainAppPage> {
 
       ) ,
     ),
+
   ),
 
     );

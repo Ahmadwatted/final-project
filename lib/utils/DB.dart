@@ -32,9 +32,10 @@ Future<void> showUsers() async {
 
 
 Future<void> insertUser(user user) async {
+  print("insert user");
 
   connectToMyDB();
-
+  showUsers();
   var result = await _conn.query(
       'insert into users (firstName, password, secondName,email,phoneNumber,userTypeID) values (?, ?,?,?,?,?)',
       [user.firstName, user.password,user.secondName,user.email,user.phoneNumber,user.userTypeID]);
@@ -43,7 +44,15 @@ Future<void> insertUser(user user) async {
   print('Inserted row id=${result.insertId}');
 
 
-  //////////
+
+
+
+
+
+
+
+
+
 
 
   //  // Query the database using a parameterized query
