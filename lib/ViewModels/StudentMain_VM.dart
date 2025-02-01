@@ -1,24 +1,28 @@
+import 'package:final_project/Models/task.dart';
 import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../models/schedule.dart';
+import '../Models/task.dart';
 
 class StudentDashboardViewModel extends ChangeNotifier {
   List<Course> _courses = [];
   List<DaySchedule> _schedule = [];
+  List<DayTask> _task=[];
 
   List<Course> get courses => _courses;
   List<DaySchedule> get schedule => _schedule;
+  List<DayTask> get task=> _task;
 
   StudentDashboardViewModel() {
     _initializeData();
   }
 
   void _initializeData() {
-    // Initialize courses
+
     _courses = [
       Course(
         name: 'Mathematics',
-        instructor: 'Dr. Smith',
+        instructor: 'Saeed al sabha ',
         time: 'Mon/Wed 10:00 AM',
         colorValue: Colors.blue[100]?.value ?? 0,
       ),
@@ -78,6 +82,23 @@ class StudentDashboardViewModel extends ChangeNotifier {
         day: 'Saturday',
         classes: ['History'],
       ),
+    ];
+    _task=[
+      DayTask(day: 'Sunday', name: ['Math', 'Physics', 'arabic','math']),
+
+      DayTask(day: 'Monday', name: ['Physics']),
+
+      DayTask(day: 'Tuesday', name: ['history']),
+
+      DayTask(day: 'Wednesday', name: ['Computer', 'Science', 'English']),
+
+      DayTask(day: 'Thursday', name: ['Math']),
+
+      DayTask(day: 'Friday', name: ['Biology']),
+
+      DayTask(day: 'Saturday', name: ['English'])
+
+
     ];
     notifyListeners();
   }
