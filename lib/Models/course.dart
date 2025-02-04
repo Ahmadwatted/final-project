@@ -1,31 +1,53 @@
+import 'package:flutter/cupertino.dart';
+
+
+
 class Course {
-  final String name;
-  final String instructor;
+  final int id;
+  final String course;
   final String time;
-  final int colorValue;
+  final String location;
+  final String day;
 
   Course({
-    required this.name,
-    required this.instructor,
+    required this.id,
+    required this.course,
+    required this.day,
     required this.time,
-    required this.colorValue,
+    required this.location,
   });
 
-  factory Course.fromJson(Map<String, dynamic> map) {
+  factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
-      name: map['name'] as String,
-      instructor: map['instructor'] as String,
-      time: map['time'] as String,
-      colorValue: map['color']?.value ?? 0,
+      id: json['id'] as int,
+      course: json['course'] as String,
+      day: json['day'] as String,
+      time: json['time'] as String,
+      location: json['location'] as String,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'instructor': instructor,
+      'id': id,
+      'course': course,
+      'day': day,
       'time': time,
-      'colorValue': colorValue,
+      'location': location,
     };
+  }
+}
+
+
+class StudentViewModel extends ChangeNotifier {
+  List<Course> courses = [];
+
+  void loadCourseFromJson(List<Map<String, dynamic>> jsonList) {
+  courses = jsonList.map((json) => Course.fromJson(json)).toList();
+  notifyListeners();
+  }
+
+  List<Map<String, dynamic>> coursesToJson() {
+  return courses.map((course) => course.toJson()).toList();
   }
 }

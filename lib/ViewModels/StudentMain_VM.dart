@@ -1,17 +1,15 @@
 import 'package:final_project/Models/task.dart';
 import 'package:flutter/material.dart';
-import '../models/course.dart';
-import '../models/schedule.dart';
+import '../Models/schedule.dart';
+import 'package:final_project/Models/course.dart';
 import '../Models/task.dart';
 
 class StudentDashboardViewModel extends ChangeNotifier {
-  List<Course> _courses = [];
-  List<DaySchedule> _schedule = [];
-  List<DayTask> _task=[];
+  List<Course> courses = [];
+  List<Schedule> schedule = [];
+  List<DayTask> task=[];
 
-  List<Course> get courses => _courses;
-  List<DaySchedule> get schedule => _schedule;
-  List<DayTask> get task=> _task;
+
 
   StudentDashboardViewModel() {
     _initializeData();
@@ -19,71 +17,45 @@ class StudentDashboardViewModel extends ChangeNotifier {
 
   void _initializeData() {
 
-    _courses = [
+    courses = [
       Course(
-        name: 'Mathematics',
-        instructor: 'Saeed al sabha ',
-        time: 'Mon/Wed 10:00 AM',
-        colorValue: Colors.blue[100]?.value ?? 0,
+        id: 1,
+        course: 'Aanced Algorithms',
+        day: 'Monday',
+        time: '10:00 AM - 11:30 AM',
+        location: 'Tech Building, Room 205',
       ),
       Course(
-        name: 'Physics',
-        instructor: 'Prof. Johnson',
-        time: 'Tue/Thu 2:00 PM',
-        colorValue: Colors.green[100]?.value ?? 0,
-      ),
-      Course(
-        name: 'Computer Science',
-        instructor: 'Dr. Williams',
-        time: 'Mon/Wed 1:00 PM',
-        colorValue: Colors.purple[100]?.value ?? 0,
-      ),
-      Course(
-        name: 'History',
-        instructor: 'Prof. Davis',
-        time: 'Fri 11:00 AM',
-        colorValue: Colors.orange[100]?.value ?? 0,
-      ),
-      Course(
-        name: 'Literature',
-        instructor: 'Dr. Brown',
-        time: 'Tue/Thu 9:00 AM',
-        colorValue: Colors.pink[100]?.value ?? 0,
+        id: 2,
+        course: 'Data Structures',
+        day: 'Wednesday',
+        time: '2:00 PM - 3:30 PM',
+        location: 'Science Complex, Room 302',
       ),
     ];
 
-    // Initialize schedule
-    _schedule = [
-      DaySchedule(
-        day: 'Sunday',
-        classes: ['Mathematics', 'Computer Science'],
-      ),
-      DaySchedule(
+
+     schedule = [
+      Schedule(
+        id: 1,
+        course: 'Advanced Algorithms',
         day: 'Monday',
-        classes: ['Mathematics', 'Computer Science'],
+        time: '10:00 AM - 11:30 AM',
+        location: 'Tech Building, Room 205',
       ),
-      DaySchedule(
-        day: 'Tuesday',
-        classes: ['Physics', 'Literature'],
-      ),
-      DaySchedule(
+      Schedule(
+        id: 2,
+        course: 'Data Structures',
         day: 'Wednesday',
-        classes: ['Mathematics', 'Computer Science'],
-      ),
-      DaySchedule(
-        day: 'Thursday',
-        classes: ['Physics', 'Literature'],
-      ),
-      DaySchedule(
-        day: 'Friday',
-        classes: ['History'],
-      ),
-      DaySchedule(
-        day: 'Saturday',
-        classes: ['History'],
+        time: '2:00 PM - 3:30 PM',
+        location: 'Science Complex, Room 302',
       ),
     ];
-    _task=[
+
+
+
+
+    task=[
       DayTask(day: 'Sunday', name: ['Math', 'Physics', 'arabic','math']),
 
       DayTask(day: 'Monday', name: ['Physics']),

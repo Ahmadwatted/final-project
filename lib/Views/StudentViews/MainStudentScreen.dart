@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import '../../ViewModels/StudentMain_VM.dart';
 import '../../utils/Widgets/Course_Card.dart';
 import '../../utils/Widgets/Schedule_Card.dart';
-import '../../utils/Widgets/Task_Card.dart';
+import '../../Models/course.dart';
+
 import 'MyCoursesScreen.dart';
 import 'MyScheduleScreen.dart';
 class MainStudentScreen extends StatelessWidget {
@@ -42,116 +43,143 @@ class _MainStudentScreenContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextButton(
-                onPressed: () =>
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const Mycoursesscreen(title: 'tomainapppage'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'My Courses',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                child: const Text(
-                  'My Courses',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                              const Mycoursesscreen(title: 'tomainapppage'),
+                            ),
+                          ),
+                      child: Row(
+                        children: [
+                          Text(
+                            'View All',
+                            style: TextStyle(
+                              color: Colors.blue[600],
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward,
+                            size: 16,
+                            color: Colors.blue[600],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
+
+
               ),
-              const SizedBox(height: 16),
               SizedBox(
-                height: 150,
-                child: ListView.builder(
+                height: 160,
+                child: viewModel.courses.isEmpty
+                    ? Center(
+                  child: Text(
+                    'You have not participated in any courses yet',
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                )
+                    : ListView.builder(
                   scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
                   itemCount: viewModel.courses.length,
-                  itemBuilder: (context, index) =>
-                      CourseCard(
-                        course: viewModel.courses[index],
-                      ),
+                  itemBuilder: (context, index) {
+                    final Course course = viewModel.courses[index] as Course;
+                    return Padding(
+                      padding: EdgeInsets.only(right: 16.0),
+                      child: CourseCard(courses: course,),
+                    );
+                  },
                 ),
               ),
+
               const SizedBox(height: 16),
-              TextButton(
-                onPressed: () =>
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const MyScheduleScreen(title: 'tomainapppage'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'My Schedule',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                child: const Text(
-                  'My schedule',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: viewModel.schedule
-                        .map((schedule) => ScheduleCard(schedule: schedule))
-                        .toList(),
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () =>
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                        const Mytasksscreen(title: 'tomainapppage'),
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                              const MyScheduleScreen(title: 'tomainapppage'),
+                            ),
+                          ),
+                      child: Row(
+                        children: [
+                          Text(
+                            'View All',
+                            style: TextStyle(
+                              color: Colors.blue[600],
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward,
+                            size: 16,
+                            color: Colors.blue[600],
+                          ),
+                        ],
                       ),
                     ),
-                child: const Text(
-                  'My tasks',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                  ],
+                ),
+
+              ),
+              SizedBox(
+                height: 160,
+                child: viewModel.schedule.isEmpty
+                    ? Center(
+                  child: Text(
+                    'No scheduled classes',
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                    ),
                   ),
+                )
+                    : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  itemCount: viewModel.schedule.length,
+                  itemBuilder: (context, index) {
+                    final schedule = viewModel.schedule[index];
+                    return Padding(
+                      padding: EdgeInsets.only(right: 16.0),
+                      child: ScheduleCard(schedule: schedule),
+                    );
+                  },
                 ),
               ),
 
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: BouncingScrollPhysics(),
-                child: Padding(
-
-                  padding:EdgeInsets.symmetric(horizontal: 16),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: viewModel.task.map((task)=> TaskCard(task: task)).toList(),
-
-
-                    ),
-                  ),
 
 
 
-
-
-
-                ),
-
-
-
-
-
-
-
-
-              )
 
 
 
@@ -159,10 +187,6 @@ class _MainStudentScreenContent extends StatelessWidget {
             ],
           ),
         ),
-
-
-
-
 
       ),
     );
