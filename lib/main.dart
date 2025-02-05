@@ -1,9 +1,7 @@
 import 'package:final_project/Models/user.dart';
 import 'package:final_project/utils/DB.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/Views/MainAppPage.dart';
-import 'utils/Utils.dart';
 
 void main() {
   runApp(const MyApp());

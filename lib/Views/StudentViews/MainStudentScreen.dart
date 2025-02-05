@@ -1,4 +1,5 @@
 import 'package:final_project/Views/StudentViews/MyTasksScreen.dart';
+import 'package:final_project/utils/Widgets/Task_Card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../ViewModels/StudentMain_VM.dart';
@@ -10,6 +11,7 @@ import 'MyCoursesScreen.dart';
 import 'MyScheduleScreen.dart';
 class MainStudentScreen extends StatelessWidget {
   final String title;
+
 
   const MainStudentScreen({super.key, required this.title});
 
@@ -172,6 +174,75 @@ class _MainStudentScreenContent extends StatelessWidget {
                     return Padding(
                       padding: EdgeInsets.only(right: 16.0),
                       child: ScheduleCard(schedule: schedule),
+                    );
+                  },
+                ),
+              ),
+
+
+
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'My Tasks',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                              const Mytasksscreen(title: 'tomainapppage'),
+                            ),
+                          ),
+                      child: Row(
+                        children: [
+                          Text(
+                            'View All',
+                            style: TextStyle(
+                              color: Colors.blue[600],
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward,
+                            size: 16,
+                            color: Colors.blue[600],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+              ),
+              SizedBox(
+                height: 160,
+                child: viewModel.tasks.isEmpty
+                    ? Center(
+                  child: Text(
+                    'No tasks yet',
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                )
+                    : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  itemCount: viewModel.tasks.length,
+                  itemBuilder: (context, index) {
+                    final task = viewModel.tasks[index];
+                    return Padding(
+                      padding: EdgeInsets.only(right: 16.0),
+                      child: TaskCard(tasks: task),
                     );
                   },
                 ),

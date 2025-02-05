@@ -33,7 +33,7 @@ class CourseCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.calendar_today,
+                Icons.play_lesson,
                 size: 20,
                 color: Colors.blue[600],
               ),
@@ -49,21 +49,6 @@ class CourseCard extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-          SizedBox(height: 8),
-          Text(
-            courses.day,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
-          Text(
-            courses.time,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
           ),
           SizedBox(height: 4),
           Text(

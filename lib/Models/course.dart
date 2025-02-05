@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 class Course {
   final int id;
   final String course;
-  final String time;
   final String location;
   final String day;
 
@@ -13,7 +12,6 @@ class Course {
     required this.id,
     required this.course,
     required this.day,
-    required this.time,
     required this.location,
   });
 
@@ -22,7 +20,6 @@ class Course {
       id: json['id'] as int,
       course: json['course'] as String,
       day: json['day'] as String,
-      time: json['time'] as String,
       location: json['location'] as String,
     );
   }
@@ -32,7 +29,6 @@ class Course {
       'id': id,
       'course': course,
       'day': day,
-      'time': time,
       'location': location,
     };
   }

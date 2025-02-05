@@ -7,7 +7,7 @@ import '../Models/task.dart';
 class StudentDashboardViewModel extends ChangeNotifier {
   List<Course> courses = [];
   List<Schedule> schedule = [];
-  List<DayTask> task=[];
+  List<Task> tasks=[];
 
 
 
@@ -22,14 +22,12 @@ class StudentDashboardViewModel extends ChangeNotifier {
         id: 1,
         course: 'Aanced Algorithms',
         day: 'Monday',
-        time: '10:00 AM - 11:30 AM',
         location: 'Tech Building, Room 205',
       ),
       Course(
         id: 2,
         course: 'Data Structures',
         day: 'Wednesday',
-        time: '2:00 PM - 3:30 PM',
         location: 'Science Complex, Room 302',
       ),
     ];
@@ -55,20 +53,22 @@ class StudentDashboardViewModel extends ChangeNotifier {
 
 
 
-    task=[
-      DayTask(day: 'Sunday', name: ['Math', 'Physics', 'arabic','math']),
+    tasks=[
+      Task(
+        id: 1,
+        course: 'Advanced Algorithms',
+        day: 'Monday',
+        time: '10:00 AM - 11:30 AM',
+        done: false,
+      ),
+      Task(
+        id: 2,
+        course: 'Data Structures',
+        day: 'Wednesday',
+        time: '2:00 PM - 3:30 PM',
+        done: false,
+      ),
 
-      DayTask(day: 'Monday', name: ['Physics']),
-
-      DayTask(day: 'Tuesday', name: ['history']),
-
-      DayTask(day: 'Wednesday', name: ['Computer', 'Science', 'English']),
-
-      DayTask(day: 'Thursday', name: ['Math']),
-
-      DayTask(day: 'Friday', name: ['Biology']),
-
-      DayTask(day: 'Saturday', name: ['English'])
 
 
     ];
