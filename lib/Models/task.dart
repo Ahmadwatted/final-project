@@ -1,14 +1,10 @@
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
-
-
 
 class Task {
   final int id;
   final String course;
   final String time;
-  final bool done;
+  final String done;
   final String day;
 
   Task({
@@ -25,7 +21,7 @@ class Task {
       course: json['course'] as String,
       day: json['day'] as String,
       time: json['time'] as String,
-      done: json['done'] as bool,
+      done: json['done'] as String,
     );
   }
 

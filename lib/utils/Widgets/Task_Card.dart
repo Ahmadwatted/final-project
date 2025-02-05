@@ -33,7 +33,7 @@ class TaskCard extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.calendar_today,
+                Icons.task_alt,
                 size: 20,
                 color: Colors.blue[600],
               ),
@@ -67,7 +67,7 @@ class TaskCard extends StatelessWidget {
           ),
           SizedBox(height: 4),
           Text(
-            "tasks.done",
+            tasks.done,
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[500],
