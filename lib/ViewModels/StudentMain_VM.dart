@@ -58,14 +58,14 @@ class StudentDashboardViewModel extends ChangeNotifier {
         id: 1,
         course: 'Advanced Algorithms',
         day: 'Monday',
-        time: '10:00 AM - 11:30 AM',
+        time: '00:00 AM',
         done: 'Completed',
       ),
       Task(
         id: 2,
         course: 'Data Structures',
         day: 'Wednesday',
-        time: '2:00 PM - 3:30 PM',
+        time: '00:00 AM',
         done: 'Not completed',
       ),
 
