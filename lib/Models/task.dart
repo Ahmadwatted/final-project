@@ -6,6 +6,8 @@ class Task {
   final String time;
   final String done;
   final String day;
+  final Color c;
+
 
   Task({
     required this.id,
@@ -13,6 +15,7 @@ class Task {
     required this.day,
     required this.time,
     required this.done,
+    required this.c,
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
@@ -22,6 +25,7 @@ class Task {
       day: json['day'] as String,
       time: json['time'] as String,
       done: json['done'] as String,
+      c:json['c'] as Color,
     );
   }
 
@@ -32,6 +36,7 @@ class Task {
       'day': day,
       'time': time,
       'done': done,
+      'c' : c,
     };
   }
 }

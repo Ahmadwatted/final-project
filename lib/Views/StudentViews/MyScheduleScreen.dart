@@ -38,10 +38,12 @@ class _MyScheduleScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
 
+        child: Column(
+
+          crossAxisAlignment: CrossAxisAlignment.start,
+
+          children: [
             const SizedBox(height: 24),
             Expanded(
               child: ListView.builder(

@@ -1,17 +1,20 @@
+import 'package:final_project/Views/StudentViews/MyCoursesScreen.dart';
 import 'package:flutter/material.dart';
+import '../../Models/course.dart';
 import '../../Models/schedule.dart';
 
 
-class ScheduleScreenDesign extends StatelessWidget {
-  final Schedule schedule;
+class CoursesScreenDesign extends StatelessWidget {
+  final Course courses;
 
-  const ScheduleScreenDesign({Key? key, required this.schedule}) : super(key: key);
+  const CoursesScreenDesign({Key? key, required this.courses}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
 
     return Card(
+
 
       color: Colors.white,
       elevation: 2,
@@ -21,12 +24,16 @@ class ScheduleScreenDesign extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
+
           children: [
             Container(
+
+
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: schedule.c,
+
+                color: courses.c,
                 borderRadius: BorderRadius.circular(8),
               ),
 
@@ -36,8 +43,10 @@ class ScheduleScreenDesign extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
                   Text(
-                    schedule.course,
+
+                    courses.course,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -46,10 +55,10 @@ class ScheduleScreenDesign extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                      const Icon(Icons.play_lesson, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Text(
-                        '${schedule.day}, ${schedule.time}',
+                        '${courses.day},''',
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
@@ -63,7 +72,7 @@ class ScheduleScreenDesign extends StatelessWidget {
                       const Icon(Icons.location_on, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Text(
-                        schedule.location,
+                        courses.location,
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../Models/schedule.dart';
+import '../../Models/task.dart';
 
 
-class ScheduleScreenDesign extends StatelessWidget {
-  final Schedule schedule;
+class TasksScreenDesign extends StatelessWidget {
+  final Task tasks;
 
-  const ScheduleScreenDesign({Key? key, required this.schedule}) : super(key: key);
+  const TasksScreenDesign({Key? key, required this.tasks}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class ScheduleScreenDesign extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: schedule.c,
+                color: tasks.c,
                 borderRadius: BorderRadius.circular(8),
               ),
 
@@ -37,7 +38,7 @@ class ScheduleScreenDesign extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    schedule.course,
+                    tasks.course,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -49,7 +50,7 @@ class ScheduleScreenDesign extends StatelessWidget {
                       const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Text(
-                        '${schedule.day}, ${schedule.time}',
+                        '${tasks.day}, ${tasks.time}',
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
@@ -60,10 +61,10 @@ class ScheduleScreenDesign extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                      const Icon(Icons.task_alt, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Text(
-                        schedule.location,
+                        tasks.done,
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,

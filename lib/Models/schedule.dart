@@ -1,3 +1,4 @@
+import 'package:final_project/utils/Widgets/Random_color.dart';
 import 'package:flutter/cupertino.dart';
 
 class Schedule {
@@ -6,6 +7,7 @@ class Schedule {
   final String day;
   final String time;
   final String location;
+  final Color c;
 
   Schedule({
     required this.id,
@@ -13,6 +15,7 @@ class Schedule {
     required this.day,
     required this.time,
     required this.location,
+    required this.c,
   });
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
@@ -22,6 +25,7 @@ class Schedule {
       day: json['day'] as String,
       time: json['time'] as String,
       location: json['location'] as String,
+      c: json['c'] as Color,
     );
   }
 
@@ -32,6 +36,7 @@ class Schedule {
       'day': day,
       'time': time,
       'location': location,
+      'c' : c,
     };
   }
 }

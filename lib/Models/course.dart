@@ -7,12 +7,15 @@ class Course {
   final String course;
   final String location;
   final String day;
+  final Color c;
+
 
   Course({
     required this.id,
     required this.course,
     required this.day,
     required this.location,
+    required this.c,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -21,6 +24,7 @@ class Course {
       course: json['course'] as String,
       day: json['day'] as String,
       location: json['location'] as String,
+      c:json['c'] as Color,
     );
   }
 
@@ -30,6 +34,7 @@ class Course {
       'course': course,
       'day': day,
       'location': location,
+      'c': c,
     };
   }
 }
