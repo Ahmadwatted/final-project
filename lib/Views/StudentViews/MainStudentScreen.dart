@@ -1,4 +1,5 @@
 import 'package:final_project/Views/StudentViews/MyTasksScreen.dart';
+import 'package:final_project/utils/Widgets/Add_Button_Design.dart';
 import 'package:final_project/utils/Widgets/Task_Card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,8 +25,22 @@ class MainStudentScreen extends StatelessWidget {
   }
 }
 
+
 class _MainStudentScreenContent extends StatelessWidget {
   final String title;
+  void _handleJoinCourse(String code) {
+    // backend
+    print('Joining course with code: $code');
+  }
+
+  void _showJoinSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => AddButtonDesign(
+        onJoinCourse: _handleJoinCourse,
+      ),
+    );
+  }
 
   const _MainStudentScreenContent({required this.title});
 
@@ -63,7 +78,7 @@ class _MainStudentScreenContent extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                              const Mycoursesscreen(title: 'tomainapppage'),
+                              const MyCoursesScreen(title: 'tomainapppage'),
                             ),
                           ),
                       child: Row(
@@ -200,7 +215,7 @@ class _MainStudentScreenContent extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                              const Mytasksscreen(title: 'tomainapppage'),
+                              const MyTasksScreen(title: 'tomainapppage'),
                             ),
                           ),
                       child: Row(
@@ -260,6 +275,21 @@ class _MainStudentScreenContent extends StatelessWidget {
         ),
 
       ),
+
+      floatingActionButton: FloatingActionButton(onPressed: () => _showJoinSheet(context),
+      child: const Icon(Icons.add_circle_outline,color: Colors.black, ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        splashColor: Colors.transparent ,
+        highlightElevation: 0,
+
+        
+          
+
+      ), 
+
+
+
     );
   }
 }

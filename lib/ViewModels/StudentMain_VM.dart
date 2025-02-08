@@ -1,4 +1,5 @@
 import 'package:final_project/Models/task.dart';
+import 'package:final_project/utils/Widgets/Random_color.dart';
 import 'package:flutter/material.dart';
 import '../Models/schedule.dart';
 import 'package:final_project/Models/course.dart';
@@ -23,12 +24,14 @@ class StudentDashboardViewModel extends ChangeNotifier {
         course: 'Aanced Algorithms',
         day: 'Monday',
         location: 'Tech Building, Room 205',
+        c: RandomColor.getRandomShade700(),
       ),
       Course(
         id: 2,
         course: 'Data Structures',
         day: 'Wednesday',
         location: 'Science Complex, Room 302',
+          c: RandomColor.getRandomShade700(),
       ),
     ];
 
@@ -36,10 +39,14 @@ class StudentDashboardViewModel extends ChangeNotifier {
      schedule = [
       Schedule(
         id: 1,
+
         course: 'Advanced Algorithms',
         day: 'Monday',
         time: '10:00 AM - 11:30 AM',
         location: 'Tech Building, Room 205',
+        c: RandomColor.getRandomShade700(),
+
+
       ),
       Schedule(
         id: 2,
@@ -47,6 +54,7 @@ class StudentDashboardViewModel extends ChangeNotifier {
         day: 'Wednesday',
         time: '2:00 PM - 3:30 PM',
         location: 'Science Complex, Room 302',
+        c: RandomColor.getRandomShade700(),
       ),
     ];
 
@@ -58,15 +66,19 @@ class StudentDashboardViewModel extends ChangeNotifier {
         id: 1,
         course: 'Advanced Algorithms',
         day: 'Monday',
-        time: '10:00 AM - 11:30 AM',
+        time: '00:00 AM',
         done: 'Completed',
+        c: RandomColor.getRandomShade700(),
+
       ),
       Task(
         id: 2,
         course: 'Data Structures',
         day: 'Wednesday',
-        time: '2:00 PM - 3:30 PM',
+        time: '00:00 AM',
         done: 'Not completed',
+        c: RandomColor.getRandomShade700(),
+
       ),
 
 
