@@ -4,7 +4,7 @@ class Task {
   final int id;
   final String course;
   final String time;
-  final String done;
+   String done;
   final String day;
   final Color c;
 

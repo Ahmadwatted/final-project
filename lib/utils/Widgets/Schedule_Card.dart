@@ -66,13 +66,18 @@ class ScheduleCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: 4),
-          Text(
-            schedule.location,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[500],
-            ),
-          ),
+          Row(
+            children: [
+              Icon(Icons.location_on, color: Colors.grey,),
+              Text(
+                schedule.location,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[500],
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );

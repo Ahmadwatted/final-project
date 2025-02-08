@@ -264,7 +264,7 @@ class _MainStudentScreenContent extends StatelessWidget {
               ),
 
 
-
+              SizedBox(height: 75,)
 
 
 

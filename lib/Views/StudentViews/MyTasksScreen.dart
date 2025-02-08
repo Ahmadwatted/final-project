@@ -33,7 +33,7 @@ class _MyTasksScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFE3DFD6),
 
       appBar: AppBar(
-        title: const Text('My Schedule'),
+        title: const Text('My tasks'),
         backgroundColor: Colors.white,
         elevation: 1,
       ),

@@ -1,3 +1,4 @@
+import 'package:final_project/Views/TeacherViews/MainTeacherScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:final_project/Views/EditProfile.dart';
@@ -44,6 +45,25 @@ class _MainAppPage extends State<MainAppPage> {
                   child: Padding(
                     padding: EdgeInsets.all(10),
                     child: Text('Sign-in',
+                        style: TextStyle(
+                          color: Colors.deepOrange[200],
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        )),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Mainteacherscreen(
+                              title: 'tomainapppage')),
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text('Sign-in2',
                         style: TextStyle(
                           color: Colors.deepOrange[200],
                           fontSize: 20,

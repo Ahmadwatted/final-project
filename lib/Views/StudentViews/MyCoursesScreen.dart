@@ -1,3 +1,4 @@
+import 'package:final_project/utils/Widgets/Course_Card.dart';
 import 'package:final_project/utils/Widgets/Courses_Screen_Design.dart';
 import 'package:final_project/utils/Widgets/Schedule_Screen_Design.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,7 @@
+import 'package:final_project/Models/usertype.dart';
 import 'package:final_project/Views/StudentViews/MyCoursesScreen.dart';
+import 'package:final_project/Views/TeacherViews/MainTeacherScreen.dart';
+import 'package:final_project/Views/TeacherViews/TeacherCoursesScreen.dart';
 import 'package:flutter/material.dart';
 import '../../Models/course.dart';
 import '../../Models/schedule.dart';
@@ -80,6 +83,23 @@ class CoursesScreenDesign extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 4,),
+                  if(true)...[Row(
+                    children: [
+                      const Icon(Icons.people, size: 16, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Text(
+                        courses.stunum as String,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  )],
+
+
+
                 ],
               ),
             ),

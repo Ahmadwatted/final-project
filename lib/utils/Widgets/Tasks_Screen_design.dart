@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../Models/schedule.dart';
 import '../../Models/task.dart';
 
-
 class TasksScreenDesign extends StatelessWidget {
   final Task tasks;
 
@@ -10,10 +9,7 @@ class TasksScreenDesign extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Card(
-
       color: Colors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -30,7 +26,6 @@ class TasksScreenDesign extends StatelessWidget {
                 color: tasks.c,
                 borderRadius: BorderRadius.circular(8),
               ),
-
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -47,7 +42,8 @@ class TasksScreenDesign extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                      const Icon(Icons.calendar_today,
+                          size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Text(
                         '${tasks.day}, ${tasks.time}',
@@ -70,6 +66,20 @@ class TasksScreenDesign extends StatelessWidget {
                           fontSize: 14,
                         ),
                       ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      IconButton(
+                          onPressed: () {
+
+
+
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            size: 16,
+                            color: Colors.grey,
+                          ),)
                     ],
                   ),
                 ],

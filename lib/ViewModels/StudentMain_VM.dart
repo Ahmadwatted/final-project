@@ -25,6 +25,7 @@ class StudentDashboardViewModel extends ChangeNotifier {
         day: 'Monday',
         location: 'Tech Building, Room 205',
         c: RandomColor.getRandomShade700(),
+        stunum: 100
       ),
       Course(
         id: 2,
@@ -32,6 +33,7 @@ class StudentDashboardViewModel extends ChangeNotifier {
         day: 'Wednesday',
         location: 'Science Complex, Room 302',
           c: RandomColor.getRandomShade700(),
+        stunum: 20,
       ),
     ];
 

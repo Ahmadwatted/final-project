@@ -51,13 +51,33 @@ class CourseCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 4),
-          Text(
-            courses.location,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[500],
-            ),
+          Row(
+            children: [
+              Icon(Icons.location_on, color: Colors.grey,),
+              Text(
+                courses.location,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[500],
+                ),
+              ),
+
+            ],
           ),
+          SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.people, color: Colors.grey,),
+              Text(
+                '${courses.stunum}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[500],
+                ),
+              ),
+
+            ],
+          )
         ],
       ),
     );
