@@ -20,7 +20,7 @@ class Course {
       id: json['id'] as int,
       course: json['course'] as String,
       day: json['day'] as String,
-      location: json['location'] as String,
+      location: json['loqcation'] as String,
     );
   }
 
