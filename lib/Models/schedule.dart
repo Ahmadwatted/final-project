@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
 class Schedule {
-  final int id;
+  final int scheduleID;
+  final String tutor;
   final String course;
   final String day;
   final String time;
@@ -9,7 +10,8 @@ class Schedule {
   final Color c;
 
   Schedule({
-    required this.id,
+    required this.scheduleID,
+    required this.tutor,
     required this.course,
     required this.day,
     required this.time,
@@ -19,7 +21,8 @@ class Schedule {
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
     return Schedule(
-      id: json['id'] as int,
+      scheduleID: json['scheduleID'] as int,
+      tutor: json['tutor'] as String,
       course: json['course'] as String,
       day: json['day'] as String,
       time: json['time'] as String,
@@ -30,7 +33,8 @@ class Schedule {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'scheduleID': scheduleID,
+      'tutor' : tutor,
       'course': course,
       'day': day,
       'time': time,

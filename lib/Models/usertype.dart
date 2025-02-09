@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 
-class usertype {
+class UserType {
 
-  usertype({
+  UserType({
     this.userTypeID=0,
     this.userTypeName="",
 
@@ -12,7 +12,7 @@ class usertype {
   int userTypeID;
   String userTypeName;
 
-  factory usertype.fromJson(Map<String, dynamic> json) => usertype(
+  factory UserType.fromJson(Map<String, dynamic> json) => UserType(
         userTypeID: json["userTypeID"],
         userTypeName: json["userTypeName"],
 

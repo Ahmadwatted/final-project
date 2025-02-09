@@ -37,7 +37,7 @@ class ScheduleCard extends StatelessWidget {
                 size: 20,
                 color: Colors.blue[600],
               ),
-              SizedBox(width: 8),
+              SizedBox(width: 4),
               Expanded(
                 child: Text(
                   schedule.course,
@@ -50,18 +50,32 @@ class ScheduleCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.person, color: Colors.grey,),
+              Text(
+                schedule.tutor,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[500],
+                ),
+              ),
+
+            ],
+          ),
+          SizedBox(height: 5),
           Text(
             schedule.day,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 12,
               color: Colors.grey[600],
             ),
           ),
           Text(
             schedule.time,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 12,
               color: Colors.grey[600],
             ),
           ),

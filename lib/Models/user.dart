@@ -1,9 +1,8 @@
 import 'dart:convert';
 
 
-class user {
-
-  user({
+class User {
+  User({
     this.userTypeID=2,
     this.userID=0,
     this.firstName = "",
@@ -22,7 +21,7 @@ class user {
   String password;
   String phoneNumber;
 
-  factory user.fromJson(Map<String, dynamic> json) => user(
+  factory User.fromJson(Map<String, dynamic> json) => User(
     firstName: json["firstName"],
     secondName: json["secondName"],
     password: json["password"],

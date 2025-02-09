@@ -55,6 +55,20 @@ class CourseCard extends StatelessWidget {
           SizedBox(height: 4),
           Row(
             children: [
+              Icon(Icons.person, color: Colors.grey,),
+              Text(
+                courses.tutor,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[500],
+                ),
+              ),
+
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            children: [
               Icon(Icons.location_on, color: Colors.grey,),
               Text(
                 courses.location,

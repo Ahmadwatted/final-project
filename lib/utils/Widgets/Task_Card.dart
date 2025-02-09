@@ -50,6 +50,20 @@ class TaskCard extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(Icons.person, color: Colors.grey,),
+              Text(
+                tasks.tutor,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[500],
+                ),
+              ),
+
+            ],
+          ),
           SizedBox(height: 8),
           Text(
             tasks.day,

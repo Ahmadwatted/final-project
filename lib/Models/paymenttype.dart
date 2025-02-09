@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 
-class paymenttype {
+class PaymentType {
 
-  paymenttype({
+  PaymentType({
     this.paymentTypeID=0,
     this.paymentTypeName="",
 
@@ -12,7 +12,7 @@ class paymenttype {
   int paymentTypeID;
   String paymentTypeName;
 
-  factory paymenttype.fromJson(Map<String, dynamic> json) => paymenttype(
+  factory PaymentType.fromJson(Map<String, dynamic> json) => PaymentType(
     paymentTypeID: json["paymentTypeID"],
     paymentTypeName: json["paymentTypeName"],
 

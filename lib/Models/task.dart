@@ -2,15 +2,16 @@ import 'package:flutter/cupertino.dart';
 
 class Task {
   final int id;
+  final String tutor;
   final String course;
   final String time;
-   String done;
   final String day;
   final Color c;
-
+  String done;
 
   Task({
     required this.id,
+    required this.tutor,
     required this.course,
     required this.day,
     required this.time,
@@ -21,26 +22,27 @@ class Task {
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       id: json['id'] as int,
+      tutor: json['tutor'] as String,
       course: json['course'] as String,
       day: json['day'] as String,
       time: json['time'] as String,
       done: json['done'] as String,
-      c:json['c'] as Color,
+      c: json['c'] as Color,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'tutor' : tutor,
       'course': course,
       'day': day,
       'time': time,
       'done': done,
-      'c' : c,
+      'c': c,
     };
   }
 }
-
 
 class StudentViewModel extends ChangeNotifier {
   List<Task> tasks = [];

@@ -1,5 +1,4 @@
 import 'package:final_project/Models/user.dart';
-import 'package:final_project/utils/DB.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/Views/MainAppPage.dart';
 
@@ -296,15 +295,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           visible: _noAccount,
                           child: ElevatedButton(
                             onPressed: () {
-                              user us = new user();
-                              us.firstName = _txtfirstName.text;
-                              us.secondName = _txtsecondName.text;
-                              us.phoneNumber = _txtphoneNumber.text;
-                              us.email = _txtemail.text;
-                              us.password = _txtpassword.text;
-                              us.userTypeID=2;
-
-                              insertUser(us);
+                              // user us = new user();
+                              // us.firstName = _txtfirstName.text;
+                              // us.secondName = _txtsecondName.text;
+                              // us.phoneNumber = _txtphoneNumber.text;
+                              // us.email = _txtemail.text;
+                              // us.password = _txtpassword.text;
+                              // us.userTypeID=2;
+                              //
+                              // insertUser(us);
 /*
                               Navigator.push(
                                 context,

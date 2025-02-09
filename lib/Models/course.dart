@@ -3,15 +3,18 @@ import 'package:flutter/cupertino.dart';
 
 
 class Course {
-  final int id;
+  final int courseID;
+  final String tutor;
   final String course;
   final String location;
+  
   final String day;
   final int? stunum;
   final Color c;
 
   Course({
-    required this.id,
+    required this.courseID,
+    required this.tutor,
     required this.course,
     required this.day,
     required this.location,
@@ -21,7 +24,8 @@ class Course {
 
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
-      id: json['id'] as int,
+      courseID: json['courseID'] as int,
+      tutor: json['tutor'] as String,
       course: json['course'] as String,
       day: json['day'] as String,
       location: json['location'] as String,
@@ -31,7 +35,8 @@ class Course {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'courseID': courseID,
+      'tutor' : tutor,
       'course': course,
       'day': day,
       'location': location,

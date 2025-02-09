@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 
-class payment {
+class Payment {
 
-  payment({
+  Payment({
     this.paymentID=0,
     this.paymentTypeID=0,
     this.date="",
@@ -18,7 +18,7 @@ class payment {
   int userID;
   int quantity;
 
-  factory payment.fromJson(Map<String, dynamic> json) => payment(
+  factory Payment.fromJson(Map<String, dynamic> json) => Payment(
     paymentID: json["paymentID"],
     paymentTypeID: json["paymentTypeID"],
     date: json["date"],

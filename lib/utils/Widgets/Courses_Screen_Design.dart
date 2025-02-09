@@ -51,6 +51,20 @@ class CoursesScreenDesign extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
+                      const Icon(Icons.person, size: 16, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${courses.tutor},',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
                       const Icon(Icons.play_lesson, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Text(
@@ -62,6 +76,7 @@ class CoursesScreenDesign extends StatelessWidget {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 4),
                   Row(
                     children: [

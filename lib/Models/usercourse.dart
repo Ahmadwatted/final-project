@@ -1,9 +1,7 @@
 import 'dart:convert';
+class UserCourse {
 
-
-class usercourse {
-
-  usercourse({
+  UserCourse({
     this.rowID =0,
     this.courseID=0,
     this.userID=0,
@@ -14,7 +12,7 @@ class usercourse {
   int courseID=0;
   int userID=0;
 
-  factory usercourse.fromJson(Map<String, dynamic> json) => usercourse(
+  factory UserCourse.fromJson(Map<String, dynamic> json) => UserCourse(
     rowID: json["rowID"],
     courseID: json["courseID"],
     userID: json["userID"]

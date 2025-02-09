@@ -20,7 +20,8 @@ class StudentDashboardViewModel extends ChangeNotifier {
 
     courses = [
       Course(
-        id: 1,
+        courseID: 1,
+        tutor: 'mohmmad majadly',
         course: 'Aanced Algorithms',
         day: 'Monday',
         location: 'Tech Building, Room 205',
@@ -28,8 +29,9 @@ class StudentDashboardViewModel extends ChangeNotifier {
         stunum: 100
       ),
       Course(
-        id: 2,
+        courseID: 2,
         course: 'Data Structures',
+        tutor: 'yamin massri',
         day: 'Wednesday',
         location: 'Science Complex, Room 302',
           c: RandomColor.getRandomShade700(),
@@ -40,9 +42,10 @@ class StudentDashboardViewModel extends ChangeNotifier {
 
      schedule = [
       Schedule(
-        id: 1,
+        scheduleID: 1,
 
         course: 'Advanced Algorithms',
+        tutor: 'mohmmad majadly',
         day: 'Monday',
         time: '10:00 AM - 11:30 AM',
         location: 'Tech Building, Room 205',
@@ -51,7 +54,8 @@ class StudentDashboardViewModel extends ChangeNotifier {
 
       ),
       Schedule(
-        id: 2,
+        scheduleID: 2,
+        tutor: 'mohmmad majadly',
         course: 'Data Structures',
         day: 'Wednesday',
         time: '2:00 PM - 3:30 PM',
@@ -66,6 +70,7 @@ class StudentDashboardViewModel extends ChangeNotifier {
     tasks=[
       Task(
         id: 1,
+        tutor: 'mohmmad majadly',
         course: 'Advanced Algorithms',
         day: 'Monday',
         time: '00:00 AM',
@@ -75,6 +80,7 @@ class StudentDashboardViewModel extends ChangeNotifier {
       ),
       Task(
         id: 2,
+        tutor: 'mohmmad majadly',
         course: 'Data Structures',
         day: 'Wednesday',
         time: '00:00 AM',

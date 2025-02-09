@@ -3,7 +3,6 @@ import 'package:final_project/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'DB.dart';
 class Utils{
 
   // static void alert(String _txtEmail,String _txtPassword, BuildContext context, String _txtFirstName,String _txtSecondName) {
@@ -32,7 +31,7 @@ class Utils{
   // }
 
 
-  Future<void> showMyDialog(user us, BuildContext context) async {
+  Future<void> showMyDialog(User us, BuildContext context) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -68,6 +67,9 @@ class Utils{
       },
     );
   }
+
+  void insertUser(User us) {}
+
 
 
 
