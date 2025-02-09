@@ -1,27 +1,28 @@
+import 'package:final_project/utils/Widgets/Schedule_Screen_Design.dart';
+import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../ViewModels/StudentMain_VM.dart';
-import '../../utils/Widgets/Courses_Screen_Design.dart';
 
-class TeacherCoursesScreen extends StatelessWidget {
+class TeacherUploadedTasks extends StatelessWidget {
   final String title;
 
 
-  const TeacherCoursesScreen({super.key, required this.title});
+  const TeacherUploadedTasks({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _TeacherCoursesScreen(title: title),
+      child: _TeacherUploadedTasks(title: title),
     );
   }
 }
-class _TeacherCoursesScreen extends StatelessWidget {
+class _TeacherUploadedTasks extends StatelessWidget {
 
   final String title;
 
-  const _TeacherCoursesScreen({required this.title});
+  const _TeacherUploadedTasks({required this.title});
 
 
   @override
@@ -32,7 +33,7 @@ class _TeacherCoursesScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFE3DFD6),
 
       appBar: AppBar(
-        title: const Text('My Courses'),
+        title: const Text('Uploaded tasks'),
         backgroundColor: Colors.white,
         elevation: 1,
       ),
@@ -47,10 +48,10 @@ class _TeacherCoursesScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Expanded(
               child: ListView.builder(
-                itemCount: viewModel.courses.length,
+                itemCount: viewModel.tasks.length,
                 itemBuilder: (context, index) => Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: CoursesScreenDesign(courses: viewModel.courses[index], showStudentCount: true,),
+                  child: TasksScreenDesign(tasks: viewModel.tasks[index]),
                 ),
               ),
             ),

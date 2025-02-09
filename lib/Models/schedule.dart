@@ -1,4 +1,3 @@
-import 'package:final_project/utils/Widgets/Random_color.dart';
 import 'package:flutter/cupertino.dart';
 
 class Schedule {

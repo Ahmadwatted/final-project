@@ -1,5 +1,6 @@
 import 'package:final_project/Views/StudentViews/MyTasksScreen.dart';
 import 'package:final_project/Views/TeacherViews/TeacherCoursesScreen.dart';
+import 'package:final_project/Views/TeacherViews/TeacherUploadedTasks.dart';
 import 'package:final_project/utils/Widgets/Add_Button_Design.dart';
 import 'package:final_project/utils/Widgets/Task_Card.dart';
 import 'package:flutter/material.dart';
@@ -109,7 +110,7 @@ class _MainTeacherScreen extends StatelessWidget {
                     final Course course = viewModel.courses[index] as Course;
                     return Padding(
                       padding: EdgeInsets.only(right: 16.0),
-                      child: CourseCard(courses: course,),
+                      child: CourseCard(courses: course,showStudentCount: true,),
                     );
                   },
                 ),
@@ -191,7 +192,7 @@ class _MainTeacherScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'My Tasks',
+                      'Uploaded Tasks',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w600,
@@ -203,7 +204,7 @@ class _MainTeacherScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                              const MyTasksScreen(title: 'tomainapppage'),
+                              const TeacherUploadedTasks(title: 'tomainapppage'),
                             ),
                           ),
                       child: Row(
