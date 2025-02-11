@@ -110,7 +110,7 @@ class _MainTeacherScreen extends StatelessWidget {
                     final Course course = viewModel.courses[index] as Course;
                     return Padding(
                       padding: EdgeInsets.only(right: 16.0),
-                      child: CourseCard(courses: course,showStudentCount: true,),
+                      child: CourseCard(courses: course,isStudent: false,),
                     );
                   },
                 ),

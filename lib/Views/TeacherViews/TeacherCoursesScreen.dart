@@ -50,7 +50,7 @@ class _TeacherCoursesScreen extends StatelessWidget {
                 itemCount: viewModel.courses.length,
                 itemBuilder: (context, index) => Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: CoursesScreenDesign(courses: viewModel.courses[index], showStudentCount: true,),
+                  child: CoursesScreenDesign(courses: viewModel.courses[index], isStudent: false,),
                 ),
               ),
             ),

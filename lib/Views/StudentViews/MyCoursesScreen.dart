@@ -49,10 +49,12 @@ class _MyCoursesScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Expanded(
               child: ListView.builder(
+
                 itemCount: viewModel.courses.length,
                 itemBuilder: (context, index) => Padding(
+
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: CoursesScreenDesign(courses: viewModel.courses[index], showStudentCount: false,),
+                  child: CoursesScreenDesign(courses: viewModel.courses[index], isStudent: true,),
                 ),
               ),
             ),

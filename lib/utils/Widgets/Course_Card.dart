@@ -4,12 +4,12 @@ import '../../Models/course.dart';
 
 class CourseCard extends StatelessWidget {
   final Course courses;
-  final bool showStudentCount;
+  final bool isStudent;
 
   const CourseCard({
     Key? key,
     required this.courses,
-    this.showStudentCount = false,
+    this.isStudent = false,
   }) : super(key: key);
 
   @override
@@ -40,32 +40,38 @@ class CourseCard extends StatelessWidget {
                 color: Colors.blue[600],
               ),
               SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  courses.course,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+
+                Expanded(
+                  child: Text(
+                    courses.course,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 4),
-          Row(
-            children: [
-              Icon(Icons.person, color: Colors.grey,),
-              Text(
-                courses.tutor,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[500],
-                ),
-              ),
+
+
 
             ],
           ),
+          SizedBox(height: 4),
+          if(isStudent)...[
+            Row(
+              children: [
+                Icon(Icons.person, color: Colors.grey,),
+                Text(
+                  courses.tutor.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
+                ),
+
+              ],
+            )
+          ],
           SizedBox(height: 4),
           Row(
             children: [
@@ -81,7 +87,7 @@ class CourseCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 4),
-          if (showStudentCount) ...[
+          if (!isStudent) ...[
             Row(
               children: [
                 const Icon(Icons.people, size: 16, color: Colors.grey),

@@ -8,12 +8,12 @@ import '../../Models/schedule.dart';
 
 class CoursesScreenDesign extends StatelessWidget {
   final Course courses;
-  final bool showStudentCount;  // Simple boolean flag
+  final bool isStudent;  // Simple boolean flag
 
   const CoursesScreenDesign({
     Key? key,
     required this.courses,
-    this.showStudentCount = false,  // Defaults to false
+    this.isStudent = false,  // Defaults to false
   }) : super(key: key);
 
   @override
@@ -49,19 +49,21 @@ class CoursesScreenDesign extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.person, size: 16, color: Colors.grey),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${courses.tutor},',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
+                  if(isStudent)...[
+                    Row(
+                      children: [
+                        const Icon(Icons.person, size: 16, color: Colors.grey),
+                        const SizedBox(width: 8),
+                        Text(
+                          courses.tutor.toString(),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 4),
                   Row(
                     children: [
@@ -92,8 +94,8 @@ class CoursesScreenDesign extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  // Only show student numbers if showStudentCount is true
-                  if (showStudentCount) ...[
+
+                  if (!isStudent) ...[
                     Row(
                       children: [
                         const Icon(Icons.people, size: 16, color: Colors.grey),
