@@ -1,3 +1,4 @@
+import 'package:final_project/Models/student.dart';
 import 'package:final_project/Views/StudentViews/MyTasksScreen.dart';
 import 'package:final_project/utils/Widgets/Add_Button_Design.dart';
 import 'package:final_project/utils/Widgets/Task_Card.dart';
@@ -7,6 +8,7 @@ import '../../ViewModels/StudentMain_VM.dart';
 import '../../utils/Widgets/Course_Card.dart';
 import '../../utils/Widgets/Schedule_Card.dart';
 import '../../Models/course.dart';
+
 
 import 'MyCoursesScreen.dart';
 import 'MyScheduleScreen.dart';
@@ -193,6 +195,7 @@ class _MainStudentScreenContent extends StatelessWidget {
                   },
                 ),
               ),
+              Text(viewModel.students.length.toString()),
 
 
 
@@ -237,6 +240,7 @@ class _MainStudentScreenContent extends StatelessWidget {
                   ],
                 ),
 
+
               ),
               SizedBox(
                 height: 160,
@@ -262,6 +266,8 @@ class _MainStudentScreenContent extends StatelessWidget {
                   },
                 ),
               ),
+
+
 
 
               SizedBox(height: 75,)
@@ -293,3 +299,4 @@ class _MainStudentScreenContent extends StatelessWidget {
     );
   }
 }
+

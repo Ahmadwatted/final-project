@@ -1,14 +1,21 @@
+import 'dart:convert';
+
 import 'package:final_project/Models/task.dart';
 import 'package:final_project/utils/Widgets/Random_color.dart';
 import 'package:flutter/material.dart';
 import '../Models/schedule.dart';
 import 'package:final_project/Models/course.dart';
+import '../Models/student.dart';
+import '../Views/TeacherViews/StudentsRequests.dart';
 import '../Models/task.dart';
+import 'package:http/http.dart' as http;
+import '/../../Models/clientConfig.dart';
 
 class StudentDashboardViewModel extends ChangeNotifier {
   List<Course> courses = [];
   List<Schedule> schedule = [];
   List<Task> tasks=[];
+  List<Student> students=[];
 
 
 
@@ -16,7 +23,7 @@ class StudentDashboardViewModel extends ChangeNotifier {
     _initializeData();
   }
 
-  void _initializeData() {
+  Future<void> _initializeData() async {
 
     courses = [
       Course(
@@ -92,6 +99,32 @@ class StudentDashboardViewModel extends ChangeNotifier {
 
 
     ];
+
+    students=  await getStudents();
     notifyListeners();
   }
+  Future getStudents() async
+  {
+    // final String? getInfoDeviceSTR = localStorage.getItem('getInfoDeviceSTR');
+    var url = "students/getStudents.php";
+    final response = await http.get(Uri.parse(serverPath + url));
+    // print(serverPath + url);
+    List<Student> arr = [];
+
+    for(Map<String, dynamic> i in json.decode(response.body)){
+      arr.add(Student.fromJson(i));
+    }
+
+    return arr;
+  }
+
+
+
+
+
+
+
+
+
+
 }

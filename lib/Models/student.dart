@@ -29,4 +29,21 @@ class Student {
     this.email = user.email;
   }
 
+
+  factory Student.fromJson(Map<String, dynamic> json) {
+
+    return Student(
+      userID: json['userID'],
+      firstName: json['firstName'],
+      secondName: json['secondName'],
+      password: json['password'],
+      phoneNumber: json['phoneNumber'],
+      usertypeID: json['usertypeID'],
+      email: json['email'],
+
+    );
+  }
+
+
+
 }
