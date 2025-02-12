@@ -76,7 +76,7 @@ class StudentDashboardViewModel extends ChangeNotifier {
 
     tasks=[
       Task(
-        id: 1,
+        taskID: 1,
         tutor: 'mohmmad majadly',
         course: 'Advanced Algorithms',
         day: 'Monday',
@@ -86,7 +86,7 @@ class StudentDashboardViewModel extends ChangeNotifier {
 
       ),
       Task(
-        id: 2,
+        taskID: 2,
         tutor: 'mohmmad majadly',
         course: 'Data Structures',
         day: 'Wednesday',

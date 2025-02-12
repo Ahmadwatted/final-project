@@ -60,7 +60,7 @@ class TasksScreenDesign extends StatelessWidget {
                       const Icon(Icons.task_alt, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Text(
-                        tasks.done,
+                        tasks.done.toString(),
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,

@@ -1,45 +1,45 @@
 import 'package:flutter/cupertino.dart';
 
 class Task {
-  final int id;
+  final int taskID;
   final String tutor;
   final String course;
   final String time;
   final String day;
-  final Color c;
-  String done;
+   Color? c;
+  String? done;
 
   Task({
-    required this.id,
+    required this.taskID,
     required this.tutor,
     required this.course,
     required this.day,
     required this.time,
-    required this.done,
-    required this.c,
+     this.done,
+     this.c,
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: json['id'] as int,
+      taskID: json['taskID'] as int,
       tutor: json['tutor'] as String,
       course: json['course'] as String,
       day: json['day'] as String,
       time: json['time'] as String,
-      done: json['done'] as String,
-      c: json['c'] as Color,
+
+
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'taskID': taskID,
       'tutor' : tutor,
       'course': course,
       'day': day,
       'time': time,
       'done': done,
-      'c': c,
+
     };
   }
 }

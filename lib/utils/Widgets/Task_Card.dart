@@ -81,7 +81,7 @@ class TaskCard extends StatelessWidget {
           ),
           SizedBox(height: 4),
           Text(
-            tasks.done,
+            tasks.done.toString(),
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[500],
