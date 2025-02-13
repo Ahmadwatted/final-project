@@ -38,7 +38,6 @@ class Task {
       'day': day,
       'time': time,
       'done': done,
-      'c': c,
     };
   }
 }
