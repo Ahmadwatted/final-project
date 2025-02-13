@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class Task {
-  final int id;
+  final int taskID;
   final String tutor;
   final String course;
   final String time;
@@ -10,7 +10,7 @@ class Task {
   String done;
 
   Task({
-    required this.id,
+    required this.taskID,
     required this.tutor,
     required this.course,
     required this.day,
@@ -21,7 +21,7 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id: json['id'] as int,
+      taskID: json['id'] as int,
       tutor: json['tutor'] as String,
       course: json['course'] as String,
       day: json['day'] as String,
@@ -33,7 +33,7 @@ class Task {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'taskID': taskID,
       'tutor' : tutor,
       'course': course,
       'day': day,
