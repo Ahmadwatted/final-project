@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:final_project/Models/student.dart';
 import 'package:final_project/Views/StudentViews/MyTasksScreen.dart';
 import 'package:final_project/utils/Widgets/Add_Button_Design.dart';
@@ -43,6 +46,7 @@ class _MainStudentScreenContent extends StatelessWidget {
       ),
     );
   }
+
 
   const _MainStudentScreenContent({required this.title});
 
@@ -195,7 +199,6 @@ class _MainStudentScreenContent extends StatelessWidget {
                   },
                 ),
               ),
-              Text(viewModel.students.length.toString()),
 
 
 
