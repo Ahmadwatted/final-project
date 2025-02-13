@@ -51,7 +51,7 @@ class state extends State<CategoryDetailsScreen> {
                 return ListView.builder(
                   itemCount: projectSnap.data.length,
                   itemBuilder: (context, index) {
-                    Student project = projectSnap.data[index];
+                    User project = projectSnap.data[index];
                     var numm = projectSnap.data.length - 1;
                     int numInt = numm;
                     numm = numm.toString();
@@ -131,6 +131,21 @@ class state extends State<CategoryDetailsScreen> {
 
     return arr;
   }
+  Future getStudents() async
+  {
+    // final String? getInfoDeviceSTR = localStorage.getItem('getInfoDeviceSTR');
+    var url = "students/getStudents.php";
+    final response = await http.get(Uri.parse("https://darkgray-hummingbird-925566.hostingersite.com/watad/students/getStudents.php"));
+    // print(serverPath + url);
+    List<Student> arr = [];
+
+    for(Map<String, dynamic> i in json.decode(response.body)){
+      arr.add(Student.fromJson(i));
+    }
+
+    return arr;
+  }
+
 
 
 
