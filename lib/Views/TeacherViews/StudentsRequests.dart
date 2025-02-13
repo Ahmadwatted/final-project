@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../Models/student.dart';
+import '../../Models/user.dart';
 import '/../../Models/clientConfig.dart';
 
 
@@ -33,7 +34,7 @@ class state extends State<CategoryDetailsScreen> {
       //   appBar: generalAppBar(sContext:context, title:parts[0], isWithCartIcon:true, isWithSearchIcon:true),
         backgroundColor: Color(0XFFF7F8FA),
         body: FutureBuilder(
-          future: getStudents(),
+          future: getUsers(),
           builder: (context, projectSnap) {
             if (projectSnap.hasData) {
               if (projectSnap.data.length == 0)
@@ -116,16 +117,16 @@ class state extends State<CategoryDetailsScreen> {
 
 
 
-  Future getStudents() async
+  Future getUsers() async
   {
     // final String? getInfoDeviceSTR = localStorage.getItem('getInfoDeviceSTR');
-    var url = "students/getStudents.php";
-    final response = await http.get(Uri.parse("https://darkgray-hummingbird-925566.hostingersite.com/watad/students/getStudents.php"));
+    var url = "users/getUsers.php";
+    final response = await http.get(Uri.parse("https://darkgray-hummingbird-925566.hostingersite.com/watad/users/getUsers.php"));
     // print(serverPath + url);
-    List<Student> arr = [];
+    List<User> arr = [];
 
     for(Map<String, dynamic> i in json.decode(response.body)){
-      arr.add(Student.fromJson(i));
+      arr.add(User.fromJson(i));
     }
 
     return arr;

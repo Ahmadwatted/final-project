@@ -1,4 +1,3 @@
-import 'dart:convert';
 class UserCourse {
   final int rowID;
   final int courseID;

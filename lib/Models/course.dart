@@ -4,21 +4,20 @@ import 'package:flutter/cupertino.dart';
 
 class Course {
   final int courseID;
-   String? tutor;
+  final String tutor;
   final String course;
   final String location;
-  
   final String day;
-  final int? stunum;
+   int? stunum;
   final Color? c;
 
   Course({
     required this.courseID,
-     this.tutor,
+    required this.tutor,
     required this.course,
     required this.day,
     required this.location,
-     this.c,
+    this.c,
     this.stunum,
   });
 

@@ -7,7 +7,7 @@ class Schedule {
   final String day;
   final String time;
   final String location;
-  final Color c;
+   Color? c;
 
   Schedule({
     required this.scheduleID,
@@ -16,7 +16,7 @@ class Schedule {
     required this.day,
     required this.time,
     required this.location,
-    required this.c,
+     this.c,
   });
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
@@ -27,7 +27,7 @@ class Schedule {
       day: json['day'] as String,
       time: json['time'] as String,
       location: json['location'] as String,
-      c: json['c'] as Color,
+
     );
   }
 
@@ -39,7 +39,7 @@ class Schedule {
       'day': day,
       'time': time,
       'location': location,
-      'c' : c,
+
     };
   }
 }
