@@ -30,18 +30,12 @@ Future insertUser(
   // SharedPreferences prefs = await SharedPreferences.getInstance();
   // String? getInfoDeviceSTR = prefs.getString("getInfoDeviceSTR");
   var url = "users/insertUser.php?"
-          "firstName=" +
-      firstName +
-      "&secondName=" +
-      secondName +
-      "email=" +
-      email +
-      "password=" +
-      password +
-      "phoneNumber=" +
-      phoneNumber +
-      "userTypeID=" +
-      userTypeID.toString();
+      "firstName=$firstName"
+      "&secondName=$secondName"
+      "&email=$email"
+      "&password=$password"
+      "&phoneNumber=$phoneNumber"
+      "&userTypeID=$userTypeID";
 
   final response = await http.get(Uri.parse(serverPath + url));
   Navigator.pop(context);

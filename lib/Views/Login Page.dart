@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../Models/clientConfig.dart';
 import '../main.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
 import 'RegisterPage.dart';
@@ -75,18 +76,17 @@ class LoginPage extends StatelessWidget {
 
                     // Email Field
                     CustomTextField(
-
+                      controller: _txtemail,
                       label: 'Email',
                       hint: 'Enter your email',
-
-
-
                       keyboardType: TextInputType.emailAddress,
+
                     ),
                     const SizedBox(height: 24),
 
                     // Password Field
                     CustomTextField(
+                      controller: _txtpassword,
                       label: 'Password',
                       hint: 'Enter your password',
                       isPassword: true,

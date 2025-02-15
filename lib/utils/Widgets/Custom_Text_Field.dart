@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
+  final TextEditingController? controller;
   final String label;
   final String hint;
   final bool isPassword;
@@ -9,6 +10,7 @@ class CustomTextField extends StatelessWidget {
 
   const CustomTextField({
     Key? key,
+    this.controller,
     required this.label,
     required this.hint,
     this.isPassword = false,
@@ -30,6 +32,7 @@ class CustomTextField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextFormField(
+          controller: controller,
 
           obscureText: isPassword,
           keyboardType: keyboardType,
