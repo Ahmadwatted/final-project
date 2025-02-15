@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:final_project/Views/StudentViews/MyTasksScreen.dart';
 import 'package:final_project/Views/TeacherViews/TeacherCoursesScreen.dart';
 import 'package:final_project/Views/TeacherViews/TeacherUploadedTasks.dart';
@@ -5,11 +7,15 @@ import 'package:final_project/utils/Widgets/Add_Button_Design.dart';
 import 'package:final_project/utils/Widgets/Task_Card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../Models/student.dart';
+import '../../Models/user.dart';
 import '../../ViewModels/StudentMain_VM.dart';
 import '../../utils/Widgets/Course_Card.dart';
 import '../../utils/Widgets/Schedule_Card.dart';
 import '../../Models/course.dart';
 import '../StudentViews/MyScheduleScreen.dart';
+import 'StudentsRequests.dart';
+import 'package:http/http.dart' as http;
 
 
 class Mainteacherscreen extends StatelessWidget {
@@ -32,6 +38,41 @@ class _MainTeacherScreen extends StatelessWidget {
   final String title;
 
   const _MainTeacherScreen({required this.title});
+
+
+  Future getUsers() async
+  {
+    // final String? getInfoDeviceSTR = localStorage.getItem('getInfoDeviceSTR');
+    var url = "users/getUsers.php";
+    final response = await http.get(Uri.parse("https://darkgray-hummingbird-925566.hostingersite.com/watad/users/getUsers.php"));
+    // print(serverPath + url);
+    List<User> arr = [];
+
+    for(Map<String, dynamic> i in json.decode(response.body)){
+      arr.add(User.fromJson(i));
+    }
+
+    return arr;
+  }
+  Future getStudents() async
+  {
+    // final String? getInfoDeviceSTR = localStorage.getItem('getInfoDeviceSTR');
+    var url = "students/getStudents.php";
+    final response = await http.get(Uri.parse("https://darkgray-hummingbird-925566.hostingersite.com/watad/students/getStudents.php"));
+    // print(serverPath + url);
+    List<Student> arr = [];
+
+    for(Map<String, dynamic> i in json.decode(response.body)){
+      arr.add(Student.fromJson(i));
+    }
+
+    return arr;
+  }
+
+
+
+
+
 
 
   @override
@@ -157,6 +198,7 @@ class _MainTeacherScreen extends StatelessWidget {
                   ],
                 ),
 
+
               ),
               SizedBox(
                 height: 160,
@@ -225,6 +267,7 @@ class _MainTeacherScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+
 
               ),
               SizedBox(

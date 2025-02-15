@@ -121,7 +121,7 @@ class state extends State<CategoryDetailsScreen> {
   {
     // final String? getInfoDeviceSTR = localStorage.getItem('getInfoDeviceSTR');
     var url = "users/getUsers.php";
-    final response = await http.get(Uri.parse("https://darkgray-hummingbird-925566.hostingersite.com/watad/users/getUsers.php"));
+    final response = await http.get(Uri.parse(serverPath+"/users/getUsers.php"));
     // print(serverPath + url);
     List<User> arr = [];
 
@@ -135,7 +135,7 @@ class state extends State<CategoryDetailsScreen> {
   {
     // final String? getInfoDeviceSTR = localStorage.getItem('getInfoDeviceSTR');
     var url = "students/getStudents.php";
-    final response = await http.get(Uri.parse("https://darkgray-hummingbird-925566.hostingersite.com/watad/students/getStudents.php"));
+    final response = await http.get(Uri.parse(serverPath+"students/getStudents.php"));
     // print(serverPath + url);
     List<Student> arr = [];
 

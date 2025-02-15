@@ -5,7 +5,6 @@ import 'package:final_project/Views/EditProfile.dart';
 import 'package:final_project/Views/ListPage.dart';
 import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 
-
 class MainAppPage extends StatefulWidget {
   const MainAppPage({super.key, required this.title});
 
@@ -16,30 +15,25 @@ class MainAppPage extends StatefulWidget {
 }
 
 class _MainAppPage extends State<MainAppPage> {
-
   @override
   Widget build(BuildContext context) {
-
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Color(0xFFE3DFD6),
       body: Container(
-
-
         child: Column(
           children: [
             Row(
-
               children: [
-                 ElevatedButton(
+                ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MainStudentScreen(
-                              title: 'tomainapppage')),
+                          builder: (context) =>
+                              const MainStudentScreen(title: 'tomainapppage')),
                     );
                   },
                   child: Padding(
@@ -57,8 +51,8 @@ class _MainAppPage extends State<MainAppPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const Mainteacherscreen(
-                              title: 'tomainapppage')),
+                          builder: (context) =>
+                              const Mainteacherscreen(title: 'tomainapppage')),
                     );
                   },
                   child: Padding(
@@ -71,73 +65,53 @@ class _MainAppPage extends State<MainAppPage> {
                         )),
                   ),
                 ),
-
-
-
-
-
-
-
-
-
               ],
-
-
-
-
-
-
-
             ),
           ],
         ),
       ),
-
-    bottomSheet: Container(
-     width: screenWidth,
-    height: 50,
-
-    child: Align(
-      alignment: Alignment.bottomLeft,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ElevatedButton(onPressed: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const MainAppPage(
-                      title: 'tomainpage')),
-            );
-          }, child: Icon(Icons.home)),
-          ElevatedButton(onPressed: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const ListPage(
-                      title: 'toprofilepage')),
-            );
-          }, child: Icon(CupertinoIcons.list_bullet_indent)),
-          ElevatedButton(onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const EditProfile(
-                      title: 'toprofilepage')),
-            );
-          },
-              child: Icon(CupertinoIcons.profile_circled))
-
-
-
-        ],
-
-
-      ) ,
-    ),
-
-  ),
-
+      bottomSheet: Container(
+        width: screenWidth,
+        height: 50,
+        child: Align(
+          alignment: Alignment.bottomLeft,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const MainAppPage(title: 'tomainpage')),
+                    );
+                  },
+                  child: Icon(Icons.home)),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const ListPage(title: 'toprofilepage')),
+                    );
+                  },
+                  child: Icon(CupertinoIcons.list_bullet_indent)),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const EditProfile(title: 'toprofilepage')),
+                    );
+                  },
+                  child: Icon(CupertinoIcons.profile_circled))
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

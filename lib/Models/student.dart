@@ -1,5 +1,3 @@
-import 'user.dart';
-
 class Student {
   final int studentID;
   final String firstName;

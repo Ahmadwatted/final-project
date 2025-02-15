@@ -1,3 +1,4 @@
+import 'course.dart';
 
 class Tutor {
   final int tutorID;
@@ -6,20 +7,13 @@ class Tutor {
   final String email;
   final String phoneNumber;
 
-
-
-
   Tutor({
     required this.tutorID,
     required this.firstName,
     required this.secondName,
     required this.email,
     required this.phoneNumber,
-
-
-
   });
-
 
   factory Tutor.fromJson(Map<String, dynamic> json) {
     return Tutor(
@@ -28,25 +22,18 @@ class Tutor {
       secondName: json['secondName'],
       phoneNumber: json['phoneNumber'],
       email: json['email'],
-
     );
+  }
 
-
-
+  Map<String, dynamic> toJson() {
+    return {
+      "tutorID": tutorID,
+      "firstName": firstName,
+      "secondName": secondName,
+      "phoneNumber": phoneNumber,
+      "email": email,
+    };
   }
 
 
-
-
-  Map<String, dynamic> toJson()  { return {
-    "tutorID": tutorID,
-    "firstName": firstName,
-    "secondName": secondName,
-    "phoneNumber" : phoneNumber,
-    "email": email,
-
-
-  };
-
-  }
 }

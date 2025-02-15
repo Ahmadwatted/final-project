@@ -9,7 +9,7 @@ class CourseCard extends StatelessWidget {
   const CourseCard({
     Key? key,
     required this.courses,
-    this.isStudent = false,
+    this.isStudent = true,
   }) : super(key: key);
 
   @override
