@@ -38,7 +38,7 @@ Future insertUser(
       "&userTypeID=$userTypeID";
 
   final response = await http.get(Uri.parse(serverPath + url));
-  Navigator.pop(context);
+   Navigator.pop(context);
 }
 
 class StudentDashboardViewModel extends ChangeNotifier {
