@@ -11,6 +11,9 @@ class RegisterPage extends StatelessWidget {
   final TextEditingController _txtpassword = TextEditingController();
   final TextEditingController _txtphoneNumber = TextEditingController();
   final TextEditingController _txtemail = TextEditingController();
+  final TextEditingController _txtuserTypeID = TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +97,8 @@ class RegisterPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
+
+
                     // Email
                     CustomTextField(
                       controller: _txtemail,
@@ -140,6 +145,8 @@ class RegisterPage extends StatelessWidget {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
+
+
                           insertUser(
                               context,
                               2,
@@ -148,6 +155,7 @@ class RegisterPage extends StatelessWidget {
                               _txtemail.text,
                               _txtpassword.text,
                               _txtphoneNumber.text
+
                           );
                           
 
