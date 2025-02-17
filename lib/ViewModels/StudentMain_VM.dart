@@ -41,6 +41,22 @@ Future insertUser(
   Navigator.pop(context);
 }
 
+Future<bool> checkLogin(BuildContext context, String email, String password) async {
+  var url = "checkLogins/checkLogin.php?email=$email&password=$password";
+
+  final response = await http.get(Uri.parse(serverPath + url));
+
+  Navigator.pop(context); // Close the loading dialog or current screen
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body) == true; // Directly check if response is true
+  } else {
+    return false; // Server error
+  }
+}
+
+
+
 class StudentDashboardViewModel extends ChangeNotifier {
   List<Course> courses = [];
   List<Schedule> schedule = [];

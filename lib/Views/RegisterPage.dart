@@ -149,6 +149,7 @@ class RegisterPage extends StatelessWidget {
                               _txtpassword.text,
                               _txtphoneNumber.text
                           );
+                          
 
                           Navigator.push(
                             context,
