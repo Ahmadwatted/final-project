@@ -19,6 +19,30 @@ Future deleteUser(BuildContext context, String userID) async {
   Navigator.pop(context);
 }
 
+Future<bool> checkLogin(BuildContext context, String email, String password) async {
+  var url = "checkLogins/checkLogin.php?"
+      "email=$email"
+      "&password=$password";
+
+
+  final response = await http.get(Uri.parse(serverPath + url));
+
+  Navigator.pop(context); // Close the loading dialog or current screen
+
+  if (response.statusCode == 200) {
+    var data = jsonDecode(response.body);
+
+    if (data['status'] == 'success') {
+      return true; // Login successful
+    } else {
+      return false; // Login failed
+    }
+  } else {
+    return false; // Server error
+  }
+}
+
+
 Future insertUser(
     BuildContext context,
     int userTypeID,

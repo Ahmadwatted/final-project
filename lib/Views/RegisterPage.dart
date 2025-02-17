@@ -96,7 +96,6 @@ class RegisterPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    Text(_txtsecondName.text+'sdasd'),
 
 
 
@@ -146,9 +145,7 @@ class RegisterPage extends StatelessWidget {
                       ),
                       child: ElevatedButton(
                         onPressed: () {
-                          print("Inserting user with data:");
-                          print("First Name: ${_txtfirstName.text}");
-                          print("Email: ${_txtemail.text}");
+
 
                           insertUser(
                               context,

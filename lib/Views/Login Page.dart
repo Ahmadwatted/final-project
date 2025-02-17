@@ -1,3 +1,5 @@
+import 'package:final_project/ViewModels/StudentMain_VM.dart';
+import 'package:final_project/Views/MainAppPage.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/clientConfig.dart';
@@ -111,7 +113,24 @@ class LoginPage extends StatelessWidget {
                         ],
                       ),
                       child: ElevatedButton(
-                        onPressed: () {},
+
+                        onPressed: () async {
+                          if(await checkLogin(context, _txtemail.text, _txtpassword.text))
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  const MainAppPage(title: 'tomainapppage')),
+                            );
+
+
+
+
+
+
+
+
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
