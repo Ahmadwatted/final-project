@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../Models/schedule.dart';
 import 'package:final_project/Models/course.dart';
 import '../Models/student.dart';
+import '../Models/user.dart';
 import '../Views/TeacherViews/StudentsRequests.dart';
 import '../Models/task.dart';
 import 'package:http/http.dart' as http;
@@ -22,41 +23,8 @@ Future deleteUser(BuildContext context, String userID) async {
 
 
 
-Future insertUser(
-    BuildContext context,
-    int userTypeID,
-    String firstName,
-    String secondName,
-    String email,
-    String password,
-    String phoneNumber) async {
-  // SharedPreferences prefs = await SharedPreferences.getInstance();
-  // String? getInfoDeviceSTR = prefs.getString("getInfoDeviceSTR");
-  var url = "users/insertUser.php?"
-      "firstName=$firstName"
-      "&secondName=$secondName"
-      "&email=$email"
-      "&password=$password"
-      "&phoneNumber=$phoneNumber"
-      "&userTypeID=$userTypeID";
 
-  final response = await http.get(Uri.parse(serverPath + url));
-   Navigator.pop(context);
-}
 
-Future<bool> checkLogin(BuildContext context, String email, String password) async {
-  var url = "checkLogins/checkLogin.php?email=$email&password=$password";
-
-  final response = await http.get(Uri.parse(serverPath + url));
-
-  Navigator.pop(context); // Close the loading dialog or current screen
-
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body) == true; // Directly check if response is true
-  } else {
-    return false; // Server error
-  }
-}
 
 
 
@@ -133,19 +101,18 @@ class StudentDashboardViewModel extends ChangeNotifier {
       ),
     ];
 
-    students = await getStudents();
-    notifyListeners();
+
   }
 
-  Future getStudents() async {
+  Future getUsers() async {
     // final String? getInfoDeviceSTR = localStorage.getItem('getInfoDeviceSTR');
-    var url = "students/getStudents.php";
+    var url = "users/getUsers.php";
     final response = await http.get(Uri.parse(serverPath + url));
     // print(serverPath + url);
-    List<Student> arr = [];
+    List<User> arr = [];
 
     for (Map<String, dynamic> i in json.decode(response.body)) {
-      arr.add(Student.fromJson(i));
+      arr.add(User.fromJson(i));
     }
 
     return arr;

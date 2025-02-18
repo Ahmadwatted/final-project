@@ -1,22 +1,58 @@
+import 'dart:convert';
+import '../Models/user.dart';
 import 'package:final_project/Views/TeacherViews/MainTeacherScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:final_project/Views/EditProfile.dart';
 import 'package:final_project/Views/ListPage.dart';
 import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
+import 'package:http/http.dart' as http;
+
+import '../Models/clientConfig.dart';
+import '../Models/user.dart';
 
 class MainAppPage extends StatefulWidget {
+
   const MainAppPage({super.key, required this.title});
 
   final String title;
 
+
   @override
   State<MainAppPage> createState() => _MainAppPage();
 }
-
 class _MainAppPage extends State<MainAppPage> {
+
   @override
   Widget build(BuildContext context) {
+    var dd = '';
+
+
+    Future<String> getUsers() async {
+
+      var url = "users/getUsers.php";
+      final response = await http.get(Uri.parse(serverPath + url));
+
+      // Decode the response and create a list of User objects
+      List<User> arr = [];
+      for (Map<String, dynamic> i in json.decode(response.body)) {
+        arr.add(User.fromJson(i));
+      }
+
+      // Convert the list of User objects to a string with the specified format
+      String usersString = arr.map((user) =>
+      '${user.firstName}, ${user.secondName}, ${user.email}, ${user.phoneNumber}'
+      ).join(', ');
+
+      setState(() {
+        dd = usersString;
+      });
+      return usersString; // Return the formatted string
+    }
+    Future<String> arr= getUsers();
+
+
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -67,6 +103,7 @@ class _MainAppPage extends State<MainAppPage> {
                 ),
               ],
             ),
+            Text(dd),
           ],
         ),
       ),
@@ -109,8 +146,10 @@ class _MainAppPage extends State<MainAppPage> {
                   },
                   child: Icon(CupertinoIcons.profile_circled))
             ],
+
           ),
         ),
+
       ),
     );
   }

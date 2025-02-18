@@ -1,6 +1,7 @@
-import 'package:final_project/ViewModels/StudentMain_VM.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
+import '../Models/clientConfig.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
 import 'MainAppPage.dart';
 
@@ -213,4 +214,28 @@ class RegisterPage extends StatelessWidget {
       ),
     );
   }
+  Future insertUser(
+      BuildContext context,
+      int userTypeID,
+      String firstName,
+      String secondName,
+      String email,
+      String password,
+      String phoneNumber) async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String? getInfoDeviceSTR = prefs.getString("getInfoDeviceSTR");
+    var url = "users/insertUser.php?"
+        "firstName=$firstName"
+        "&secondName=$secondName"
+        "&email=$email"
+        "&password=$password"
+        "&phoneNumber=$phoneNumber"
+        "&userTypeID=$userTypeID";
+
+    final response = await http.get(Uri.parse(serverPath + url));
+    Navigator.pop(context);
+  }
+
 }
+
+

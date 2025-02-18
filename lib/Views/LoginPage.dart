@@ -1,21 +1,47 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-
+// import 'package:shared_preferences/shared_preferences.dart';
+import '../Models/checkLoginModel.dart';
+import '../Models/user.dart';
 import '../Models/clientConfig.dart';
-import '../main.dart';
+import '../utils/Utils.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
+import 'MainAppPage.dart';
 import 'RegisterPage.dart';
 
 
 
+
 class LoginPage extends StatelessWidget {
+
+
    LoginPage({Key? key}) : super(key: key);
   final TextEditingController _txtemail = TextEditingController();
    final TextEditingController _txtpassword = TextEditingController();
 
 
 
+   checkConction(BuildContext context) async {
+     try {
+       final result = await InternetAddress.lookup('google.com');
+       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+         print('connected to internet');// print(result);// return 1;
+       }
+     } on SocketException catch (_) {
+       print('not connected to internet');// print(result);
+       var uti = new Utils();
+       uti.showMyDialog2(context, "אין אינטרנט", "האפליקציה דורשת חיבור לאינטרנט, נא להתחבר בבקשה");
+       // return;
+     }
+   }
+
    @override
   Widget build(BuildContext context) {
+
+     checkConction(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
@@ -111,7 +137,25 @@ class LoginPage extends StatelessWidget {
                         ],
                       ),
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: ()  async {
+                          if ( await checkLogin(context, _txtemail.text, _txtpassword.text)) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MainAppPage(title: 'tomainapppage')
+                              ),
+                            );
+                          } else {
+                            print('sdasd');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Invalid email or password. Please try again.'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
@@ -166,4 +210,29 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
+}
+Future<bool> checkLogin(BuildContext context, String email, String password) async {
+  var url = "checkLogins/checkLogin.php?email=$email&password=$password";
+  // print("url:" + serverPath + url);
+  final response = await http.get(Uri.parse(serverPath + url));
+
+  // Navigator.pop(context); // Close the loading dialog or current screen
+
+  if (response.statusCode == 200) {
+    if(checkLoginModel.fromJson(jsonDecode(response.body)).userID == 0)
+    {
+      return false;
+    }
+    else
+    {
+      // SharedPreferences prefs = await SharedPreferences.getInstance();
+      // await prefs.setString('phoneNumber', checkLoginModel.fromJson(jsonDecode(response.body)).phoneNumber!);
+      // await prefs.setString('email', checkLoginModel.fromJson(jsonDecode(response.body)).email!);
+      // await prefs.setString('userTypeID', checkLoginModel.fromJson(jsonDecode(response.body)).userTypeID!);
+      // await prefs.setString('firstName', checkLoginModel.fromJson(jsonDecode(response.body)).firstName!);
+      // await prefs.setString('secondName', checkLoginModel.fromJson(jsonDecode(response.body)).secondName!);
+      return true;
+    }
+  }
+  return false;
 }
