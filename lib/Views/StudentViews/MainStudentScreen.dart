@@ -264,7 +264,7 @@ class _MainStudentScreenContent extends StatelessWidget {
                     final task = viewModel.tasks[index];
                     return Padding(
                       padding: EdgeInsets.only(right: 16.0),
-                      child: TaskCard(tasks: task),
+                      child: TaskCard(tasks: task,isStudent: true,),
                     );
                   },
                 ),

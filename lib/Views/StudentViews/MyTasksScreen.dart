@@ -51,7 +51,7 @@ class _MyTasksScreen extends StatelessWidget {
                 itemCount: viewModel.tasks.length,
                 itemBuilder: (context, index) => Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: TasksScreenDesign(tasks: viewModel.tasks[index]),
+                  child: TasksScreenDesign(tasks: viewModel.tasks[index],isStudent: true,),
                 ),
               ),
             ),

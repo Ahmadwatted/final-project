@@ -1,13 +1,16 @@
 
 import 'package:flutter/material.dart';
 import '../../Models/task.dart';
+import '../Widgets/Confirm_Del.dart';
 
 class TaskCard extends StatelessWidget {
   final Task tasks;
+  final bool isStudent;
 
   const TaskCard({
     Key? key,
     required this.tasks,
+    this.isStudent =true,
   }) : super(key: key);
 
   @override
@@ -48,7 +51,23 @@ class TaskCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              if(!isStudent)...[
+                IconButton(
+                  icon: Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => TaskDeleteAlert(taskId: tasks.taskID.toString()),
+                    );
+                  },
+
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  splashRadius: 24,
+                ),
+              ],
             ],
+
           ),
           SizedBox(height: 4),
           Row(
@@ -80,13 +99,13 @@ class TaskCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: 4),
-          Text(
+          if(isStudent)...[Text(
             tasks.done.toString(),
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[500],
             ),
-          ),
+          ),],
         ],
       ),
     );

@@ -28,28 +28,27 @@ class _MainAppPage extends State<MainAppPage> {
     var dd = '';
 
 
-    Future<String> getUsers() async {
-
-      var url = "users/getUsers.php";
-      final response = await http.get(Uri.parse(serverPath + url));
-
-      // Decode the response and create a list of User objects
-      List<User> arr = [];
-      for (Map<String, dynamic> i in json.decode(response.body)) {
-        arr.add(User.fromJson(i));
-      }
-
-      // Convert the list of User objects to a string with the specified format
-      String usersString = arr.map((user) =>
-      '${user.firstName}, ${user.secondName}, ${user.email}, ${user.phoneNumber}'
-      ).join(', ');
-
-      setState(() {
-        dd = usersString;
-      });
-      return usersString; // Return the formatted string
-    }
-    Future<String> arr= getUsers();
+    // Future<String> getUsers() async {
+    //
+    //   var url = "users/getUsers.php";
+    //   final response = await http.get(Uri.parse(serverPath + url));
+    //
+    //   // Decode the response and create a list of User objects
+    //   List<User> arr = [];
+    //   for (Map<String, dynamic> i in json.decode(response.body)) {
+    //     arr.add(User.fromJson(i));
+    //   }
+    //
+    //   // Convert the list of User objects to a string with the specified format
+    //   String usersString = arr.map((user) =>
+    //   '${user.firstName}, ${user.secondName}, ${user.email}, ${user.phoneNumber}'
+    //   ).join(', ');
+    //
+    //   setState(() {
+    //     dd = usersString;
+    //   });
+    //   return usersString; // Return the formatted string
+    // }
 
 
 

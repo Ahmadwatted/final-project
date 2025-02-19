@@ -50,7 +50,7 @@ class _MyScheduleScreen extends StatelessWidget {
                 itemCount: viewModel.schedule.length,
                 itemBuilder: (context, index) => Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: ScheduleScreenDesign(schedule: viewModel.schedule[index]),
+                  child: ScheduleScreenDesign(schedule: viewModel.schedule[index],),
                 ),
               ),
             ),

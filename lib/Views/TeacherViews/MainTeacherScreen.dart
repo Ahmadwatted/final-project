@@ -7,6 +7,7 @@ import 'package:final_project/utils/Widgets/Add_Button_Design.dart';
 import 'package:final_project/utils/Widgets/Task_Card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../Models/clientConfig.dart';
 import '../../Models/student.dart';
 import '../../Models/user.dart';
 import '../../ViewModels/StudentMain_VM.dart';
@@ -289,7 +290,7 @@ class _MainTeacherScreen extends StatelessWidget {
                     final task = viewModel.tasks[index];
                     return Padding(
                       padding: EdgeInsets.only(right: 16.0),
-                      child: TaskCard(tasks: task),
+                      child: TaskCard(tasks: task,isStudent: false,),
                     );
                   },
                 ),

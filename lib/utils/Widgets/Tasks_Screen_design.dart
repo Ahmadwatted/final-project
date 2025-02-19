@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../Models/schedule.dart';
 import '../../Models/task.dart';
+import '../Widgets/Confirm_Del.dart';
 
 class TasksScreenDesign extends StatelessWidget {
   final Task tasks;
+  final bool isStudent;
 
-  const TasksScreenDesign({Key? key, required this.tasks}) : super(key: key);
+  const TasksScreenDesign({Key? key, required this.tasks, this.isStudent=true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +34,37 @@ class TasksScreenDesign extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    tasks.course,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        tasks.course,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if(!isStudent)...[
+                        IconButton(
+                          icon: Icon(Icons.delete_outline, color: Colors.red),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => TaskDeleteAlert(taskId: tasks.taskID.toString()),
+                            );
+                          },
+                          padding: EdgeInsets.zero,
+                          constraints: BoxConstraints(),
+                          splashRadius: 24,
+                        ),
+                      ],
+
+
+
+
+
+                    ],
                   ),
+
                   const SizedBox(height: 4),
                   Row(
                     children: [
@@ -55,21 +81,22 @@ class TasksScreenDesign extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.task_alt, size: 16, color: Colors.grey),
-                      const SizedBox(width: 8),
-                      Text(
-                        tasks.done.toString(),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
+                  if(isStudent)...[
+                    Row(
+                      children: [
+                        const Icon(Icons.task_alt, size: 16, color: Colors.grey),
+                        const SizedBox(width: 8),
+                        Text(
+                          tasks.done.toString(),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      IconButton(
+                        SizedBox(
+                          width: 8,
+                        ),
+                        IconButton(
                           onPressed: () {
 
 
@@ -80,8 +107,9 @@ class TasksScreenDesign extends StatelessWidget {
                             size: 16,
                             color: Colors.grey,
                           ),)
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

@@ -1,6 +1,6 @@
 class checkLoginModel {
   String? result;
-  int? userID;
+  int userID;
   String? userTypeID;
   String? firstName;
   String? secondName;
@@ -10,7 +10,7 @@ class checkLoginModel {
 
   checkLoginModel({
     this.result,
-     this.userID,
+     required this.userID,
     this.userTypeID,
     this.phoneNumber,
     this.email,
