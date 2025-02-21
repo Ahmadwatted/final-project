@@ -25,30 +25,62 @@ class _MainAppPage extends State<MainAppPage> {
 
   @override
   Widget build(BuildContext context) {
-    var dd = '';
+    String dd = '';
 
 
-    // Future<String> getUsers() async {
-    //
-    //   var url = "users/getUsers.php";
-    //   final response = await http.get(Uri.parse(serverPath + url));
-    //
-    //   // Decode the response and create a list of User objects
-    //   List<User> arr = [];
-    //   for (Map<String, dynamic> i in json.decode(response.body)) {
-    //     arr.add(User.fromJson(i));
-    //   }
-    //
-    //   // Convert the list of User objects to a string with the specified format
-    //   String usersString = arr.map((user) =>
-    //   '${user.firstName}, ${user.secondName}, ${user.email}, ${user.phoneNumber}'
-    //   ).join(', ');
-    //
-    //   setState(() {
-    //     dd = usersString;
-    //   });
-    //   return usersString; // Return the formatted string
-    // }
+    Future<String> getUsers() async {
+      try {
+        var url = "users/getUsers.php";
+        final response = await http.get(Uri.parse(serverPath + url));
+
+        print("Response Status Code: ${response.statusCode}");
+        print("Response Body: ${response.body}");
+
+        if (response.statusCode == 200) {
+          var jsonData = json.decode(response.body);
+
+          // Check if jsonData is null or not a list
+          if (jsonData == null) {
+            throw Exception("Response body is null");
+          }
+          if (jsonData is! List) {
+            throw Exception("Response is not a List. Received: $jsonData");
+          }
+
+          List<User> arr = [];
+          for (var i in jsonData) {
+            arr.add(User.fromJson(i));
+          }
+
+          String usersString = arr.map((user) =>
+          '${user.firstName}, ${user.secondName}, ${user.email}, ${user.phoneNumber}'
+          ).join(', ');
+
+          setState(() {
+            dd = usersString;
+          });
+
+          print("Formatted User List: $usersString");
+          return usersString;
+        } else {
+          throw Exception('Failed to load users: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error: $e');
+        return "Error fetching users"; // Return a fallback string instead of throwing an exception
+      }
+    }
+
+
+    String usersList='';
+
+    void printUsers() async {
+      String users = await getUsers();
+      setState(() {
+        usersList = users;
+      });
+      print(usersList);
+    }
 
 
 
@@ -102,7 +134,7 @@ class _MainAppPage extends State<MainAppPage> {
                 ),
               ],
             ),
-            Text(dd),
+            ElevatedButton(onPressed: (){printUsers();}, child: Text('print users'))
           ],
         ),
       ),
