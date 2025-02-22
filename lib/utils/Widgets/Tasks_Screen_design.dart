@@ -80,36 +80,7 @@ class TasksScreenDesign extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  if(isStudent)...[
-                    Row(
-                      children: [
-                        const Icon(Icons.task_alt, size: 16, color: Colors.grey),
-                        const SizedBox(width: 8),
-                        Text(
-                          tasks.done.toString(),
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        IconButton(
-                          onPressed: () {
 
-
-
-                          },
-                          icon: Icon(
-                            Icons.edit,
-                            size: 16,
-                            color: Colors.grey,
-                          ),)
-                      ],
-                    ),
-                  ],
                 ],
               ),
             ),

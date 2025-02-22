@@ -87,7 +87,6 @@ class StudentDashboardViewModel extends ChangeNotifier {
         course: 'Advanced Algorithms',
         day: 'Monday',
         time: '00:00 AM',
-        done: 'Completed',
         c: RandomColor.getRandomShade700(),
       ),
       Task(
@@ -96,7 +95,6 @@ class StudentDashboardViewModel extends ChangeNotifier {
         course: 'Data Structures',
         day: 'Wednesday',
         time: '00:00 AM',
-        done: 'Not completed',
         c: RandomColor.getRandomShade700(),
       ),
     ];

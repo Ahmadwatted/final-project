@@ -215,14 +215,14 @@ Future<bool> checkLogin(BuildContext context, String email, String password) asy
   var url = "checkLogins/checkLogin.php?email=$email&password=$password";
   final response = await http.get(Uri.parse(serverPath + url));
 
-  print("Response Body: ${response.body}"); // لطباعة الاستجابة
+  print("Response Body: ${response.body}");
 
   if (response.statusCode == 200) {
     final decodedData = jsonDecode(response.body);
 
     if (decodedData is bool) {
       print("Error: Server returned a boolean instead of JSON.");
-      return decodedData; // إذا كانت الاستجابة `true` أو `false`، نعيدها مباشرة
+      return decodedData;
     }
 
     if (decodedData is Map<String, dynamic>) {
@@ -241,31 +241,10 @@ Future<bool> checkLogin(BuildContext context, String email, String password) asy
   return false;
 }
 
-// Future<bool> checkLogin(BuildContext context, String email, String password) async {
-//   var url = "checkLogins/checkLogin.php?email=$email&password=$password";
-//   // print("url:" + serverPath + url);
-//   final response = await http.get(Uri.parse(serverPath + url));
-//   print('LOLLL');
-//
-//
-//   // Navigator.pop(context); // Close the loading dialog or current screen
-//
-//   if (response.statusCode == 200) {
-//     if(checkLoginModel.fromJson(jsonDecode(response.body)).userID == 0)
-//     {
-//
-//       return false;
-//     }
-//     else
-//     {
 //       // SharedPreferences prefs = await SharedPreferences.getInstance();
 //       // await prefs.setString('phoneNumber', checkLoginModel.fromJson(jsonDecode(response.body)).phoneNumber!);
 //       // await prefs.setString('email', checkLoginModel.fromJson(jsonDecode(response.body)).email!);
 //       // await prefs.setString('userTypeID', checkLoginModel.fromJson(jsonDecode(response.body)).userTypeID!);
 //       // await prefs.setString('firstName', checkLoginModel.fromJson(jsonDecode(response.body)).firstName!);
 //       // await prefs.setString('secondName', checkLoginModel.fromJson(jsonDecode(response.body)).secondName!);
-//       return true;
-//     }
-//   }
-//   return false;
-// }
+

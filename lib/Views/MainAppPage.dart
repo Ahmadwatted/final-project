@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../Models/task.dart';
 import '../Models/user.dart';
 import 'package:final_project/Views/TeacherViews/MainTeacherScreen.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 import 'package:http/http.dart' as http;
 
 import '../Models/clientConfig.dart';
-import '../Models/user.dart';
 
 class MainAppPage extends StatefulWidget {
 
@@ -69,6 +69,59 @@ class _MainAppPage extends State<MainAppPage> {
         print('Error: $e');
         return "Error fetching users"; // Return a fallback string instead of throwing an exception
       }
+    }
+
+
+    String tasksList='';
+
+    Future<String> getTasks() async {
+      try {
+        var url = "tasks/getTasks.php";
+        final response = await http.get(Uri.parse(serverPath + url));
+
+        print("Response Status Code: ${response.statusCode}");
+         print("Response Body: ${response.body}");
+
+        if (response.statusCode == 200) {
+          var jsonData = json.decode(response.body);
+
+          // Check if jsonData is null or not a list
+          if (jsonData == null) {
+            throw Exception("Response body is null");
+          }
+          if (jsonData is! List) {
+            throw Exception("Response is not a List. Received: $jsonData");
+          }
+
+          List<Task> arr = [];
+          for (var i in jsonData) {
+            arr.add(Task.fromJson(i));
+          }
+
+          String tasksString = arr.map((task) =>
+          '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}'
+          ).join(', ');
+
+          setState(() {
+            dd = tasksString;
+          });
+
+          print("Formatted Task List: $tasksString");
+          return tasksString;
+        } else {
+          throw Exception('Failed to load tasks: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error: $e');
+        return "Error fetching tasks";
+      }
+    }
+    void printTasks() async {
+      String tasks = await getTasks();
+      setState(() {
+        tasksList = tasks;
+      });
+      print(tasksList);
     }
 
 
@@ -134,7 +187,7 @@ class _MainAppPage extends State<MainAppPage> {
                 ),
               ],
             ),
-            ElevatedButton(onPressed: (){printUsers();}, child: Text('print users'))
+            ElevatedButton(onPressed: (){printTasks();}, child: Text('print users'))
           ],
         ),
       ),
