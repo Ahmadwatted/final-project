@@ -5,31 +5,30 @@ import '../../Models/clientConfig.dart';
 
 class TaskDeleteAlert extends StatelessWidget {
   final String taskId;
+  final Function? onTaskDeleted; // Add a callback function
 
   const TaskDeleteAlert({
     Key? key,
     required this.taskId,
+    this.onTaskDeleted,
   }) : super(key: key);
 
-  Future<void> _deleteTask(BuildContext context) async {
+  Future<bool> _deleteTask(BuildContext context) async {
     try {
       var url = "tasks/deleteTask.php?taskID=$taskId";
       final response = await http.get(Uri.parse(serverPath + url));
 
       if (response.statusCode == 200) {
-        Navigator.pop(context); // Close dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Task deleted successfully!')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete task.')),
-        );
+        // Call callback if provided
+        if (onTaskDeleted != null) {
+          onTaskDeleted!();
+        }
+        return true; // Success
       }
+      return false; // Failed
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting task: ${e.toString()}')),
-      );
+      print('Error deleting task: ${e.toString()}');
+      return false; // Error
     }
   }
 
@@ -70,8 +69,9 @@ class TaskDeleteAlert extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () async {
-            Navigator.of(context).pop(); // Close dialog first
-            await _deleteTask(context); // Then delete task
+            final result = await _deleteTask(context);
+            // Close dialog and show message in parent context
+            Navigator.of(context).pop(result);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,

@@ -25,10 +25,11 @@ class _MainAppPage extends State<MainAppPage> {
 
   @override
   Widget build(BuildContext context) {
-    String dd = '';
 
 
-    Future<String> getUsers() async {
+    Future<List<User>> getUsers() async {
+      List<User> arr = [];
+
       try {
         var url = "users/getUsers.php";
         final response = await http.get(Uri.parse(serverPath + url));
@@ -47,7 +48,6 @@ class _MainAppPage extends State<MainAppPage> {
             throw Exception("Response is not a List. Received: $jsonData");
           }
 
-          List<User> arr = [];
           for (var i in jsonData) {
             arr.add(User.fromJson(i));
           }
@@ -55,26 +55,24 @@ class _MainAppPage extends State<MainAppPage> {
           String usersString = arr.map((user) =>
           '${user.firstName}, ${user.secondName}, ${user.email}, ${user.phoneNumber}'
           ).join(', ');
-
-          setState(() {
-            dd = usersString;
-          });
-
-          print("Formatted User List: $usersString");
-          return usersString;
+                    print("Formatted User List: $usersString");
         } else {
           throw Exception('Failed to load users: ${response.statusCode}');
         }
       } catch (e) {
+
         print('Error: $e');
-        return "Error fetching users"; // Return a fallback string instead of throwing an exception
+
       }
+      return arr;
     }
 
 
     String tasksList='';
 
-    Future<String> getTasks() async {
+    Future<List<Task>> getTasks() async {
+      List<Task> arr = [];
+
       try {
         var url = "tasks/getTasks.php";
         final response = await http.get(Uri.parse(serverPath + url));
@@ -93,7 +91,6 @@ class _MainAppPage extends State<MainAppPage> {
             throw Exception("Response is not a List. Received: $jsonData");
           }
 
-          List<Task> arr = [];
           for (var i in jsonData) {
             arr.add(Task.fromJson(i));
           }
@@ -102,22 +99,19 @@ class _MainAppPage extends State<MainAppPage> {
           '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}'
           ).join(', ');
 
-          setState(() {
-            dd = tasksString;
-          });
+
 
           print("Formatted Task List: $tasksString");
-          return tasksString;
         } else {
           throw Exception('Failed to load tasks: ${response.statusCode}');
         }
       } catch (e) {
         print('Error: $e');
-        return "Error fetching tasks";
       }
+      return arr;
     }
     void printTasks() async {
-      String tasks = await getTasks();
+      String tasks = (await getTasks()) as String;
       setState(() {
         tasksList = tasks;
       });
@@ -125,15 +119,6 @@ class _MainAppPage extends State<MainAppPage> {
     }
 
 
-    String usersList='';
-
-    void printUsers() async {
-      String users = await getUsers();
-      setState(() {
-        usersList = users;
-      });
-      print(usersList);
-    }
 
 
 

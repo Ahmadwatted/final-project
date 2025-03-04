@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:final_project/utils/Widgets/Schedule_Screen_Design.dart';
 import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../Models/clientConfig.dart';
+import '../../Models/task.dart';
 import '../../ViewModels/StudentMain_VM.dart';
+import 'package:http/http.dart' as http;
 
 class TeacherUploadedTasks extends StatelessWidget {
   final String title;
-
 
   const TeacherUploadedTasks({super.key, required this.title});
 
@@ -18,48 +22,105 @@ class TeacherUploadedTasks extends StatelessWidget {
     );
   }
 }
-class _TeacherUploadedTasks extends StatelessWidget {
 
+class _TeacherUploadedTasks extends StatelessWidget {
   final String title;
 
   const _TeacherUploadedTasks({required this.title});
 
-
   @override
   Widget build(BuildContext context) {
+
+    Future<List<Task>> getTasks() async {
+      List<Task> arr = [];
+
+      try {
+        var url = "tasks/getTasks.php";
+        final response = await http.get(Uri.parse(serverPath + url));
+
+        print("Response Status Code: ${response.statusCode}");
+        print("Response Body: ${response.body}");
+
+        if (response.statusCode == 200) {
+          var jsonData = json.decode(response.body);
+
+          // Check if jsonData is null or not a list
+          if (jsonData == null) {
+            throw Exception("Response body is null");
+          }
+          if (jsonData is! List) {
+            throw Exception("Response is not a List. Received: $jsonData");
+          }
+
+          for (var i in jsonData) {
+            arr.add(Task.fromJson(i));
+          }
+
+          String tasksString = arr
+              .map((task) =>
+                  '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
+              .join(', ');
+
+          print("Formatted Task List: $tasksString");
+        } else {
+          throw Exception('Failed to load tasks: ${response.statusCode}');
+        }
+      } catch (e) {
+        print('Error: $e');
+      }
+      return arr;
+    }
+
     final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE3DFD6),
-
-      appBar: AppBar(
-        title: const Text('Uploaded tasks'),
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-
-        child: Column(
-
-          crossAxisAlignment: CrossAxisAlignment.start,
-
-          children: [
-            const SizedBox(height: 24),
-            Expanded(
-              child: ListView.builder(
-                itemCount: viewModel.tasks.length,
-                itemBuilder: (context, index) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: TasksScreenDesign(tasks: viewModel.tasks[index],isStudent: false,),
-                ),
-              ),
-            ),
-          ],
+        backgroundColor: const Color(0xFFE3DFD6),
+        appBar: AppBar(
+          title: const Text('Uploaded tasks'),
+          backgroundColor: Colors.white,
+          elevation: 1,
         ),
-      ),
-    );
+        body: FutureBuilder<List<Task>>(
+          future: getTasks(),
+          builder: (context, projectSnap) {
+            if (projectSnap.hasData) {
+              if (projectSnap.data?.isEmpty ?? true) {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * 2,
+                  child: const Align(
+                      alignment: Alignment.center,
+                      child: Text('אין תוצאות',
+                          style: TextStyle(fontSize: 23, color: Colors.black))),
+                );
+              } else {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                        child: ListView.builder(
+                      itemCount: projectSnap.data?.length,
+                      itemBuilder: (context, index) {
+                        Task task = projectSnap.data![index];
+
+                        return TasksScreenDesign(
+                          tasks: task,
+                          isStudent: false, // Adjust based on your requirements
+                        );
+                      },
+                    )),
+                  ],
+                );
+              }
+            } else if (projectSnap.hasError) {
+              return const Center(
+                  child: Text('שגיאה, נסה שוב',
+                      style: TextStyle(
+                          fontSize: 22, fontWeight: FontWeight.bold)));
+            }
+            return const Center(
+                child: CircularProgressIndicator(color: Colors.red));
+          },
+        ));
   }
 }
-
-

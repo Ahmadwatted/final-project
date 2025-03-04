@@ -1,3 +1,4 @@
+import 'package:final_project/utils/Widgets/Random_color.dart';
 import 'package:flutter/material.dart';
 import '../../Models/schedule.dart';
 import '../../Models/task.dart';
@@ -6,9 +7,10 @@ import '../Widgets/Confirm_Del.dart';
 class TasksScreenDesign extends StatelessWidget {
   final Task tasks;
   final bool isStudent;
+// Inside your widget or class
+  Color taskColor = RandomColor.getRandomShade700();
 
-  const TasksScreenDesign({Key? key, required this.tasks, this.isStudent=true}) : super(key: key);
-
+   TasksScreenDesign({Key? key, required this.tasks, this.isStudent=true}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -25,7 +27,7 @@ class TasksScreenDesign extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: tasks.c,
+                color: taskColor,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -49,8 +51,25 @@ class TasksScreenDesign extends StatelessWidget {
                           onPressed: () {
                             showDialog(
                               context: context,
-                              builder: (context) => TaskDeleteAlert(taskId: tasks.taskID.toString()),
-                            );
+                              builder: (dialogContext) => TaskDeleteAlert(
+                                taskId: tasks.taskID.toString(),
+                                onTaskDeleted: () {
+                                  // Refresh the task list or perform other actions after deletion
+                                },
+                              ),
+                            ).then((result) {
+                              // Show appropriate SnackBar based on the result
+                              if (result == true) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Task deleted successfully!')),
+                                );
+                                // Refresh task list if needed
+                              } else if (result == false) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Failed to delete task.')),
+                                );
+                              }
+                            });
                           },
                           padding: EdgeInsets.zero,
                           constraints: BoxConstraints(),
