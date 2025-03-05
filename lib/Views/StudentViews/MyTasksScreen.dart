@@ -7,7 +7,6 @@ import '../../ViewModels/StudentMain_VM.dart';
 class MyTasksScreen extends StatelessWidget {
   final String title;
 
-
   const MyTasksScreen({super.key, required this.title});
 
   @override
@@ -18,12 +17,11 @@ class MyTasksScreen extends StatelessWidget {
     );
   }
 }
-class _MyTasksScreen extends StatelessWidget {
 
+class _MyTasksScreen extends StatelessWidget {
   final String title;
 
   const _MyTasksScreen({required this.title});
-
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +29,6 @@ class _MyTasksScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFE3DFD6),
-
       appBar: AppBar(
         title: const Text('My tasks'),
         backgroundColor: Colors.white,
@@ -39,11 +36,8 @@ class _MyTasksScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-
         child: Column(
-
           crossAxisAlignment: CrossAxisAlignment.start,
-
           children: [
             const SizedBox(height: 24),
             Expanded(
@@ -51,7 +45,14 @@ class _MyTasksScreen extends StatelessWidget {
                 itemCount: viewModel.tasks.length,
                 itemBuilder: (context, index) => Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: TasksScreenDesign(tasks: viewModel.tasks[index],isStudent: true,),
+                  child: TasksScreenDesign(
+                    tasks: viewModel.tasks[index],
+                    isStudent: true,
+                    onTaskDeleted: () {
+                      // Assuming the ViewModel has a method to remove a task
+                      viewModel.removeTask(viewModel.tasks[index]);
+                    },
+                  ),
                 ),
               ),
             ),
@@ -61,5 +62,3 @@ class _MyTasksScreen extends StatelessWidget {
     );
   }
 }
-
-

@@ -28,6 +28,7 @@ Future deleteUser(BuildContext context, String userID) async {
 
 
 
+
 class StudentDashboardViewModel extends ChangeNotifier {
   List<Course> courses = [];
   List<Schedule> schedule = [];
@@ -114,5 +115,9 @@ class StudentDashboardViewModel extends ChangeNotifier {
     }
 
     return arr;
+  }
+  void removeTask(Task task) {
+    tasks.remove(task);
+    notifyListeners(); // To update the UI
   }
 }

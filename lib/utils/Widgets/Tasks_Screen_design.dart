@@ -1,16 +1,21 @@
 import 'package:final_project/utils/Widgets/Random_color.dart';
 import 'package:flutter/material.dart';
-import '../../Models/schedule.dart';
 import '../../Models/task.dart';
 import '../Widgets/Confirm_Del.dart';
 
 class TasksScreenDesign extends StatelessWidget {
   final Task tasks;
   final bool isStudent;
-// Inside your widget or class
-  Color taskColor = RandomColor.getRandomShade700();
+  final Function onTaskDeleted;
+  final Color taskColor = RandomColor.getRandomShade700();
 
-   TasksScreenDesign({Key? key, required this.tasks, this.isStudent=true}) : super(key: key);
+   TasksScreenDesign({
+    Key? key,
+    required this.tasks,
+    this.isStudent = true,
+    required this.onTaskDeleted,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -45,45 +50,34 @@ class TasksScreenDesign extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if(!isStudent)...[
+                      if(!isStudent)
                         IconButton(
-                          icon: Icon(Icons.delete_outline, color: Colors.red),
+                          icon: const Icon(Icons.delete_outline, color: Colors.red),
                           onPressed: () {
                             showDialog(
                               context: context,
                               builder: (dialogContext) => TaskDeleteAlert(
-                                taskId: tasks.taskID.toString(),
-                                onTaskDeleted: () {
-                                  // Refresh the task list or perform other actions after deletion
-                                },
+                                taskID: tasks.taskID.toString(),
+                                onTaskDeleted: onTaskDeleted,
                               ),
                             ).then((result) {
-                              // Show appropriate SnackBar based on the result
-                              if (result == true) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Task deleted successfully!')),
-                                );
-                                // Refresh task list if needed
-                              } else if (result == false) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Failed to delete task.')),
-                                );
-                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    result == true
+                                        ? 'Task deleted successfully!'
+                                        : 'Failed to delete task.',
+                                  ),
+                                ),
+                              );
                             });
                           },
                           padding: EdgeInsets.zero,
-                          constraints: BoxConstraints(),
+                          constraints: const BoxConstraints(),
                           splashRadius: 24,
                         ),
-                      ],
-
-
-
-
-
                     ],
                   ),
-
                   const SizedBox(height: 4),
                   Row(
                     children: [
@@ -99,7 +93,6 @@ class TasksScreenDesign extends StatelessWidget {
                       ),
                     ],
                   ),
-
                 ],
               ),
             ),

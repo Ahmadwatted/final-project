@@ -23,54 +23,72 @@ class TeacherUploadedTasks extends StatelessWidget {
   }
 }
 
-class _TeacherUploadedTasks extends StatelessWidget {
+class _TeacherUploadedTasks extends StatefulWidget {
   final String title;
 
   const _TeacherUploadedTasks({required this.title});
 
   @override
-  Widget build(BuildContext context) {
+  State<_TeacherUploadedTasks> createState() => _TeacherUploadedTasksState();
+}
 
-    Future<List<Task>> getTasks() async {
-      List<Task> arr = [];
+class _TeacherUploadedTasksState extends State<_TeacherUploadedTasks> {
+  late Future<List<Task>> _tasksFuture;
 
-      try {
-        var url = "tasks/getTasks.php";
-        final response = await http.get(Uri.parse(serverPath + url));
+  @override
+  void initState() {
+    super.initState();
+    _refreshTasks();
+  }
 
-        print("Response Status Code: ${response.statusCode}");
-        print("Response Body: ${response.body}");
+  void _refreshTasks() {
+    setState(() {
+      _tasksFuture = getTasks();
+    });
+  }
 
-        if (response.statusCode == 200) {
-          var jsonData = json.decode(response.body);
+  Future<List<Task>> getTasks() async {
+    List<Task> arr = [];
 
-          // Check if jsonData is null or not a list
-          if (jsonData == null) {
-            throw Exception("Response body is null");
-          }
-          if (jsonData is! List) {
-            throw Exception("Response is not a List. Received: $jsonData");
-          }
+    try {
+      var url = "tasks/getTasks.php";
+      final response = await http.get(Uri.parse(serverPath + url));
 
-          for (var i in jsonData) {
-            arr.add(Task.fromJson(i));
-          }
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
 
-          String tasksString = arr
-              .map((task) =>
-                  '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
-              .join(', ');
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
 
-          print("Formatted Task List: $tasksString");
-        } else {
-          throw Exception('Failed to load tasks: ${response.statusCode}');
+        // Check if jsonData is null or not a list
+        if (jsonData == null) {
+          throw Exception("Response body is null");
         }
-      } catch (e) {
-        print('Error: $e');
-      }
-      return arr;
-    }
+        if (jsonData is! List) {
+          throw Exception("Response is not a List. Received: $jsonData");
+        }
 
+        for (var i in jsonData) {
+          arr.add(Task.fromJson(i));
+        }
+
+        String tasksString = arr
+            .map((task) =>
+        '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
+            .join(', ');
+
+        print("Formatted Task List: $tasksString");
+      } else {
+        throw Exception('Failed to load tasks: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    return arr;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(
@@ -81,7 +99,7 @@ class _TeacherUploadedTasks extends StatelessWidget {
           elevation: 1,
         ),
         body: FutureBuilder<List<Task>>(
-          future: getTasks(),
+          future: _tasksFuture,
           builder: (context, projectSnap) {
             if (projectSnap.hasData) {
               if (projectSnap.data?.isEmpty ?? true) {
@@ -99,16 +117,17 @@ class _TeacherUploadedTasks extends StatelessWidget {
                   children: <Widget>[
                     Expanded(
                         child: ListView.builder(
-                      itemCount: projectSnap.data?.length,
-                      itemBuilder: (context, index) {
-                        Task task = projectSnap.data![index];
+                          itemCount: projectSnap.data?.length,
+                          itemBuilder: (context, index) {
+                            Task task = projectSnap.data![index];
 
-                        return TasksScreenDesign(
-                          tasks: task,
-                          isStudent: false, // Adjust based on your requirements
-                        );
-                      },
-                    )),
+                            return TasksScreenDesign(
+                              tasks: task,
+                              isStudent: false, // Adjust based on your requirements
+                              onTaskDeleted: _refreshTasks, // Add this to refresh the list
+                            );
+                          },
+                        )),
                   ],
                 );
               }

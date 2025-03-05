@@ -110,13 +110,13 @@ class _MainAppPage extends State<MainAppPage> {
       }
       return arr;
     }
-    void printTasks() async {
-      String tasks = (await getTasks()) as String;
-      setState(() {
-        tasksList = tasks;
-      });
-      print(tasksList);
-    }
+    // void printTasks() async {
+    //   String tasks = (await getTasks()) as String;
+    //   setState(() {
+    //     tasksList = tasks;
+    //   });
+    //   print(tasksList);
+    // }
 
 
 
@@ -172,7 +172,6 @@ class _MainAppPage extends State<MainAppPage> {
                 ),
               ],
             ),
-            ElevatedButton(onPressed: (){printTasks();}, child: Text('print users'))
           ],
         ),
       ),
