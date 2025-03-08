@@ -46,7 +46,7 @@ class _MyTasksScreen extends StatelessWidget {
                 itemBuilder: (context, index) => Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: TasksScreenDesign(
-                    tasks: viewModel.tasks[index],
+                    task: viewModel.tasks[index],
                     isStudent: true,
                     onTaskDeleted: () {
                       // Assuming the ViewModel has a method to remove a task

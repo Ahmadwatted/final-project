@@ -4,14 +4,14 @@ import '../../Models/task.dart';
 import '../Widgets/Confirm_Del.dart';
 
 class TasksScreenDesign extends StatelessWidget {
-  final Task tasks;
+  final Task task;
   final bool isStudent;
   final Function onTaskDeleted;
   final Color taskColor = RandomColor.getRandomShade700();
 
    TasksScreenDesign({
     Key? key,
-    required this.tasks,
+    required this.task,
     this.isStudent = true,
     required this.onTaskDeleted,
   }) : super(key: key);
@@ -44,7 +44,7 @@ class TasksScreenDesign extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        tasks.course,
+                        task.course,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -57,7 +57,7 @@ class TasksScreenDesign extends StatelessWidget {
                             showDialog(
                               context: context,
                               builder: (dialogContext) => TaskDeleteAlert(
-                                taskID: tasks.taskID.toString(),
+                                taskID: task.taskID,
                                 onTaskDeleted: onTaskDeleted,
                               ),
                             ).then((result) {
@@ -85,7 +85,7 @@ class TasksScreenDesign extends StatelessWidget {
                           size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Text(
-                        '${tasks.day}, ${tasks.time}',
+                        '${task.day}, ${task.time}',
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,

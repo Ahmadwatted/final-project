@@ -60,7 +60,6 @@ class _TeacherUploadedTasksState extends State<_TeacherUploadedTasks> {
       if (response.statusCode == 200) {
         var jsonData = json.decode(response.body);
 
-        // Check if jsonData is null or not a list
         if (jsonData == null) {
           throw Exception("Response body is null");
         }
@@ -89,6 +88,8 @@ class _TeacherUploadedTasksState extends State<_TeacherUploadedTasks> {
 
   @override
   Widget build(BuildContext context) {
+    Future<List<Task>> arr= getTasks();
+
     final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(
@@ -122,9 +123,9 @@ class _TeacherUploadedTasksState extends State<_TeacherUploadedTasks> {
                             Task task = projectSnap.data![index];
 
                             return TasksScreenDesign(
-                              tasks: task,
-                              isStudent: false, // Adjust based on your requirements
-                              onTaskDeleted: _refreshTasks, // Add this to refresh the list
+                              task: task,
+                              isStudent: false,
+                              onTaskDeleted: _refreshTasks,
                             );
                           },
                         )),

@@ -46,7 +46,6 @@ class _MainTeacherScreen extends StatelessWidget {
     // final String? getInfoDeviceSTR = localStorage.getItem('getInfoDeviceSTR');
     var url = "users/getUsers.php";
     final response = await http.get(Uri.parse("https://darkgray-hummingbird-925566.hostingersite.com/watad/users/getUsers.php"));
-    // print(serverPath + url);
     List<User> arr = [];
 
     for(Map<String, dynamic> i in json.decode(response.body)){

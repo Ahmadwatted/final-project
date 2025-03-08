@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../Models/clientConfig.dart';
 
 class TaskDeleteAlert extends StatefulWidget {
-  final String taskID;
+  final int taskID;
   final Function? onTaskDeleted;
 
   const TaskDeleteAlert({

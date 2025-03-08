@@ -57,7 +57,7 @@ class TaskCard extends StatelessWidget {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) => TaskDeleteAlert(taskID: tasks.taskID.toString()),
+                      builder: (context) => TaskDeleteAlert(taskID: tasks.taskID),
                     );
                   },
 
