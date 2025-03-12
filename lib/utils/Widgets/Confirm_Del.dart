@@ -30,21 +30,36 @@ class _TaskDeleteAlertState extends State<TaskDeleteAlert> {
       print("Full Delete Response:");
       print("Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
+      print("Attempting to delete Task ID: ${widget.taskID}");
 
       setState(() => _isDeleting = false);
 
       if (response.statusCode == 200) {
-        var jsonResponse = json.decode(response.body);
+        if (response.body.trim().startsWith('[')) {
 
-        print("JSON Response: $jsonResponse");
-        print("Result Type: ${jsonResponse['result'].runtimeType}");
+          print("Server returned a list of tasks instead of a deletion confirmation");
+          return false;
+        }
 
-        // Add more flexible result checking
-        if (jsonResponse['result'] == '1' || jsonResponse['result'] == 1) {
-          widget.onTaskDeleted?.call();
-          return true;
-        } else {
-          print("Deletion failed: ${jsonResponse['message']}");
+        try {
+          var jsonResponse = json.decode(response.body);
+
+          print("JSON Response: $jsonResponse");
+
+          if (jsonResponse is Map && jsonResponse.containsKey('result')) {
+            if (jsonResponse['result'] == '1' || jsonResponse['result'] == 1) {
+              widget.onTaskDeleted?.call();
+              return true;
+            } else {
+              print("Deletion failed: ${jsonResponse['message'] ?? 'Unknown error'}");
+              return false;
+            }
+          } else {
+            print("Unexpected response format");
+            return false;
+          }
+        } catch (e) {
+          print("JSON parsing error: $e");
           return false;
         }
       }

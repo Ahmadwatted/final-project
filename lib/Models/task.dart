@@ -19,7 +19,7 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      taskID: json['id'] ?? 0,
+      taskID: json['taskID'] ?? 0,
       tutor: json['tutor'] ,
       course: json['course'] ,
       day: json['day'] ,
@@ -38,15 +38,4 @@ class Task {
   }
 }
 
-class StudentViewModel extends ChangeNotifier {
-  List<Task> tasks = [];
 
-  void loadTaskFromJson(List<Map<String, dynamic>> jsonList) {
-    tasks = jsonList.map((json) => Task.fromJson(json)).toList();
-    notifyListeners();
-  }
-
-  List<Map<String, dynamic>> tasksToJson() {
-    return tasks.map((task) => task.toJson()).toList();
-  }
-}
