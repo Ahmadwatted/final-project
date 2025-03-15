@@ -21,13 +21,13 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      userID: json['userID'] ?? 0,  // Default to 0 if null
-      userTypeID: json['usertypeID'] ?? 0,  // Default to 0 if null
-      firstName: json['firstName'] ?? 'Unknown',  // Default to 'Unknown' if null
-      secondName: json['secondName'] ?? 'Unknown',
-      password: json['secondName'] ?? 'Unknown',
-      phoneNumber: json['phoneNumber'] ?? 'N/A',
-      email: json['email'] ?? 'N/A',
+      userID: json['userID'] ?? 0,
+      userTypeID: json['usertypeID'] ?? 0,
+      firstName: json['firstName'] ?? '',
+      secondName: json['secondName'] ?? '',
+      password: json['secondName'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? '',
+      email: json['email'] ?? '',
     );
   }
 
