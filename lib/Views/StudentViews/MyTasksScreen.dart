@@ -50,7 +50,7 @@ class _MyTasksScreenState extends State<_MyTasksScreen> {
     List<Task> arr = [];
 
     try {
-      var url = "userTasks/getUserTasks.php?userID=$userID?";
+      var url = "userTasks/getUserTasks.php?userID=";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
