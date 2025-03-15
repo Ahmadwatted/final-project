@@ -88,7 +88,6 @@ class _TeacherUploadedTasksState extends State<_TeacherUploadedTasks> {
 
   @override
   Widget build(BuildContext context) {
-    Future<List<Task>> arr= getTasks();
 
     final viewModel = context.watch<StudentDashboardViewModel>();
 

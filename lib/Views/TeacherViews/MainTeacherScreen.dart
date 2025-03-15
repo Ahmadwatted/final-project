@@ -19,26 +19,26 @@ import 'StudentsRequests.dart';
 import 'package:http/http.dart' as http;
 
 
-class Mainteacherscreen extends StatelessWidget {
+class MyTasksScreen extends StatelessWidget {
   final String title;
 
 
-  const Mainteacherscreen({super.key, required this.title});
+  const MyTasksScreen({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _MainTeacherScreen(title: title),
+      child: _MyTasksScreen(title: title),
     );
   }
 }
 
 
-class _MainTeacherScreen extends StatelessWidget {
+class _MyTasksScreen extends StatelessWidget {
   final String title;
 
-  const _MainTeacherScreen({required this.title});
+  const _MyTasksScreen({required this.title});
 
 
   Future getUsers() async
