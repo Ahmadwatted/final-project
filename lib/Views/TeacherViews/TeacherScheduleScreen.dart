@@ -1,40 +1,38 @@
 import 'dart:convert';
 
-import 'package:final_project/utils/Widgets/Schedule_Screen_Design.dart';
 import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../Models/clientConfig.dart';
-import '../../Models/schedule.dart';
 import '../../Models/task.dart';
 import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
 
-class MyScheduleScreen extends StatelessWidget {
+class Teacherschedulescreen extends StatelessWidget {
   final String title;
 
-  const MyScheduleScreen({super.key, required this.title});
+  const Teacherschedulescreen({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _MyScheduleScreen(title: title),
+      child: _Teacherschedulescreen(title: title),
     );
   }
 }
 
-class _MyScheduleScreen extends StatefulWidget {
+class _Teacherschedulescreen extends StatefulWidget {
   final String title;
 
-  const _MyScheduleScreen({required this.title});
+  const _Teacherschedulescreen({required this.title});
 
   @override
-  State<_MyScheduleScreen> createState() => _MyScheduleScreenState();
+  State<_Teacherschedulescreen> createState() => _TeacherschedulescreenState();
 }
 
-class _MyScheduleScreenState extends State<_MyScheduleScreen> {
-  late Future<List<Schedule>> _scheduleFuture;
+class _TeacherschedulescreenState extends State<_Teacherschedulescreen> {
+  late Future<List<Task>> _tasksFuture;
 
   @override
   void initState() {
@@ -44,15 +42,15 @@ class _MyScheduleScreenState extends State<_MyScheduleScreen> {
 
   void _refreshTasks() {
     setState(() {
-      _scheduleFuture = getUserSchedule();
+      _tasksFuture = getUserTasks();
     });
   }
 
-  Future<List<Schedule>> getUserSchedule() async {
-    List<Schedule> arr = [];
+  Future<List<Task>> getUserTasks() async {
+    List<Task> arr = [];
 
     try {
-      var url = "userSchedule/getUserSchedule.php?userID=1";
+      var url = "userTasks/getUserTasks.php?userID=1";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
@@ -69,10 +67,13 @@ class _MyScheduleScreenState extends State<_MyScheduleScreen> {
         }
 
         for (var i in jsonData) {
-          arr.add(Schedule.fromJson(i));
+          arr.add(Task.fromJson(i));
         }
 
-
+        String tasksString = arr
+            .map((task) =>
+        '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
+            .join(', ');
 
         // print("Formatted Task List: $tasksString");
       } else {
@@ -92,12 +93,12 @@ class _MyScheduleScreenState extends State<_MyScheduleScreen> {
     return Scaffold(
         backgroundColor: const Color(0xFFE3DFD6),
         appBar: AppBar(
-          title: const Text('My Schedule'),
+          title: const Text('Uploaded tasks'),
           backgroundColor: Colors.white,
           elevation: 1,
         ),
-        body: FutureBuilder<List<Schedule>>(
-          future: _scheduleFuture,
+        body: FutureBuilder<List<Task>>(
+          future: _tasksFuture,
           builder: (context, projectSnap) {
             if (projectSnap.hasData) {
               if (projectSnap.data?.isEmpty ?? true) {
@@ -117,11 +118,11 @@ class _MyScheduleScreenState extends State<_MyScheduleScreen> {
                         child: ListView.builder(
                           itemCount: projectSnap.data?.length,
                           itemBuilder: (context, index) {
-                            Schedule schedule = projectSnap.data![index];
+                            Task task = projectSnap.data![index];
 
-                            return ScheduleScreenDesign(
-                              schedule: schedule,
-                              isStudent: true,
+                            return TasksScreenDesign(
+                              task: task,
+                              isStudent: false,
                               onTaskDeleted: _refreshTasks,
                             );
                           },

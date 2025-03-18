@@ -9,7 +9,7 @@ class Course {
   final String location;
   final String day;
    int? stunum;
-  final Color? c;
+   Color? c;
 
   Course({
     required this.courseID,

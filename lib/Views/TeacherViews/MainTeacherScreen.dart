@@ -18,6 +18,8 @@ import '../StudentViews/MyScheduleScreen.dart';
 import 'StudentsRequests.dart';
 import 'package:http/http.dart' as http;
 
+import 'TeacherScheduleScreen.dart';
+
 
 class MyTasksScreen extends StatelessWidget {
   final String title;
@@ -176,7 +178,7 @@ class _MyTasksScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                              const MyScheduleScreen(title: 'tomainapppage'),
+                              const Teacherschedulescreen(title: 'tomainapppage'),
                             ),
                           ),
                       child: Row(
@@ -246,7 +248,7 @@ class _MyTasksScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                              const TeacherUploadedTasks(title: 'tomainapppage'),
+                              const Teacheruploadedtasks(title: 'tomainapppage'),
                             ),
                           ),
                       child: Row(

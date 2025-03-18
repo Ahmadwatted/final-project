@@ -5,15 +5,20 @@ import 'package:final_project/Views/TeacherViews/TeacherCoursesScreen.dart';
 import 'package:flutter/material.dart';
 import '../../Models/course.dart';
 import '../../Models/schedule.dart';
+import 'Confirm_Del.dart';
+import 'Random_color.dart';
 
 class CoursesScreenDesign extends StatelessWidget {
   final Course courses;
-  final bool isStudent;  // Simple boolean flag
+  final bool isStudent;
+  final Function onTaskDeleted;
+  final Color courseColor = RandomColor.getRandomShade700();
 
-  const CoursesScreenDesign({
+   CoursesScreenDesign({
     Key? key,
     required this.courses,
-    this.isStudent = false,  // Defaults to false
+    this.isStudent = true,
+     required this.onTaskDeleted,
   }) : super(key: key);
 
   @override
@@ -32,7 +37,7 @@ class CoursesScreenDesign extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: courses.c,
+                color: courseColor,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -41,12 +46,48 @@ class CoursesScreenDesign extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    courses.course,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        courses.course,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if(!isStudent)...{
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.red),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (dialogContext) => TaskDeleteAlert(
+                                taskID: courses.courseID,
+                                onTaskDeleted: onTaskDeleted,
+                              ),
+                            ).then((result) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    result == true
+                                        ? 'Course deleted successfully!'
+                                        : 'Failed to delete course.',
+                                  ),
+                                ),
+                              );
+                            });
+                          },
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          splashRadius: 24,
+                        ),
+
+
+
+
+                      },
+                    ],
+
                   ),
                   const SizedBox(height: 4),
                   if(isStudent)...[

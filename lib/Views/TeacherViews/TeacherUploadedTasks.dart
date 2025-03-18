@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:final_project/utils/Widgets/Schedule_Screen_Design.dart';
 import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,30 +8,30 @@ import '../../Models/task.dart';
 import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
 
-class TeacherUploadedTasks extends StatelessWidget {
+class Teacheruploadedtasks extends StatelessWidget {
   final String title;
 
-  const TeacherUploadedTasks({super.key, required this.title});
+  const Teacheruploadedtasks({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _TeacherUploadedTasks(title: title),
+      child: _Teacheruploadedtasks(title: title),
     );
   }
 }
 
-class _TeacherUploadedTasks extends StatefulWidget {
+class _Teacheruploadedtasks extends StatefulWidget {
   final String title;
 
-  const _TeacherUploadedTasks({required this.title});
+  const _Teacheruploadedtasks({required this.title});
 
   @override
-  State<_TeacherUploadedTasks> createState() => _TeacherUploadedTasksState();
+  State<_Teacheruploadedtasks> createState() => _MyTasksScreenState();
 }
 
-class _TeacherUploadedTasksState extends State<_TeacherUploadedTasks> {
+class _MyTasksScreenState extends State<_Teacheruploadedtasks> {
   late Future<List<Task>> _tasksFuture;
 
   @override
@@ -43,15 +42,15 @@ class _TeacherUploadedTasksState extends State<_TeacherUploadedTasks> {
 
   void _refreshTasks() {
     setState(() {
-      _tasksFuture = getTasks();
+      _tasksFuture = getUserTasks();
     });
   }
 
-  Future<List<Task>> getTasks() async {
+  Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
 
     try {
-      var url = "tasks/getTasks.php";
+      var url = "userTasks/getUserTasks.php?userID=1";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
@@ -76,12 +75,12 @@ class _TeacherUploadedTasksState extends State<_TeacherUploadedTasks> {
         '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
             .join(', ');
 
-        print("Formatted Task List: $tasksString");
+        // print("Formatted Task List: $tasksString");
       } else {
-        throw Exception('Failed to load tasks: ${response.statusCode}');
+        // throw Exception('Failed to load tasks: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      // print('Error: $e');
     }
     return arr;
   }
