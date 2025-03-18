@@ -93,6 +93,7 @@ class _MyCoursesScreenState extends State<_MyCoursesScreen> {
           title: const Text('My Courses'),
           backgroundColor: Colors.white,
           elevation: 1,
+
         ),
         body: FutureBuilder<List<Course>>(
           future: _CoursesFuture,
