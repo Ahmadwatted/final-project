@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:final_project/Models/schedule.dart';
 import 'package:http/http.dart' as http;
 import '../../Models/clientConfig.dart';
+import '../../Models/task.dart';
 import '../../Views/StudentViews/MyCoursesScreen.dart';
 import 'package:final_project/Views/StudentViews/MyTasksScreen.dart';
 import 'package:final_project/utils/Widgets/Add_Button_Design.dart';
@@ -12,13 +14,9 @@ import '../../ViewModels/StudentMain_VM.dart';
 import '../../utils/Widgets/Course_Card.dart';
 import '../../utils/Widgets/Schedule_Card.dart';
 import '../../Models/course.dart';
-
-
-import 'MyCoursesScreen.dart';
 import 'MyScheduleScreen.dart';
 class _MainStudentScreen extends StatefulWidget {
   final String title;
-
 
   const _MainStudentScreen({required this.title});
 
@@ -27,6 +25,49 @@ class _MainStudentScreen extends StatefulWidget {
 }
 
 class _MainStudentScreenState extends State<_MainStudentScreen> {
+  late Future<List<Task>> _tasksFuture;
+  late Future<List<Course>> _CoursesFuture;
+  late Future<List<Schedule>> _scheduleFuture;
+
+  Future<List<Task>> getUserTasks() async {
+    List<Task> arr = [];
+
+    try {
+      var url = "userTasks/getUserTasks.php?userID=1";
+      final response = await http.get(Uri.parse(serverPath + url));
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
+
+        if (jsonData == null) {
+          throw Exception("Response body is null");
+        }
+        if (jsonData is! List) {
+          throw Exception("Response is not a List. Received: $jsonData");
+        }
+
+        for (var i in jsonData) {
+          arr.add(Task.fromJson(i));
+        }
+
+        String tasksString = arr
+            .map((task) =>
+        '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
+            .join(', ');
+
+        // print("Formatted Task List: $tasksString");
+      } else {
+        // throw Exception('Failed to load tasks: ${response.statusCode}');
+      }
+    } catch (e) {
+      // print('Error: $e');
+    }
+    return arr;
+  }
+
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
 
@@ -50,6 +91,35 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
         for (var i in jsonData) {
           arr.add(Course.fromJson(i));
         }
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+    return arr;
+  }
+  Future<List<Schedule>> getUserSchedule() async {
+    List<Schedule> arr = [];
+
+    try {
+      var url = "userSchedule/getUserSchedule.php?userID=1";
+      final response = await http.get(Uri.parse(serverPath + url));
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
+
+        if (jsonData == null) {
+          throw Exception("Response body is null");
+        }
+        if (jsonData is! List) {
+          throw Exception("Response is not a List. Received: $jsonData");
+        }
+
+        for (var i in jsonData) {
+          arr.add(Schedule.fromJson(i));
+        }
 
 
 
@@ -62,17 +132,29 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
     }
     return arr;
   }
-  late Future<List<Course>> _CoursesFuture;
+
 
   @override
   void initState() {
     super.initState();
     _refreshTasks();
+    _refreshCourses();
+    _refreshSchedule();
   }
 
-  void _refreshTasks() {
+  void _refreshCourses() {
     setState(() {
       _CoursesFuture = getUserCourses();
+    });
+  }
+  void _refreshTasks() {
+    setState(() {
+      _tasksFuture = getUserTasks();
+    });
+  }
+  void _refreshSchedule() {
+    setState(() {
+      _scheduleFuture = getUserSchedule();
     });
   }
 
@@ -89,7 +171,6 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -148,47 +229,7 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
               SizedBox(
                 height: 160,
                 child: FutureBuilder<List<Course>>(
-                  future:_CoursesFuture,
-                  builder: (context, projectSnap) {
-                    if (projectSnap.hasData) {
-                      if (projectSnap.data?.isEmpty ?? true) {
-                        return SizedBox(
-                          height: MediaQuery.of(context).size.height * 2,
-                          child: const Align(
-                              alignment: Alignment.center,
-                              child: Text('אין תוצאות',
-                                  style: TextStyle(fontSize: 23, color: Colors.black))),
-                        );
-                      } else {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Expanded(
-                                child: ListView.builder(
-                                  itemCount: projectSnap.data?.length,
-                                  itemBuilder: (context, index) {
-                                    Course course = projectSnap.data![index];
-
-                                    return CourseCard(
-                                      courses: course,
-                                      isStudent: true,
-                                      onTaskDeleted: _refreshTasks,
-                                    );
-                                  },
-                                )),
-                          ],
-                        );
-                      }
-                    } else if (projectSnap.hasError) {
-                      return const Center(
-                          child: Text('שגיאה, נסה שוב',
-                              style: TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold)));
-                    }
-                    return const Center(
-                        child: CircularProgressIndicator(color: Colors.red));
-                  }, // Replace with your actual future
+                  future: _CoursesFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator(color: Colors.red));
@@ -215,7 +256,11 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
                           final Course course = snapshot.data![index];
                           return Padding(
                             padding: EdgeInsets.only(right: 16.0),
-                            child: CourseCard(courses: course),
+                            child: CourseCard(
+                              courses: course,
+                              isStudent: true,
+                              onTaskDeleted: _refreshCourses,
+                            ),
                           );
                         },
                       );
@@ -267,8 +312,8 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
               ),
               SizedBox(
                 height: 160,
-                child: FutureBuilder<List<dynamic>>(
-                  future: viewModel.fetchSchedule(), // Replace with your actual future
+                child: FutureBuilder<List<Schedule>>(
+                  future: _scheduleFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator(color: Colors.red));
@@ -295,7 +340,7 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
                           final schedule = snapshot.data![index];
                           return Padding(
                             padding: EdgeInsets.only(right: 16.0),
-                            child: ScheduleCard(schedule: schedule),
+                            child: ScheduleCard(schedule: schedule, isStudent: true, onTaskDeleted: _refreshSchedule,),
                           );
                         },
                       );
@@ -347,8 +392,8 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
               ),
               SizedBox(
                 height: 160,
-                child: FutureBuilder<List<dynamic>>(
-                  future: viewModel.fetchTasks(), // Replace with your actual future
+                child: FutureBuilder<List<Task>>(
+                  future: _tasksFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator(color: Colors.red));
@@ -375,7 +420,11 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
                           final task = snapshot.data![index];
                           return Padding(
                             padding: EdgeInsets.only(right: 16.0),
-                            child: TaskCard(tasks: task, isStudent: true),
+                            child: TaskCard(
+                              tasks: task,
+                              isStudent: true,
+                              onTaskDeleted: _refreshTasks,
+                            ),
                           );
                         },
                       );
@@ -399,6 +448,5 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
       ),
     );
   }
-
 }
 

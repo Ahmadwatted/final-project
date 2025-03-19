@@ -1,13 +1,21 @@
 
 import 'package:flutter/material.dart';
 import '../../Models/schedule.dart';
+import 'Confirm_Del.dart';
+import 'Random_color.dart';
 
 class ScheduleCard extends StatelessWidget {
   final Schedule schedule;
+  final bool isStudent;
+  final Function onTaskDeleted;
+  final Color courseColor = RandomColor.getRandomShade700();
 
-  const ScheduleCard({
+
+   ScheduleCard({
     Key? key,
     required this.schedule,
+     this.isStudent = true,
+     required this.onTaskDeleted,
   }) : super(key: key);
 
   @override
@@ -47,7 +55,43 @@ class ScheduleCard extends StatelessWidget {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
+              ),if(!isStudent)...{
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) => TaskDeleteAlert(
+                        taskID: schedule.scheduleID,
+                        onTaskDeleted: onTaskDeleted,
+                      ),
+                    ).then((result) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            result == true
+                                ? 'schedule deleted successfully!'
+                                : 'Failed to delete schedule.',
+                          ),
+                        ),
+                      );
+                    });
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  splashRadius: 24,
+                ),
+
+
+
+
+              },
+
+
+
+
+
+
             ],
           ),
           SizedBox(height: 4),

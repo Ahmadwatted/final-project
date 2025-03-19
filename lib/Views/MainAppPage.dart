@@ -10,6 +10,7 @@ import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 import 'package:http/http.dart' as http;
 
 import '../Models/clientConfig.dart';
+import 'StudentViews/MyTasksScreen.dart';
 
 class MainAppPage extends StatefulWidget {
 

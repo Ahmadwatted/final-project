@@ -2,15 +2,19 @@
 import 'package:flutter/material.dart';
 import '../../Models/task.dart';
 import '../Widgets/Confirm_Del.dart';
+import 'Random_color.dart';
 
 class TaskCard extends StatelessWidget {
   final Task tasks;
   final bool isStudent;
+  final Function onTaskDeleted;
+  final Color courseColor = RandomColor.getRandomShade700();
 
-  const TaskCard({
+   TaskCard({
     Key? key,
     required this.tasks,
     this.isStudent =true,
+     required this.onTaskDeleted,
   }) : super(key: key);
 
   @override
@@ -51,21 +55,37 @@ class TaskCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if(!isStudent)...[
+              if(!isStudent)...{
                 IconButton(
-                  icon: Icon(Icons.delete_outline, color: Colors.red),
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) => TaskDeleteAlert(taskID: tasks.taskID),
-                    );
+                      builder: (dialogContext) => TaskDeleteAlert(
+                        taskID: tasks.taskID,
+                        onTaskDeleted: onTaskDeleted,
+                      ),
+                    ).then((result) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            result == true
+                                ? 'Task deleted successfully!'
+                                : 'Failed to delete task.',
+                          ),
+                        ),
+                      );
+                    });
                   },
-
                   padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
+                  constraints: const BoxConstraints(),
                   splashRadius: 24,
                 ),
-              ],
+
+
+
+
+              },
             ],
 
           ),

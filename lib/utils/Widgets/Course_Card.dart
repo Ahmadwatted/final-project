@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../../Models/course.dart';
+import 'Confirm_Del.dart';
+import 'Random_color.dart';
 
 class CourseCard extends StatelessWidget {
   final Course courses;
   final bool isStudent;
+  final Function onTaskDeleted;
+  final Color courseColor = RandomColor.getRandomShade700();
 
-  const CourseCard({
+   CourseCard({
     Key? key,
     required this.courses,
     this.isStudent = true,
+     required this.onTaskDeleted,
   }) : super(key: key);
 
   @override
@@ -51,6 +56,37 @@ class CourseCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+              if(!isStudent)...{
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) => TaskDeleteAlert(
+                        taskID: courses.courseID,
+                        onTaskDeleted: onTaskDeleted,
+                      ),
+                    ).then((result) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            result == true
+                                ? 'Course deleted successfully!'
+                                : 'Failed to delete course.',
+                          ),
+                        ),
+                      );
+                    });
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  splashRadius: 24,
+                ),
+
+
+
+
+              },
 
 
 
