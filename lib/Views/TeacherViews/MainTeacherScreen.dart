@@ -8,6 +8,7 @@ import 'package:final_project/utils/Widgets/Task_Card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../Models/clientConfig.dart';
+import '../../Models/schedule.dart';
 import '../../Models/student.dart';
 import '../../Models/task.dart';
 import '../../Models/user.dart';
@@ -33,12 +34,15 @@ class _MyTasksScreen extends StatefulWidget {
 class _MyTasksScreenState extends State<_MyTasksScreen> {
   late Future<List<Task>> _tasksFuture;
   late Future<List<Course>> _CoursesFuture;
+  late Future<List<Schedule>> _ScheduleFuture;
 
   @override
   void initState() {
     super.initState();
     _refreshTasks();
     _refreshCourses();
+    _refreshSchedule();
+
   }
 
   Future<List<User>> getUsers() async {
@@ -116,6 +120,41 @@ class _MyTasksScreenState extends State<_MyTasksScreen> {
     }
     return arr;
   }
+  Future<List<Schedule>> getUserSchedule() async {
+    List<Schedule> arr = [];
+
+    try {
+      var url = "userSchedule/getUserSchedule.php?userID=1";
+      final response = await http.get(Uri.parse(serverPath + url));
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
+
+        if (jsonData == null) {
+          throw Exception("Response body is null");
+        }
+        if (jsonData is! List) {
+          throw Exception("Response is not a List. Received: $jsonData");
+        }
+
+        for (var i in jsonData) {
+          arr.add(Schedule.fromJson(i));
+        }
+
+
+
+        // print("Formatted Task List: $tasksString");
+      } else {
+        // throw Exception('Failed to load tasks: ${response.statusCode}');
+      }
+    } catch (e) {
+      // print('Error: $e');
+    }
+    return arr;
+  }
 
   void _refreshCourses() {
     setState(() {
@@ -126,6 +165,11 @@ class _MyTasksScreenState extends State<_MyTasksScreen> {
   void _refreshTasks() {
     setState(() {
       _tasksFuture = getUserTasks();
+    });
+  }
+  void _refreshSchedule() {
+    setState(() {
+      _ScheduleFuture = getUserSchedule();
     });
   }
 
@@ -266,8 +310,8 @@ class _MyTasksScreenState extends State<_MyTasksScreen> {
               ),
               SizedBox(
                 height: 160,
-                child: FutureBuilder<List<dynamic>>(
-                  future: viewModel.fetchSchedule(),
+                child: FutureBuilder<List<Schedule>>(
+                  future: _ScheduleFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator(color: Colors.red));
@@ -279,7 +323,7 @@ class _MyTasksScreenState extends State<_MyTasksScreen> {
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       return Center(
                         child: Text(
-                          'No scheduled classes',
+                          'You are free for now',
                           style: TextStyle(
                             color: Colors.grey[500],
                           ),
@@ -294,7 +338,11 @@ class _MyTasksScreenState extends State<_MyTasksScreen> {
                           final schedule = snapshot.data![index];
                           return Padding(
                             padding: EdgeInsets.only(right: 16.0),
-                            child: ScheduleCard(schedule: schedule),
+                            child: ScheduleCard(
+                              schedule: schedule,
+                              isStudent: false,
+                              onTaskDeleted: _refreshSchedule,
+                            ),
                           );
                         },
                       );

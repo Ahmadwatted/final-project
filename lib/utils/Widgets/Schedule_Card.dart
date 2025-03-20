@@ -55,7 +55,8 @@ class ScheduleCard extends StatelessWidget {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),if(!isStudent)...{
+              )
+              ,if(!isStudent)...{
                 IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
                   onPressed: () {

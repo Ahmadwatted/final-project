@@ -15,18 +15,21 @@ import '../../utils/Widgets/Course_Card.dart';
 import '../../utils/Widgets/Schedule_Card.dart';
 import '../../Models/course.dart';
 import 'MyScheduleScreen.dart';
-class _MainStudentScreen extends StatefulWidget {
+
+// Public class that will be used for navigation
+class MainStudentScreen extends StatefulWidget {
   final String title;
 
-  const _MainStudentScreen({required this.title});
+  const MainStudentScreen({super.key, required this.title});
 
   @override
-  _MainStudentScreenState createState() => _MainStudentScreenState();
+  State<MainStudentScreen> createState() => _MainStudentScreenState();
 }
 
-class _MainStudentScreenState extends State<_MainStudentScreen> {
+// Private state class
+class _MainStudentScreenState extends State<MainStudentScreen> {
   late Future<List<Task>> _tasksFuture;
-  late Future<List<Course>> _CoursesFuture;
+  late Future<List<Course>> _coursesFuture;
   late Future<List<Schedule>> _scheduleFuture;
 
   Future<List<Task>> getUserTasks() async {
@@ -97,6 +100,7 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
     }
     return arr;
   }
+
   Future<List<Schedule>> getUserSchedule() async {
     List<Schedule> arr = [];
 
@@ -144,7 +148,7 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
 
   void _refreshCourses() {
     setState(() {
-      _CoursesFuture = getUserCourses();
+      _coursesFuture = getUserCourses();
     });
   }
   void _refreshTasks() {
@@ -229,7 +233,7 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
               SizedBox(
                 height: 160,
                 child: FutureBuilder<List<Course>>(
-                  future: _CoursesFuture,
+                  future: _coursesFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator(color: Colors.red));
@@ -449,4 +453,3 @@ class _MainStudentScreenState extends State<_MainStudentScreen> {
     );
   }
 }
-
