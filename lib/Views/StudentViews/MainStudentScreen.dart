@@ -16,7 +16,6 @@ import '../../utils/Widgets/Schedule_Card.dart';
 import '../../Models/course.dart';
 import 'MyScheduleScreen.dart';
 
-// Public class that will be used for navigation
 class MainStudentScreen extends StatefulWidget {
   final String title;
 
@@ -55,18 +54,11 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
         for (var i in jsonData) {
           arr.add(Task.fromJson(i));
         }
-
-        String tasksString = arr
-            .map((task) =>
-        '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
-            .join(', ');
-
-        // print("Formatted Task List: $tasksString");
       } else {
-        // throw Exception('Failed to load tasks: ${response.statusCode}');
+        print('Failed to load tasks: ${response.statusCode}');
       }
     } catch (e) {
-      // print('Error: $e');
+      print('Error in getUserTasks: $e');
     }
     return arr;
   }
@@ -94,9 +86,11 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
         for (var i in jsonData) {
           arr.add(Course.fromJson(i));
         }
+      } else {
+        print('Failed to load courses: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error in getUserCourses: $e');
     }
     return arr;
   }
@@ -124,15 +118,11 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
         for (var i in jsonData) {
           arr.add(Schedule.fromJson(i));
         }
-
-
-
-        // print("Formatted Task List: $tasksString");
       } else {
-        // throw Exception('Failed to load tasks: ${response.statusCode}');
+        print('Failed to load schedule: ${response.statusCode}');
       }
     } catch (e) {
-      // print('Error: $e');
+      print('Error in getUserSchedule: $e');
     }
     return arr;
   }
@@ -178,7 +168,8 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<StudentDashboardViewModel>();
+    // Remove the viewModel reference that's causing the error
+    // final viewModel = Provider.of<StudentDashboardViewModel>(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFE3DFD6),
