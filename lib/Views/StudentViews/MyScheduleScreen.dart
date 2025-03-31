@@ -1,33 +1,33 @@
 import 'dart:convert';
 
 import 'package:final_project/utils/Widgets/Schedule_Screen_Design.dart';
-import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../Models/clientConfig.dart';
 import '../../Models/schedule.dart';
-import '../../Models/task.dart';
 import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
 
 class MyScheduleScreen extends StatelessWidget {
   final String title;
+  final String userID;
 
-  const MyScheduleScreen({super.key, required this.title});
+  const MyScheduleScreen({super.key, required this.title, required this.userID});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _MyScheduleScreen(title: title),
+      child: _MyScheduleScreen(title: title, userID: userID),
     );
   }
 }
 
 class _MyScheduleScreen extends StatefulWidget {
   final String title;
+  final String userID;
 
-  const _MyScheduleScreen({required this.title});
+  const _MyScheduleScreen({required this.title, required this.userID});
 
   @override
   State<_MyScheduleScreen> createState() => _MyScheduleScreenState();
@@ -52,7 +52,7 @@ class _MyScheduleScreenState extends State<_MyScheduleScreen> {
     List<Schedule> arr = [];
 
     try {
-      var url = "userSchedule/getUserSchedule.php?userID=1";
+      var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
@@ -72,8 +72,6 @@ class _MyScheduleScreenState extends State<_MyScheduleScreen> {
           arr.add(Schedule.fromJson(i));
         }
 
-
-
         // print("Formatted Task List: $tasksString");
       } else {
         // throw Exception('Failed to load tasks: ${response.statusCode}');
@@ -86,7 +84,6 @@ class _MyScheduleScreenState extends State<_MyScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(

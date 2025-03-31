@@ -10,22 +10,24 @@ import 'package:http/http.dart' as http;
 
 class MyCoursesScreen extends StatelessWidget {
   final String title;
+  final String userID;
 
-  const MyCoursesScreen({super.key, required this.title});
+  const MyCoursesScreen({super.key, required this.title, required this.userID});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _MyCoursesScreen(title: title),
+      child: _MyCoursesScreen(title: title, userID: userID),
     );
   }
 }
 
 class _MyCoursesScreen extends StatefulWidget {
   final String title;
+  final String userID;
 
-  const _MyCoursesScreen({required this.title});
+  const _MyCoursesScreen({required this.title, required this.userID});
 
   @override
   State<_MyCoursesScreen> createState() => _MyCoursesScreenState();
@@ -50,7 +52,7 @@ class _MyCoursesScreenState extends State<_MyCoursesScreen> {
     List<Course> arr = [];
 
     try {
-      var url = "userCourses/getUserCourses.php?userID=1";
+      var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");

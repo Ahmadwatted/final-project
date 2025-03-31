@@ -204,7 +204,10 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>  MyCoursesScreen(title: 'tomainapppage', userID: 'userID=${widget.userID}',),
+                            builder: (context) => MyCoursesScreen(
+                              title: 'tomainapppage',
+                              userID: widget.userID,
+                            )
                         ),
                       ),
                       child: Row(
@@ -288,7 +291,10 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MyScheduleScreen(title: 'tomainapppage'),
+                          builder: (context) => MyScheduleScreen(
+                            title: 'tomainapppage',
+                            userID: widget.userID,
+                          ),
                         ),
                       ),
                       child: Row(
@@ -368,7 +374,10 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MyTasksScreen(title: 'tomainapppage'),
+                          builder: (context) => MyTasksScreen(
+                            title: 'tomainapppage',
+                            userID: widget.userID,
+                          ),
                         ),
                       ),
                       child: Row(
