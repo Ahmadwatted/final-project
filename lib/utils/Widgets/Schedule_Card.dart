@@ -20,7 +20,7 @@ class ScheduleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 250,
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -42,15 +42,15 @@ class ScheduleCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.calendar_today,
-                size: 18,
+                size: 16,
                 color: Colors.blue[600],
               ),
-              SizedBox(width: 6),
+              SizedBox(width: 4),
               Expanded(
                 child: Text(
                   schedule.course,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -59,10 +59,10 @@ class ScheduleCard extends StatelessWidget {
               ),
               if(!isStudent)
                 SizedBox(
-                  width: 28,
-                  height: 28,
+                  width: 24,
+                  height: 24,
                   child: IconButton(
-                    icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                    icon: const Icon(Icons.delete_outline, size: 18, color: Colors.red),
                     onPressed: () {
                       showDialog(
                         context: context,
@@ -84,22 +84,22 @@ class ScheduleCard extends StatelessWidget {
                     },
                     padding: EdgeInsets.zero,
                     constraints: BoxConstraints(),
-                    splashRadius: 20,
+                    splashRadius: 18,
                   ),
                 ),
             ],
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 6),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.person, color: Colors.grey, size: 16),
-              SizedBox(width: 6),
+              Icon(Icons.person, color: Colors.grey, size: 14),
+              SizedBox(width: 4),
               Expanded(
                 child: Text(
                   schedule.tutor,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: Colors.grey[500],
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -108,17 +108,17 @@ class ScheduleCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 6),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.event, color: Colors.grey, size: 16),
-              SizedBox(width: 6),
+              Icon(Icons.event, color: Colors.grey, size: 14),
+              SizedBox(width: 4),
               Expanded(
                 child: Text(
                   schedule.day,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: Colors.grey[600],
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -127,17 +127,17 @@ class ScheduleCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 6),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.access_time, color: Colors.grey, size: 16),
-              SizedBox(width: 6),
+              Icon(Icons.access_time, color: Colors.grey, size: 14),
+              SizedBox(width: 4),
               Expanded(
                 child: Text(
                   schedule.time,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: Colors.grey[600],
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -146,17 +146,17 @@ class ScheduleCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 6),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.location_on, color: Colors.grey, size: 16),
-              SizedBox(width: 6),
+              Icon(Icons.location_on, color: Colors.grey, size: 14),
+              SizedBox(width: 4),
               Expanded(
                 child: Text(
                   schedule.location,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: Colors.grey[500],
                   ),
                   overflow: TextOverflow.ellipsis,

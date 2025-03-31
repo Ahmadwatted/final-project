@@ -1,9 +1,10 @@
+import 'dart:convert';
+import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../Models/clientConfig.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
-import 'MainAppPage.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({Key? key}) : super(key: key);
@@ -13,8 +14,6 @@ class RegisterPage extends StatelessWidget {
   final TextEditingController _txtphoneNumber = TextEditingController();
   final TextEditingController _txtemail = TextEditingController();
   final TextEditingController _txtuserTypeID = TextEditingController();
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +97,6 @@ class RegisterPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-
-
                     // Email
                     CustomTextField(
                       controller: _txtemail,
@@ -145,10 +142,9 @@ class RegisterPage extends StatelessWidget {
                         ],
                       ),
                       child: ElevatedButton(
-                        onPressed: () {
-
-
-                          insertUser(
+                        onPressed: () async {
+                          // Call the insertUser function and get the user ID
+                          final userID = await insertUser(
                               context,
                               2,
                               _txtfirstName.text,
@@ -156,15 +152,17 @@ class RegisterPage extends StatelessWidget {
                               _txtemail.text,
                               _txtpassword.text,
                               _txtphoneNumber.text
-
                           );
-                          
 
+                          // Navigate to MainStudentScreen with the user ID
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const MainAppPage(title: 'tomainapppage')),
+                              builder: (context) => MainStudentScreen(
+                                title: 'pepo',
+                                userID: userID,
+                              ),
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -214,7 +212,8 @@ class RegisterPage extends StatelessWidget {
       ),
     );
   }
-  Future insertUser(
+
+  Future<String> insertUser(
       BuildContext context,
       int userTypeID,
       String firstName,
@@ -222,8 +221,6 @@ class RegisterPage extends StatelessWidget {
       String email,
       String password,
       String phoneNumber) async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String? getInfoDeviceSTR = prefs.getString("getInfoDeviceSTR");
     var url = "users/insertUser.php?"
         "firstName=$firstName"
         "&secondName=$secondName"
@@ -233,9 +230,18 @@ class RegisterPage extends StatelessWidget {
         "&userTypeID=$userTypeID";
 
     final response = await http.get(Uri.parse(serverPath + url));
-    Navigator.pop(context);
+
+    // Parse the response to get the new userID
+    // Assuming your PHP returns the new user ID
+    if (response.statusCode == 200) {
+      try {
+        final data = json.decode(response.body);
+        return data['userID'].toString();
+      } catch (e) {
+        print("Error parsing user ID: $e");
+        return "1"; // Default ID if parsing fails
+      }
+    }
+    return "1"; // Default ID
   }
-
 }
-
-

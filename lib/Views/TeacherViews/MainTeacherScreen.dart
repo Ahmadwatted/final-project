@@ -17,8 +17,12 @@ import 'TeacherScheduleScreen.dart';
 
 class MainTeacherScreen extends StatefulWidget {
   final String title;
+  final String userID;
 
-  const MainTeacherScreen({super.key, required this.title});
+
+  const MainTeacherScreen({super.key,
+    required this.title,
+    required  this.userID});
 
   @override
   State<MainTeacherScreen> createState() => _MainTeacherScreenState();
@@ -40,7 +44,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
     try {
-      var url = "userCourses/getUserCourses.php?userID=1";
+      var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       if (response.statusCode == 200) {
@@ -66,7 +70,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
   Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
     try {
-      var url = "userTasks/getUserTasks.php?userID=1";
+      var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       if (response.statusCode == 200) {
@@ -93,7 +97,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
     List<Schedule> arr = [];
 
     try {
-      var url = "userSchedule/getUserSchedule.php?userID=1";
+      var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");

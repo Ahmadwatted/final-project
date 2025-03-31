@@ -1,4 +1,6 @@
 import 'package:final_project/Models/user.dart';
+import 'package:final_project/Views/LoginPage.dart';
+import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 import 'package:final_project/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +50,7 @@ class Utils{
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => MyHomePage(title: 'asdasd',))),
+              onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => MainStudentScreen(title: 'asdasd', userID: '2',))),
               child: const Text('Cancel'),
             ),
             TextButton(
@@ -88,7 +90,7 @@ class Utils{
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => MyHomePage(title: 'asdasd',))),
+              onPressed: () => Navigator.push(context,MaterialPageRoute(builder: (context) => LoginPage())),
               child: const Text('Cancel'),
             ),
             TextButton(

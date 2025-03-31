@@ -106,7 +106,7 @@ class _MyTasksScreenState extends State<_MyTasksScreen> {
                   height: MediaQuery.of(context).size.height * 2,
                   child: const Align(
                       alignment: Alignment.center,
-                      child: Text('אין תוצאות',
+                      child: Text('No Tasks Yet',
                           style: TextStyle(fontSize: 23, color: Colors.black))),
                 );
               } else {

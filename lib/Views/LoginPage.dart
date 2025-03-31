@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
@@ -8,39 +9,58 @@ import '../Models/user.dart';
 import '../Models/clientConfig.dart';
 import '../utils/Utils.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
-import 'MainAppPage.dart';
 import 'RegisterPage.dart';
-
-
+import 'TeacherViews/MainTeacherScreen.dart';
+ void main() {
+   runApp(const MyApp());
+ }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      debugShowCheckedModeBanner: false,
+      home:  LoginPage(),
+      // routes: {
+      //   '/MainAppPage': (context) => LoginPage(),
+      // },
+    );
+  }
+}
 
 
 class LoginPage extends StatelessWidget {
 
 
-   LoginPage({Key? key}) : super(key: key);
+  LoginPage({Key? key}) : super(key: key);
   final TextEditingController _txtemail = TextEditingController();
-   final TextEditingController _txtpassword = TextEditingController();
+  final TextEditingController _txtpassword = TextEditingController();
 
 
 
-   checkConction(BuildContext context) async {
-     try {
-       final result = await InternetAddress.lookup('google.com');
-       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-         print('connected to internet');// print(result);// return 1;
-       }
-     } on SocketException catch (_) {
-       print('not connected to internet');// print(result);
-       var uti = new Utils();
-       uti.showMyDialog2(context, "אין אינטרנט", "האפליקציה דורשת חיבור לאינטרנט, נא להתחבר בבקשה");
-       // return;
-     }
-   }
+  checkConction(BuildContext context) async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected to internet');// print(result);// return 1;
+      }
+    } on SocketException catch (_) {
+      print('not connected to internet');// print(result);
+      var uti = new Utils();
+      uti.showMyDialog2(context, "אין אינטרנט", "האפליקציה דורשת חיבור לאינטרנט, נא להתחבר בבקשה");
+      // return;
+    }
+  }
 
-   @override
+  @override
   Widget build(BuildContext context) {
 
-     checkConction(context);
+    checkConction(context);
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -137,15 +157,58 @@ class LoginPage extends StatelessWidget {
                         ],
                       ),
                       child: ElevatedButton(
-                        onPressed: ()  async {
-                          if (
-                          await checkLogin(context, _txtemail.text, _txtpassword.text)) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MainAppPage(title: 'tomainapppage')
-                              ),
-                            );
+                        onPressed: () async {
+                          // Call the checkLogin function
+                          bool isLoginSuccessful = await checkLogin(context, _txtemail.text, _txtpassword.text);
+
+                          if (isLoginSuccessful) {
+                            // Get the userTypeID from the login response
+                            try {
+                              var url = "checkLogins/checkLogin.php?email=${_txtemail.text}&password=${_txtpassword.text}";
+                              final response = await http.get(Uri.parse(serverPath + url));
+
+                              if (response.statusCode == 200) {
+                                final decodedData = jsonDecode(response.body);
+
+                                if (decodedData is Map<String, dynamic>) {
+                                  String userTypeID = decodedData['usertypeID'].toString();
+                                  String userID = decodedData['userID'].toString();
+
+                                  if (userTypeID == "1") {
+                                    // Navigate to Teacher Main Screen with userID
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MainTeacherScreen(
+                                          title: 'pepo',
+                                          userID: userID,
+                                        ),
+                                      ),
+                                    );
+                                  } else if (userTypeID == "2") {
+                                    // Navigate to Student Main Screen with userID
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MainStudentScreen(
+                                          title: 'pepo',
+                                          userID: userID,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              }
+                            } catch (e) {
+                              print("Error routing user: $e");
+                              // Fallback to original behavior
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LoginPage()
+                                ),
+                              );
+                            }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -211,6 +274,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
+
 Future<bool> checkLogin(BuildContext context, String email, String password) async {
   var url = "checkLogins/checkLogin.php?email=$email&password=$password";
   final response = await http.get(Uri.parse(serverPath + url));
@@ -240,11 +304,3 @@ Future<bool> checkLogin(BuildContext context, String email, String password) asy
 
   return false;
 }
-
-//       // SharedPreferences prefs = await SharedPreferences.getInstance();
-//       // await prefs.setString('phoneNumber', checkLoginModel.fromJson(jsonDecode(response.body)).phoneNumber!);
-//       // await prefs.setString('email', checkLoginModel.fromJson(jsonDecode(response.body)).email!);
-//       // await prefs.setString('userTypeID', checkLoginModel.fromJson(jsonDecode(response.body)).userTypeID!);
-//       // await prefs.setString('firstName', checkLoginModel.fromJson(jsonDecode(response.body)).firstName!);
-//       // await prefs.setString('secondName', checkLoginModel.fromJson(jsonDecode(response.body)).secondName!);
-

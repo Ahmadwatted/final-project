@@ -18,8 +18,13 @@ import 'MyScheduleScreen.dart';
 
 class MainStudentScreen extends StatefulWidget {
   final String title;
+  final String userID;
 
-  const MainStudentScreen({super.key, required this.title});
+  const MainStudentScreen({
+    super.key,
+    required this.title,
+    required this.userID,
+  });
 
   @override
   State<MainStudentScreen> createState() => _MainStudentScreenState();
@@ -35,7 +40,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
     List<Task> arr = [];
 
     try {
-      var url = "userTasks/getUserTasks.php?userID=1";
+      var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
@@ -67,7 +72,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
     List<Course> arr = [];
 
     try {
-      var url = "userCourses/getUserCourses.php?userID=1";
+      var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
@@ -99,7 +104,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
     List<Schedule> arr = [];
 
     try {
-      var url = "userSchedule/getUserSchedule.php?userID=1";
+      var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
@@ -199,7 +204,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MyCoursesScreen(title: 'tomainapppage'),
+                          builder: (context) =>  MyCoursesScreen(title: 'tomainapppage', userID: 'userID=${widget.userID}',),
                         ),
                       ),
                       child: Row(
