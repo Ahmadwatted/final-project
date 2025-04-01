@@ -10,22 +10,24 @@ import 'package:http/http.dart' as http;
 
 class Teacheruploadedtasks extends StatelessWidget {
   final String title;
+  final String userID;
 
-  const Teacheruploadedtasks({super.key, required this.title});
+  const Teacheruploadedtasks({super.key, required this.title, required this.userID});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _Teacheruploadedtasks(title: title),
+      child: _Teacheruploadedtasks(title: title, userID:userID),
     );
   }
 }
 
 class _Teacheruploadedtasks extends StatefulWidget {
   final String title;
+  final String userID;
 
-  const _Teacheruploadedtasks({required this.title});
+  const _Teacheruploadedtasks({required this.title, required this.userID});
 
   @override
   State<_Teacheruploadedtasks> createState() => _MyTasksScreenState();
@@ -50,7 +52,7 @@ class _MyTasksScreenState extends State<_Teacheruploadedtasks> {
     List<Task> arr = [];
 
     try {
-      var url = "userTasks/getUserTasks.php?userID=1";
+      var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");

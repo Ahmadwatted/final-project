@@ -22,7 +22,10 @@ class MainTeacherScreen extends StatefulWidget {
 
   const MainTeacherScreen({super.key,
     required this.title,
-    required  this.userID});
+    required  this.userID
+
+
+  });
 
   @override
   State<MainTeacherScreen> createState() => _MainTeacherScreenState();
@@ -188,7 +191,12 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const TeacherCoursesScreen(title: 'tomainapppage'),
+                          builder: (context) => TeacherCoursesScreen(title: 'tomainapppage',
+                            userID: widget.userID,
+
+
+
+                          ),
                         ),
                       ),
                       child: Row(
@@ -270,7 +278,8 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const Teacherschedulescreen(title: 'tomainapppage'),
+                          builder: (context) =>  Teacherschedulescreen(title: 'tomainapppage',
+                            userID: widget.userID,),
                         ),
                       ),
                       child: Row(
@@ -352,7 +361,8 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const Teacheruploadedtasks(title: 'tomainapppage'),
+                          builder: (context) =>  Teacheruploadedtasks(title: 'tomainapppage',
+                            userID: widget.userID,),
                         ),
                       ),
                       child: Row(

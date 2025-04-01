@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:final_project/Models/schedule.dart';
+import 'package:final_project/utils/Widgets/Schedule_Screen_Design.dart';
 import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,47 +12,49 @@ import 'package:http/http.dart' as http;
 
 class Teacherschedulescreen extends StatelessWidget {
   final String title;
+  final String userID;
 
-  const Teacherschedulescreen({super.key, required this.title});
+  const Teacherschedulescreen({super.key, required this.title, required this.userID});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _Teacherschedulescreen(title: title),
+      child: _Teacherschedulescreen(title: title, userID:userID),
     );
   }
 }
 
 class _Teacherschedulescreen extends StatefulWidget {
   final String title;
+  final String userID;
 
-  const _Teacherschedulescreen({required this.title});
+  const _Teacherschedulescreen({required this.title, required this.userID});
 
   @override
   State<_Teacherschedulescreen> createState() => _TeacherschedulescreenState();
 }
 
 class _TeacherschedulescreenState extends State<_Teacherschedulescreen> {
-  late Future<List<Task>> _tasksFuture;
+  late Future<List<Schedule>> _ScheduleFuture;
 
   @override
   void initState() {
     super.initState();
-    _refreshTasks();
+    _refreshSchedule();
   }
 
-  void _refreshTasks() {
+  void _refreshSchedule() {
     setState(() {
-      _tasksFuture = getUserTasks();
+      _ScheduleFuture = getUserSchedule();
     });
   }
 
-  Future<List<Task>> getUserTasks() async {
-    List<Task> arr = [];
+  Future<List<Schedule>> getUserSchedule() async {
+    List<Schedule> arr = [];
 
     try {
-      var url = "userTasks/getUserTasks.php?userID=1";
+      var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
@@ -67,20 +71,17 @@ class _TeacherschedulescreenState extends State<_Teacherschedulescreen> {
         }
 
         for (var i in jsonData) {
-          arr.add(Task.fromJson(i));
+          arr.add(Schedule.fromJson(i));
         }
 
         String tasksString = arr
             .map((task) =>
-        '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
+        '${task.scheduleID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
             .join(', ');
 
-        // print("Formatted Task List: $tasksString");
       } else {
-        // throw Exception('Failed to load tasks: ${response.statusCode}');
       }
     } catch (e) {
-      // print('Error: $e');
     }
     return arr;
   }
@@ -93,12 +94,12 @@ class _TeacherschedulescreenState extends State<_Teacherschedulescreen> {
     return Scaffold(
         backgroundColor: const Color(0xFFE3DFD6),
         appBar: AppBar(
-          title: const Text('Uploaded tasks'),
+          title: const Text('My Schedule'),
           backgroundColor: Colors.white,
           elevation: 1,
         ),
-        body: FutureBuilder<List<Task>>(
-          future: _tasksFuture,
+        body: FutureBuilder<List<Schedule>>(
+          future: _ScheduleFuture,
           builder: (context, projectSnap) {
             if (projectSnap.hasData) {
               if (projectSnap.data?.isEmpty ?? true) {
@@ -118,12 +119,12 @@ class _TeacherschedulescreenState extends State<_Teacherschedulescreen> {
                         child: ListView.builder(
                           itemCount: projectSnap.data?.length,
                           itemBuilder: (context, index) {
-                            Task task = projectSnap.data![index];
+                            Schedule schedule = projectSnap.data![index];
 
-                            return TasksScreenDesign(
-                              task: task,
+                            return ScheduleScreenDesign(
+                              schedule: schedule,
                               isStudent: false,
-                              onTaskDeleted: _refreshTasks,
+                              onTaskDeleted: _refreshSchedule,
                             );
                           },
                         )),

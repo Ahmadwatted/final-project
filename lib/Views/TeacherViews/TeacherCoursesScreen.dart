@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:final_project/Models/course.dart';
+import 'package:final_project/utils/Widgets/Courses_Screen_Design.dart';
 import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,47 +12,49 @@ import 'package:http/http.dart' as http;
 
 class TeacherCoursesScreen extends StatelessWidget {
   final String title;
+  final String userID;
 
-  const TeacherCoursesScreen({super.key, required this.title});
+  const TeacherCoursesScreen({super.key, required this.title, required this.userID});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _TeacherCoursesScreen(title: title),
+      child: _TeacherCoursesScreen(title: title, userID: userID),
     );
   }
 }
 
 class _TeacherCoursesScreen extends StatefulWidget {
   final String title;
+  final String userID;
 
-  const _TeacherCoursesScreen({required this.title});
+  const _TeacherCoursesScreen({required this.title, required  this.userID});
 
   @override
   State<_TeacherCoursesScreen> createState() => _TeacherCoursesScreenState();
 }
 
 class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
-  late Future<List<Task>> _tasksFuture;
+  late Future<List<Course>> _coursesFuture;
 
   @override
   void initState() {
     super.initState();
-    _refreshTasks();
+    _refreshCourses();
   }
 
-  void _refreshTasks() {
+  void _refreshCourses() {
     setState(() {
-      _tasksFuture = getUserTasks();
+      _coursesFuture = getUserCourses();
     });
   }
 
-  Future<List<Task>> getUserTasks() async {
-    List<Task> arr = [];
+  Future<List<Course>> getUserCourses() async {
+    List<Course> arr = [];
 
     try {
-      var url = "userTasks/getUserTasks.php?userID=1";
+      var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
@@ -67,13 +71,9 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
         }
 
         for (var i in jsonData) {
-          arr.add(Task.fromJson(i));
+          arr.add(Course.fromJson(i));
         }
 
-        String tasksString = arr
-            .map((task) =>
-        '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
-            .join(', ');
 
         // print("Formatted Task List: $tasksString");
       } else {
@@ -93,12 +93,12 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
     return Scaffold(
         backgroundColor: const Color(0xFFE3DFD6),
         appBar: AppBar(
-          title: const Text('Uploaded tasks'),
+          title: const Text('My courses'),
           backgroundColor: Colors.white,
           elevation: 1,
         ),
-        body: FutureBuilder<List<Task>>(
-          future: _tasksFuture,
+        body: FutureBuilder<List<Course>>(
+          future: _coursesFuture,
           builder: (context, projectSnap) {
             if (projectSnap.hasData) {
               if (projectSnap.data?.isEmpty ?? true) {
@@ -118,12 +118,12 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
                         child: ListView.builder(
                           itemCount: projectSnap.data?.length,
                           itemBuilder: (context, index) {
-                            Task task = projectSnap.data![index];
+                            Course course = projectSnap.data![index];
 
-                            return TasksScreenDesign(
-                              task: task,
+                            return CoursesScreenDesign(
+                              courses: course,
                               isStudent: false,
-                              onTaskDeleted: _refreshTasks,
+                              onTaskDeleted: _refreshCourses,
                             );
                           },
                         )),

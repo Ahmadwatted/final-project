@@ -158,7 +158,6 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
   }
 
   void _handleJoinCourse(String code) {
-    // backend
     print('Joining course with code: $code');
   }
 
@@ -173,8 +172,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Remove the viewModel reference that's causing the error
-    // final viewModel = Provider.of<StudentDashboardViewModel>(context);
+
 
     return Scaffold(
       backgroundColor: const Color(0xFFE3DFD6),
