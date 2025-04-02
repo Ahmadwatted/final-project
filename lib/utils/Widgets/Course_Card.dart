@@ -16,128 +16,118 @@ class CourseCard extends StatelessWidget {
     this.isStudent = true,
      required this.onTaskDeleted,
   }) : super(key: key);
+  Color getCourseColor(Course course) {
+    final colors = [
+      Colors.blue.shade600,
+      Colors.green.shade600,
+      Colors.orange.shade600,
+      Colors.purple.shade600,
+      Colors.pink.shade600,
+      Colors.teal.shade600,
+    ];
 
+    int colorIndex = 0;
+
+    colorIndex = course.courseID.hashCode;
+
+    return colors[colorIndex.abs() % colors.length];
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 250,
-      padding: EdgeInsets.all(16),
+      width: 290,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 2),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.play_lesson,
-                size: 20,
-                color: Colors.blue[600],
+          // Top color strip
+          Container(
+            height: 8,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: getCourseColor(courses),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
               ),
-              SizedBox(width: 8),
+            ),
+          ),
+          // Content section
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Day badge
 
-                Expanded(
-                  child: Text(
-                    courses.course,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              if(!isStudent)...{
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (dialogContext) => TaskDeleteAlert(
-                        taskID: courses.courseID,
-                        onTaskDeleted: onTaskDeleted,
+                const SizedBox(height: 8),
+                // Course title
+                Row(
+                  children: [
+                    Text(
+                      courses.course,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1A1F36),
                       ),
-                    ).then((result) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            result == true
-                                ? 'Course deleted successfully!'
-                                : 'Failed to delete course.',
-                          ),
-                        ),
-                      );
-                    });
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  splashRadius: 24,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+
+                  ],
+
+
+
+
+
+
+
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(Icons.person_2_sharp, size: 16, color: Colors.grey.shade600),
+                    const SizedBox(width: 6),
+                    Text(
+                      courses.tutor,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
                 ),
 
 
 
-
-              },
-
-
-
-            ],
-          ),
-          SizedBox(height: 4),
-          if(isStudent)...[
-            Row(
-              children: [
-                Icon(Icons.person, color: Colors.grey,),
-                Text(
-                  courses.tutor.toString(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[500],
-                  ),
+                Row(
+                  children: [
+                    Icon(Icons.location_on, size: 16, color: Colors.grey.shade600),
+                    const SizedBox(width: 6),
+                    Text(
+                      courses.location,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
                 ),
 
-              ],
-            )
-          ],
-          SizedBox(height: 4),
-          Row(
-            children: [
-              Icon(Icons.location_on, color: Colors.grey,),
-              Text(
-                courses.location,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[500],
-                ),
-              ),
-
-            ],
-          ),
-          SizedBox(height: 4),
-          if (!isStudent) ...[
-            Row(
-              children: [
-                const Icon(Icons.people, size: 16, color: Colors.grey),
-                const SizedBox(width: 8),
-                Text(
-                  courses.stunum.toString(),
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                  ),
-                ),
               ],
             ),
-          ],
+          ),
         ],
       ),
     );

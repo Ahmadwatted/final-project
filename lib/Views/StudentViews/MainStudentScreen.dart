@@ -1,20 +1,18 @@
 import 'dart:convert';
-
-import 'package:final_project/Models/schedule.dart';
-import 'package:http/http.dart' as http;
-import '../../Models/clientConfig.dart';
-import '../../Models/task.dart';
-import '../../Views/StudentViews/MyCoursesScreen.dart';
-import 'package:final_project/Views/StudentViews/MyTasksScreen.dart';
-import 'package:final_project/utils/Widgets/Add_Button_Design.dart';
+import 'package:final_project/utils/Widgets/Course_Card.dart';
+import 'package:final_project/utils/Widgets/Schedule_Card.dart';
 import 'package:final_project/utils/Widgets/Task_Card.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../ViewModels/StudentMain_VM.dart';
-import '../../utils/Widgets/Course_Card.dart';
-import '../../utils/Widgets/Schedule_Card.dart';
+import 'package:http/http.dart' as http;
+
+import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
+import '../../Models/schedule.dart';
+import '../../Models/task.dart';
+import '../../utils/Widgets/Add_Button_Design.dart';
+import 'MyCoursesScreen.dart';
 import 'MyScheduleScreen.dart';
+import 'MyTasksScreen.dart';
 
 class MainStudentScreen extends StatefulWidget {
   final String title;
@@ -30,108 +28,10 @@ class MainStudentScreen extends StatefulWidget {
   State<MainStudentScreen> createState() => _MainStudentScreenState();
 }
 
-// Private state class
 class _MainStudentScreenState extends State<MainStudentScreen> {
   late Future<List<Task>> _tasksFuture;
   late Future<List<Course>> _coursesFuture;
   late Future<List<Schedule>> _scheduleFuture;
-
-  Future<List<Task>> getUserTasks() async {
-    List<Task> arr = [];
-
-    try {
-      var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
-      final response = await http.get(Uri.parse(serverPath + url));
-
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
-      if (response.statusCode == 200) {
-        var jsonData = json.decode(response.body);
-
-        if (jsonData == null) {
-          throw Exception("Response body is null");
-        }
-        if (jsonData is! List) {
-          throw Exception("Response is not a List. Received: $jsonData");
-        }
-
-        for (var i in jsonData) {
-          arr.add(Task.fromJson(i));
-        }
-      } else {
-        print('Failed to load tasks: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error in getUserTasks: $e');
-    }
-    return arr;
-  }
-
-  Future<List<Course>> getUserCourses() async {
-    List<Course> arr = [];
-
-    try {
-      var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
-      final response = await http.get(Uri.parse(serverPath + url));
-
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
-      if (response.statusCode == 200) {
-        var jsonData = json.decode(response.body);
-
-        if (jsonData == null) {
-          throw Exception("Response body is null");
-        }
-        if (jsonData is! List) {
-          throw Exception("Response is not a List. Received: $jsonData");
-        }
-
-        for (var i in jsonData) {
-          arr.add(Course.fromJson(i));
-        }
-      } else {
-        print('Failed to load courses: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error in getUserCourses: $e');
-    }
-    return arr;
-  }
-
-  Future<List<Schedule>> getUserSchedule() async {
-    List<Schedule> arr = [];
-
-    try {
-      var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
-      final response = await http.get(Uri.parse(serverPath + url));
-
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
-      if (response.statusCode == 200) {
-        var jsonData = json.decode(response.body);
-
-        if (jsonData == null) {
-          throw Exception("Response body is null");
-        }
-        if (jsonData is! List) {
-          throw Exception("Response is not a List. Received: $jsonData");
-        }
-
-        for (var i in jsonData) {
-          arr.add(Schedule.fromJson(i));
-        }
-      } else {
-        print('Failed to load schedule: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error in getUserSchedule: $e');
-    }
-    return arr;
-  }
-
 
   @override
   void initState() {
@@ -146,312 +46,403 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
       _coursesFuture = getUserCourses();
     });
   }
+
   void _refreshTasks() {
     setState(() {
       _tasksFuture = getUserTasks();
     });
   }
+
   void _refreshSchedule() {
     setState(() {
       _scheduleFuture = getUserSchedule();
     });
   }
 
-  void _handleJoinCourse(String code) {
-    print('Joining course with code: $code');
+  Future<List<Task>> getUserTasks() async {
+    List<Task> arr = [];
+
+    try {
+      var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
+      print("Fetching tasks with URL: ${serverPath + url}");
+      final response = await http.get(Uri.parse(serverPath + url));
+
+      if (response.statusCode == 200) {
+        print("Task response body: ${response.body}");
+        var jsonData = json.decode(response.body);
+
+        if (jsonData == null) {
+          throw Exception("Response body is null");
+        }
+        if (jsonData is! List) {
+          throw Exception("Response is not a List. Received: $jsonData");
+        }
+
+        for (var i in jsonData) {
+          arr.add(Task.fromJson(i));
+        }
+      } else {
+        print('Failed to load tasks: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e) {
+      print('Error in getUserTasks: $e');
+    }
+    print("Returning ${arr.length} tasks");
+    return arr;
   }
+
+  Future<List<Course>> getUserCourses() async {
+    List<Course> arr = [];
+
+    try {
+      var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
+      print("Fetching courses with URL: ${serverPath + url}");
+      final response = await http.get(Uri.parse(serverPath + url));
+
+      if (response.statusCode == 200) {
+        print("Course response body: ${response.body}");
+        var jsonData = json.decode(response.body);
+
+        if (jsonData == null) {
+          throw Exception("Response body is null");
+        }
+        if (jsonData is! List) {
+          throw Exception("Response is not a List. Received: $jsonData");
+        }
+
+        for (var i in jsonData) {
+          print("Adding course: $i");
+          arr.add(Course.fromJson(i));
+        }
+      } else {
+        print('Failed to load courses: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e) {
+      print('Error in getUserCourses: $e');
+    }
+    print("Returning ${arr.length} courses");
+    return arr;
+  }
+
+  Future<List<Schedule>> getUserSchedule() async {
+    List<Schedule> arr = [];
+
+    try {
+      var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
+      print("Fetching schedule with URL: ${serverPath + url}");
+      final response = await http.get(Uri.parse(serverPath + url));
+
+      if (response.statusCode == 200) {
+        print("Schedule response body: ${response.body}");
+        var jsonData = json.decode(response.body);
+
+        if (jsonData == null) {
+          throw Exception("Response body is null");
+        }
+        if (jsonData is! List) {
+          throw Exception("Response is not a List. Received: $jsonData");
+        }
+
+        for (var i in jsonData) {
+          arr.add(Schedule.fromJson(i));
+        }
+      } else {
+        print('Failed to load schedule: ${response.statusCode}, ${response.body}');
+      }
+    } catch (e) {
+      print('Error in getUserSchedule: $e');
+    }
+    print("Returning ${arr.length} schedule items");
+    return arr;
+  }
+
+
+
+
+
+
 
   void _showJoinSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => AddButtonDesign(
-        onJoinCourse: _handleJoinCourse,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
+        child: AddButtonDesign(
+          onJoinCourse: (String code) {
+            print('Joining course with code: $code');
+            Navigator.pop(context);
+          },
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
-      backgroundColor: const Color(0xFFE3DFD6),
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: const Text('Home Page'),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: const Text(
+          'Student Dashboard',
+          style: TextStyle(
+            color: Color(0xFF1A1F36),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // COURSES SECTION
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'My Courses',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 80),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // COURSES SECTION
+                _buildSectionHeader(
+                  'My Courses',
+                  Icons.book_outlined,
+                      () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyCoursesScreen(
+                        title: 'tomainapppage',
+                        userID: widget.userID,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MyCoursesScreen(
-                              title: 'tomainapppage',
-                              userID: widget.userID,
-                            )
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            'View All',
-                            style: TextStyle(
-                              color: Colors.blue[600],
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward,
-                            size: 16,
-                            color: Colors.blue[600],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 160,
-                child: FutureBuilder<List<Course>>(
-                  future: _coursesFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator(color: Colors.red));
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('שגיאה, נסה שוב',
-                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                      );
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'You have not participated in any courses yet',
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      );
-                    } else {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          final Course course = snapshot.data![index];
-                          return Padding(
-                            padding: EdgeInsets.only(right: 16.0),
-                            child: CourseCard(
-                              courses: course,
-                              isStudent: true,
-                              onTaskDeleted: _refreshCourses,
-                            ),
-                          );
-                        },
-                      );
-                    }
-                  },
-                ),
-              ),
+                _buildCoursesList(),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 24),
 
-              // SCHEDULE SECTION
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'My Schedule',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
+                // SCHEDULE SECTION
+                _buildSectionHeader(
+                  'My Schedule',
+                  Icons.schedule_outlined,
+                      () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyScheduleScreen(
+                        title: 'tomainapppage',
+                        userID: widget.userID,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MyScheduleScreen(
-                            title: 'tomainapppage',
-                            userID: widget.userID,
-                          ),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            'View All',
-                            style: TextStyle(
-                              color: Colors.blue[600],
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward,
-                            size: 16,
-                            color: Colors.blue[600],
-                          ),
-                        ],
+                  ),
+                ),
+                _buildScheduleList(),
+
+                const SizedBox(height: 24),
+
+                // TASKS SECTION
+                _buildSectionHeader(
+                  'My Tasks',
+                  Icons.check_box_outlined,
+                      () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyTasksScreen(
+                        title: 'tomainapppage',
+                        userID: widget.userID,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 160,
-                child: FutureBuilder<List<Schedule>>(
-                  future: _scheduleFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator(color: Colors.red));
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('שגיאה, נסה שוב',
-                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                      );
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No scheduled classes',
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      );
-                    } else {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          final schedule = snapshot.data![index];
-                          return Padding(
-                            padding: EdgeInsets.only(right: 16.0),
-                            child: ScheduleCard(schedule: schedule, isStudent: true, onTaskDeleted: _refreshSchedule,),
-                          );
-                        },
-                      );
-                    }
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // TASKS SECTION
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'My Tasks',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MyTasksScreen(
-                            title: 'tomainapppage',
-                            userID: widget.userID,
-                          ),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            'View All',
-                            style: TextStyle(
-                              color: Colors.blue[600],
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward,
-                            size: 16,
-                            color: Colors.blue[600],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 160,
-                child: FutureBuilder<List<Task>>(
-                  future: _tasksFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator(color: Colors.red));
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text('שגיאה, נסה שוב',
-                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                      );
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No tasks yet',
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      );
-                    } else {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          final task = snapshot.data![index];
-                          return Padding(
-                            padding: EdgeInsets.only(right: 16.0),
-                            child: TaskCard(
-                              tasks: task,
-                              isStudent: true,
-                              onTaskDeleted: _refreshTasks,
-                            ),
-                          );
-                        },
-                      );
-                    }
-                  },
-                ),
-              ),
-
-              SizedBox(height: 75),
-            ],
+                _buildTasksList(),
+              ],
+            ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showJoinSheet(context),
-        child: const Icon(Icons.add_circle_outline, color: Colors.black),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        splashColor: Colors.transparent,
-        highlightElevation: 0,
+        backgroundColor: Colors.blue.shade600,
+        elevation: 4,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, IconData icon, VoidCallback onViewAll) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: Colors.blue.shade700),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1F36),
+                ),
+              ),
+            ],
+          ),
+          TextButton(
+            onPressed: onViewAll,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.blue.shade600,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
+            child: Row(
+              children: [
+                const Text(
+                  'View All',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward,
+                  size: 16,
+                  color: Colors.blue.shade600,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCoursesList() {
+    return SizedBox(
+      height: 160,
+      child: FutureBuilder<List<Course>>(
+        future: _coursesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildLoadingIndicator();
+          } else if (snapshot.hasError) {
+            return _buildErrorState('Error loading courses: ${snapshot.error}');
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return _buildEmptyState('You have not participated in any courses yet');
+          } else {
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final Course course = snapshot.data![index];
+                return CourseCard(courses: course, isStudent: true,onTaskDeleted: _refreshCourses,);
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+
+
+
+  Widget _buildScheduleList() {
+    return SizedBox(
+      height: 160,
+      child: FutureBuilder<List<Schedule>>(
+        future: _scheduleFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildLoadingIndicator();
+          } else if (snapshot.hasError) {
+            return _buildErrorState('Error loading schedule: ${snapshot.error}');
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return _buildEmptyState('No scheduled classes');
+          } else {
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final schedule = snapshot.data![index];
+                return ScheduleCard(schedule:schedule, isStudent: true,onTaskDeleted: _refreshSchedule,);
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+
+
+
+  Widget _buildTasksList() {
+    return SizedBox(
+      height: 160,
+      child: FutureBuilder<List<Task>>(
+        future: _tasksFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildLoadingIndicator();
+          } else if (snapshot.hasError) {
+            return _buildErrorState('Error loading tasks: ${snapshot.error}');
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return _buildEmptyState('No tasks yet');
+          } else {
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final task = snapshot.data![index];
+                return TaskCard(tasks:task, isStudent: true, onTaskDeleted: _refreshTasks,);
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+
+
+
+  Widget _buildLoadingIndicator() {
+    return const Center(
+      child: CircularProgressIndicator(
+        color: Colors.blue,
+        strokeWidth: 3,
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message) {
+    return Center(
+      child: Text(
+        message,
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.red.shade800,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
+    return Center(
+      child: Text(
+        message,
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.grey.shade500,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

@@ -16,155 +16,127 @@ class ScheduleCard extends StatelessWidget {
     required this.onTaskDeleted,
   }) : super(key: key);
 
+  Color getScheduleColor(Schedule schedule) {
+    final colors = [
+      Colors.teal.shade600,
+      Colors.purple.shade600,
+      Colors.green.shade600,
+      Colors.blue.shade600,
+      Colors.pink.shade600,
+      Colors.orange.shade600,
+    ];
+
+    int colorIndex = 0;
+    colorIndex = schedule.scheduleID.hashCode;
+    return colors[colorIndex.abs() % colors.length];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 250,
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      width: 320, // Increased width to prevent overflow
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 2),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.calendar_today,
-                size: 16,
-                color: Colors.blue[600],
+          // Top color strip
+          Container(
+            height: 8,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: getScheduleColor(schedule),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
               ),
-              SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  schedule.course,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+            ),
+          ),
+          // Content section
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Day badge
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-              if(!isStudent)
-                SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: IconButton(
-                    icon: const Icon(Icons.delete_outline, size: 18, color: Colors.red),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (dialogContext) => TaskDeleteAlert(
-                          taskID: schedule.scheduleID,
-                          onTaskDeleted: onTaskDeleted,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.calendar_today, size: 10, color: Colors.blue.shade800),
+                      const SizedBox(width: 4),
+                      Text(
+                        schedule.day,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blue.shade800,
                         ),
-                      ).then((result) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              result == true
-                                  ? 'Schedule deleted successfully!'
-                                  : 'Failed to delete schedule.',
-                            ),
-                          ),
-                        );
-                      });
-                    },
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
-                    splashRadius: 18,
+                      ),
+                    ],
                   ),
                 ),
-            ],
-          ),
-          SizedBox(height: 6),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.person, color: Colors.grey, size: 14),
-              SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  schedule.tutor,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[500],
+                const SizedBox(height: 6),
+                // Course title
+                Text(
+                  schedule.course,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1A1F36),
                   ),
-                  overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 6),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.event, color: Colors.grey, size: 14),
-              SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  schedule.day,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                // Info rows with overflow protection
+                infoRow(Icons.person_2_sharp, schedule.tutor),
+                infoRow(Icons.access_time, schedule.time),
+                infoRow(Icons.location_on, schedule.location),
+              ],
+            ),
           ),
-          SizedBox(height: 6),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.access_time, color: Colors.grey, size: 14),
-              SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  schedule.time,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-            ],
+        ],
+      ),
+    );
+  }
+
+  Widget infoRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center, // Changed from start to center
+        children: [
+          SizedBox(
+            width: 20, // Fixed width container for icon
+            child: Icon(icon, size: 12, color: Colors.grey.shade600),
           ),
-          SizedBox(height: 6),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(Icons.location_on, color: Colors.grey, size: 14),
-              SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  schedule.location,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[500],
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
               ),
-            ],
-          )
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );

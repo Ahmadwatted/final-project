@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../../Models/task.dart';
 import '../Widgets/Confirm_Del.dart';
@@ -10,115 +9,163 @@ class TaskCard extends StatelessWidget {
   final Function onTaskDeleted;
   final Color courseColor = RandomColor.getRandomShade700();
 
-   TaskCard({
+  TaskCard({
     Key? key,
     required this.tasks,
-    this.isStudent =true,
-     required this.onTaskDeleted,
+    this.isStudent = true,
+    required this.onTaskDeleted,
   }) : super(key: key);
 
+  Color getTaskColor(Task task) {
+    final colors = [
+      Colors.red.shade600,
+      Colors.orange.shade600,
+      Colors.purple.shade600,
+      Colors.pink.shade600,
+      Colors.teal.shade600,
+      Colors.green.shade600,
+    ];
+
+    int colorIndex = 0;
+
+    colorIndex = task.taskID.hashCode;
+
+    return colors[colorIndex.abs() % colors.length];
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 250,
-      padding: EdgeInsets.all(16),
+      width: 290,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: Offset(0, 2),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.task_alt,
-                size: 20,
-                color: Colors.blue[600],
+          // Top color strip
+          Container(
+            height: 8,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: getTaskColor(tasks),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
               ),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(
+            ),
+          ),
+          // Content section
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Day badge and delete button row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Day badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.calendar_today, size: 12, color: Colors.blue.shade800),
+                          const SizedBox(width: 4),
+                          Text(
+                            tasks.day,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.blue.shade800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (!isStudent)
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) => TaskDeleteAlert(
+                              taskID: tasks.taskID,
+                              onTaskDeleted: onTaskDeleted,
+                            ),
+                          ).then((result) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  result == true
+                                      ? 'Task deleted successfully!'
+                                      : 'Failed to delete task.',
+                                ),
+                              ),
+                            );
+                          });
+                        },
+                        child: const Icon(
+                          Icons.delete_outline,
+                          color: Colors.red,
+                          size: 20,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Course title
+                Text(
                   tasks.course,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: Color(0xFF1A1F36),
                   ),
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              if(!isStudent)...{
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (dialogContext) => TaskDeleteAlert(
-                        taskID: tasks.taskID,
-                        onTaskDeleted: onTaskDeleted,
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(Icons.person_2_sharp, size: 16, color: Colors.grey.shade600),
+                    const SizedBox(width: 6),
+                    Text(
+                      tasks.tutor,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
                       ),
-                    ).then((result) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            result == true
-                                ? 'Task deleted successfully!'
-                                : 'Failed to delete task.',
-                          ),
-                        ),
-                      );
-                    });
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  splashRadius: 24,
+                    ),
+                  ],
                 ),
-
-
-
-
-              },
-            ],
-
-          ),
-          SizedBox(height: 4),
-          Row(
-            children: [
-              Icon(Icons.person, color: Colors.grey,),
-              Text(
-                tasks.tutor,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[500],
+                Row(
+                  children: [
+                    Icon(Icons.access_time, size: 16, color: Colors.grey.shade600),
+                    const SizedBox(width: 6),
+                    Text(
+                      tasks.time,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-
-            ],
-          ),
-          SizedBox(height: 8),
-          Text(
-            tasks.day,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
+              ],
             ),
           ),
-          Text(
-            tasks.time,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
-
         ],
       ),
     );
