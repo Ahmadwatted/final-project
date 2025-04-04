@@ -1,12 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:final_project/Models/course.dart';
 import 'package:final_project/utils/Widgets/Courses_Screen_Design.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../Models/clientConfig.dart';
 import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
+import '../../Models/clientConfig.dart';
 
 class MyCoursesScreen extends StatelessWidget {
   final String title;
@@ -35,6 +35,8 @@ class _MyCoursesScreen extends StatefulWidget {
 
 class _MyCoursesScreenState extends State<_MyCoursesScreen> {
   late Future<List<Course>> _CoursesFuture;
+  bool isStudent = true;
+  String activeTab = 'all';
 
   @override
   void initState() {
@@ -71,74 +73,166 @@ class _MyCoursesScreenState extends State<_MyCoursesScreen> {
         for (var i in jsonData) {
           arr.add(Course.fromJson(i));
         }
-
-
-
-        // print("Formatted Task List: $tasksString");
-      } else {
-        // throw Exception('Failed to load tasks: ${response.statusCode}');
       }
     } catch (e) {
-      // print('Error: $e');
+      print('Error: $e');
     }
     return arr;
   }
 
   @override
   Widget build(BuildContext context) {
-
     final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(
-        backgroundColor: const Color(0xFFE3DFD6),
-        appBar: AppBar(
-          title: const Text('My Courses'),
-          backgroundColor: Colors.white,
-          elevation: 1,
+      backgroundColor: const Color(0xFFE3DFD6),
+      appBar: AppBar(
+        title: const Text('My Courses'),
+        backgroundColor: Colors.white,
+        elevation: 1,
+      ),
+      body: Column(
+        children: [
+          // Day filter tabs
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+            child: Row(
+              children: [
+                _buildFilterTab('all', 'All Courses'),
+                _buildFilterTab('monday', 'Monday'),
+                _buildFilterTab('tuesday', 'Tuesday'),
+                _buildFilterTab('wednesday', 'Wednesday'),
+                _buildFilterTab('thursday', 'Thursday'),
+                _buildFilterTab('friday', 'Friday'),
+              ],
+            ),
+          ),
 
-        ),
-        body: FutureBuilder<List<Course>>(
-          future: _CoursesFuture,
-          builder: (context, projectSnap) {
-            if (projectSnap.hasData) {
-              if (projectSnap.data?.isEmpty ?? true) {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * 2,
-                  child: const Align(
-                      alignment: Alignment.center,
-                      child: Text('אין תוצאות',
-                          style: TextStyle(fontSize: 23, color: Colors.black))),
-                );
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                        child: ListView.builder(
-                          itemCount: projectSnap.data?.length,
-                          itemBuilder: (context, index) {
-                            Course course = projectSnap.data![index];
+          // Course list
+          Expanded(
+            child: FutureBuilder<List<Course>>(
+              future: _CoursesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.red),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                        'שגיאה, נסה שוב',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
+                    ),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return _buildEmptyState();
+                } else {
+                  // Filter courses based on selected day
+                  final filteredCourses = activeTab == 'all'
+                      ? snapshot.data!
+                      : snapshot.data!.where((course) =>
+                      course.day.toLowerCase().contains(activeTab)).toList();
 
-                            return CoursesScreenDesign(
-                              courses: course,
-                              isStudent: true,
-                              onTaskDeleted: _refreshTasks,
-                            );
-                          },
-                        )),
-                  ],
-                );
-              }
-            } else if (projectSnap.hasError) {
-              return const Center(
-                  child: Text('שגיאה, נסה שוב',
-                      style: TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold)));
-            }
-            return const Center(
-                child: CircularProgressIndicator(color: Colors.red));
+                  if (filteredCourses.isEmpty) {
+                    return _buildEmptyState();
+                  }
+
+                  return ListView.builder(
+                    itemCount: filteredCourses.length,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemBuilder: (context, index) {
+                      final course = filteredCourses[index];
+
+                      return CoursesScreenDesign(
+                        courses: course,
+                        isStudent: isStudent,
+                        onTaskDeleted: _refreshTasks,
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterTab(String tabId, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Material(
+        color: activeTab == tabId
+            ? const Color(0xFF3B82F6)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              activeTab = tabId;
+            });
           },
-        ));
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              border: activeTab != tabId
+                  ? Border.all(color: const Color(0xFFE5E7EB))
+                  : null,
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: activeTab == tabId
+                    ? Colors.white
+                    : const Color(0xFF6B7280),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.menu_book_outlined,
+              size: 64,
+              color: Color(0xFF9CA3AF),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'No courses found',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF1F2937),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              activeTab == 'all'
+                  ? 'You haven\'t enrolled in any courses yet.'
+                  : 'There are no courses scheduled for this day.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

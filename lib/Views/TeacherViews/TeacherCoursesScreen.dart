@@ -2,11 +2,9 @@ import 'dart:convert';
 
 import 'package:final_project/Models/course.dart';
 import 'package:final_project/utils/Widgets/Courses_Screen_Design.dart';
-import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../Models/clientConfig.dart';
-import '../../Models/task.dart';
 import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
 
@@ -29,25 +27,63 @@ class _TeacherCoursesScreen extends StatefulWidget {
   final String title;
   final String userID;
 
-  const _TeacherCoursesScreen({required this.title, required  this.userID});
+  const _TeacherCoursesScreen({required this.title, required this.userID});
 
   @override
   State<_TeacherCoursesScreen> createState() => _TeacherCoursesScreenState();
 }
 
 class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
-  late Future<List<Course>> _coursesFuture;
+  late Future<List<Course>> _CoursesFuture;
+  bool isStudent = false;
+  String activeTab = 'all';
+  Map<String, Future<int>> _studentCountMap = {};
 
   @override
   void initState() {
     super.initState();
-    _refreshCourses();
+    _refreshTasks();
   }
 
-  void _refreshCourses() {
+  void _refreshTasks() {
     setState(() {
-      _coursesFuture = getUserCourses();
+      _CoursesFuture = getUserCourses().then((courses) {
+        // Initialize student count future for each course
+        for (var course in courses) {
+          _studentCountMap[course.courseID.toString()] = getCourseStunum(course.courseID.toString());
+        }
+        return courses;
+      });
     });
+  }
+
+  Future<int> getCourseStunum(String courseID) async {
+    int studentCount = 0;
+
+    try {
+      var url = "getCourseDetails/getCourseStunum.php?courseID=$courseID";
+      final response = await http.get(Uri.parse(serverPath + url));
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var jsonData = json.decode(response.body);
+
+        if (jsonData == null) {
+          throw Exception("Response body is null");
+        }
+        if (jsonData is! Map || !jsonData.containsKey('studentCount')) {
+          throw Exception("Invalid response format. Received: $jsonData");
+        }
+
+        studentCount = jsonData['studentCount'];
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+
+    return studentCount;
   }
 
   Future<List<Course>> getUserCourses() async {
@@ -73,72 +109,184 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
         for (var i in jsonData) {
           arr.add(Course.fromJson(i));
         }
-
-
-        // print("Formatted Task List: $tasksString");
-      } else {
-        // throw Exception('Failed to load tasks: ${response.statusCode}');
       }
     } catch (e) {
-      // print('Error: $e');
+      print('Error: $e');
     }
     return arr;
   }
 
   @override
   Widget build(BuildContext context) {
-
     final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(
-        backgroundColor: const Color(0xFFE3DFD6),
-        appBar: AppBar(
-          title: const Text('My courses'),
-          backgroundColor: Colors.white,
-          elevation: 1,
-        ),
-        body: FutureBuilder<List<Course>>(
-          future: _coursesFuture,
-          builder: (context, projectSnap) {
-            if (projectSnap.hasData) {
-              if (projectSnap.data?.isEmpty ?? true) {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * 2,
-                  child: const Align(
-                      alignment: Alignment.center,
-                      child: Text('אין תוצאות',
-                          style: TextStyle(fontSize: 23, color: Colors.black))),
-                );
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                        child: ListView.builder(
-                          itemCount: projectSnap.data?.length,
-                          itemBuilder: (context, index) {
-                            Course course = projectSnap.data![index];
+      backgroundColor: const Color(0xFFE3DFD6),
+      appBar: AppBar(
+        title: const Text('My Courses'),
+        backgroundColor: Colors.white,
+        elevation: 1,
+      ),
+      body: Column(
+        children: [
+          // Day filter tabs
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+            child: Row(
+              children: [
+                _buildFilterTab('all', 'All Courses'),
+                _buildFilterTab('monday', 'Monday'),
+                _buildFilterTab('tuesday', 'Tuesday'),
+                _buildFilterTab('wednesday', 'Wednesday'),
+                _buildFilterTab('thursday', 'Thursday'),
+                _buildFilterTab('friday', 'Friday'),
+              ],
+            ),
+          ),
 
-                            return CoursesScreenDesign(
-                              courses: course,
-                              isStudent: false,
-                              onTaskDeleted: _refreshCourses,
-                            );
-                          },
-                        )),
-                  ],
-                );
-              }
-            } else if (projectSnap.hasError) {
-              return const Center(
-                  child: Text('שגיאה, נסה שוב',
-                      style: TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold)));
-            }
-            return const Center(
-                child: CircularProgressIndicator(color: Colors.red));
+          // Course list
+          Expanded(
+            child: FutureBuilder<List<Course>>(
+              future: _CoursesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.red),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                        'שגיאה, נסה שוב',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
+                    ),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return _buildEmptyState();
+                } else {
+                  // Filter courses based on selected day
+                  final filteredCourses = activeTab == 'all'
+                      ? snapshot.data!
+                      : snapshot.data!.where((course) =>
+                      course.day.toLowerCase().contains(activeTab)).toList();
+
+                  if (filteredCourses.isEmpty) {
+                    return _buildEmptyState();
+                  }
+
+                  return ListView.builder(
+                    itemCount: filteredCourses.length,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemBuilder: (context, index) {
+                      final course = filteredCourses[index];
+                      final studentCountFuture = _studentCountMap[course.courseID.toString()] ?? Future.value(0);
+
+                      return FutureBuilder<int>(
+                        future: studentCountFuture,
+                        builder: (context, snapshot) {
+                          final studentCount = snapshot.hasData ? snapshot.data! : 0;
+
+                          // Create updated course with student count
+                          final updatedCourse = Course(
+                              courseID: course.courseID,
+                              course: course.course,
+                              tutor: course.tutor,
+                              day: course.day,
+                              location: course.location,
+                              stunum: studentCount
+                          );
+
+                          return CoursesScreenDesign(
+                            courses: updatedCourse,
+                            isStudent: isStudent,
+                            onTaskDeleted: _refreshTasks,
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterTab(String tabId, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Material(
+        color: activeTab == tabId
+            ? const Color(0xFF3B82F6)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              activeTab = tabId;
+            });
           },
-        ));
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              border: activeTab != tabId
+                  ? Border.all(color: const Color(0xFFE5E7EB))
+                  : null,
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: activeTab == tabId
+                    ? Colors.white
+                    : const Color(0xFF6B7280),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.menu_book_outlined,
+              size: 64,
+              color: Color(0xFF9CA3AF),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'No courses found',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF1F2937),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              activeTab == 'all'
+                  ? 'You don\'t have any courses yet.'
+                  : 'There are no courses scheduled for this day.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

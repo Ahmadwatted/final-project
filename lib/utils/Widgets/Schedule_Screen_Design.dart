@@ -50,32 +50,32 @@ class ScheduleScreenDesign extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if(!isStudent)
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.red),
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (dialogContext) => TaskDeleteAlert(
-                                taskID: schedule.scheduleID,
-                                onTaskDeleted: onTaskDeleted,
-                              ),
-                            ).then((result) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    result == true
-                                        ? 'Schedule deleted successfully!'
-                                        : 'Failed to delete schedule.',
-                                  ),
-                                ),
-                              );
-                            });
-                          },
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          splashRadius: 24,
-                        ),
+                      // if(!isStudent)
+                      //   IconButton(
+                      //     icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      //     onPressed: () {
+                      //       showDialog(
+                      //         context: context,
+                      //         builder: (dialogContext) => TaskDeleteAlert(
+                      //           taskID: schedule.scheduleID,
+                      //           onTaskDeleted: onTaskDeleted,
+                      //         ),
+                      //       ).then((result) {
+                      //         ScaffoldMessenger.of(context).showSnackBar(
+                      //           SnackBar(
+                      //             content: Text(
+                      //               result == true
+                      //                   ? 'Schedule deleted successfully!'
+                      //                   : 'Failed to delete schedule.',
+                      //             ),
+                      //           ),
+                      //         );
+                      //       });
+                      //     },
+                      //     padding: EdgeInsets.zero,
+                      //     constraints: const BoxConstraints(),
+                      //     splashRadius: 24,
+                      //   ),
                     ],
                   ),
                   const SizedBox(height: 4),
