@@ -101,11 +101,14 @@ class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
             child: Row(
               children: [
                 _buildFilterTab('all', 'All Courses'),
+                _buildFilterTab('sunday', 'Sunday'),
                 _buildFilterTab('monday', 'Monday'),
                 _buildFilterTab('tuesday', 'Tuesday'),
                 _buildFilterTab('wednesday', 'Wednesday'),
                 _buildFilterTab('thursday', 'Thursday'),
                 _buildFilterTab('friday', 'Friday'),
+                _buildFilterTab('saturday', 'Saturday'),
+
               ],
             ),
           ),
