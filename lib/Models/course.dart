@@ -8,6 +8,7 @@ class Course {
   final String course;
   final String location;
   final String day;
+  final String time;
    int? stunum;
    Color? c;
 
@@ -17,6 +18,7 @@ class Course {
     required this.course,
     required this.day,
     required this.location,
+    required this.time,
     this.c,
     this.stunum,
   });
@@ -28,6 +30,7 @@ class Course {
       course: json['course'] as String,
       day: json['day'] as String,
       location: json['location'] as String,
+      time: json['time'] as String,
     );
   }
 
@@ -38,20 +41,7 @@ class Course {
       'course': course,
       'day': day,
       'location': location,
+      'time' : time,
     };
-  }
-}
-
-
-class StudentViewModel extends ChangeNotifier {
-  List<Course> courses = [];
-
-  void loadCourseFromJson(List<Map<String, dynamic>> jsonList) {
-  courses = jsonList.map((json) => Course.fromJson(json)).toList();
-  notifyListeners();
-  }
-
-  List<Map<String, dynamic>> coursesToJson() {
-  return courses.map((course) => course.toJson()).toList();
   }
 }

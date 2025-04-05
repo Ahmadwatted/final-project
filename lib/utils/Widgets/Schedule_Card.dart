@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import '../../Models/course.dart';
 import '../../Models/schedule.dart';
 import 'Confirm_Del.dart';
 import 'Random_color.dart';
 
 class ScheduleCard extends StatelessWidget {
-  final Schedule schedule;
+  final Course course;
   final bool isStudent;
   final Function onTaskDeleted;
   final Color courseColor = RandomColor.getRandomShade700();
 
   ScheduleCard({
     Key? key,
-    required this.schedule,
+    required this.course,
     this.isStudent = true,
     required this.onTaskDeleted,
   }) : super(key: key);
 
-  Color getScheduleColor(Schedule schedule) {
+  Color getScheduleColor(Course schedule) {
     final colors = [
       Colors.teal.shade600,
       Colors.purple.shade600,
@@ -27,7 +28,7 @@ class ScheduleCard extends StatelessWidget {
     ];
 
     int colorIndex = 0;
-    colorIndex = schedule.scheduleID.hashCode;
+    colorIndex = schedule.courseID.hashCode;
     return colors[colorIndex.abs() % colors.length];
   }
 
@@ -55,7 +56,7 @@ class ScheduleCard extends StatelessWidget {
             height: 8,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: getScheduleColor(schedule),
+              color: getScheduleColor(course),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -81,7 +82,7 @@ class ScheduleCard extends StatelessWidget {
                       Icon(Icons.calendar_today, size: 10, color: Colors.blue.shade800),
                       const SizedBox(width: 4),
                       Text(
-                        schedule.day,
+                        course.day,
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -94,7 +95,7 @@ class ScheduleCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 // Course title
                 Text(
-                  schedule.course,
+                  course.course,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -105,9 +106,9 @@ class ScheduleCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 // Info rows with overflow protection
-                infoRow(Icons.person_2_sharp, schedule.tutor),
-                infoRow(Icons.access_time, schedule.time),
-                infoRow(Icons.location_on, schedule.location),
+                infoRow(Icons.person_2_sharp, course.tutor),
+                infoRow(Icons.access_time, course.time),
+                infoRow(Icons.location_on, course.location),
               ],
             ),
           ),

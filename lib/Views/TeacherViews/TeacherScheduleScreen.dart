@@ -1,60 +1,61 @@
 import 'dart:convert';
 
-import 'package:final_project/Models/schedule.dart';
 import 'package:final_project/utils/Widgets/Schedule_Screen_Design.dart';
-import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
+import 'package:final_project/Models/course.dart';
+import 'package:final_project/utils/Widgets/Courses_Screen_Design.dart';
 import 'package:provider/provider.dart';
-import '../../Models/clientConfig.dart';
-import '../../Models/task.dart';
 import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
+import '../../Models/clientConfig.dart';
 
-class Teacherschedulescreen extends StatelessWidget {
+class TeacherScheduleScreen extends StatelessWidget {
   final String title;
   final String userID;
 
-  const Teacherschedulescreen({super.key, required this.title, required this.userID});
+  const TeacherScheduleScreen({super.key, required this.title, required this.userID});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => StudentDashboardViewModel(),
-      child: _Teacherschedulescreen(title: title, userID:userID),
+      child: _TeacherScheduleScreen(title: title, userID: userID),
     );
   }
 }
 
-class _Teacherschedulescreen extends StatefulWidget {
+class _TeacherScheduleScreen extends StatefulWidget {
   final String title;
   final String userID;
 
-  const _Teacherschedulescreen({required this.title, required this.userID});
+  const _TeacherScheduleScreen({required this.title, required this.userID});
 
   @override
-  State<_Teacherschedulescreen> createState() => _TeacherschedulescreenState();
+  State<_TeacherScheduleScreen> createState() => _MyCoursesScreenState();
 }
 
-class _TeacherschedulescreenState extends State<_Teacherschedulescreen> {
-  late Future<List<Schedule>> _ScheduleFuture;
+class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
+  late Future<List<Course>> _CoursesFuture;
+  bool isStudent = true;
+  String activeTab = 'all';
 
   @override
   void initState() {
     super.initState();
-    _refreshSchedule();
+    _refreshTasks();
   }
 
-  void _refreshSchedule() {
+  void _refreshTasks() {
     setState(() {
-      _ScheduleFuture = getUserSchedule();
+      _CoursesFuture = getUserCourses();
     });
   }
 
-  Future<List<Schedule>> getUserSchedule() async {
-    List<Schedule> arr = [];
+  Future<List<Course>> getUserCourses() async {
+    List<Course> arr = [];
 
     try {
-      var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
+      var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Response Status Code: ${response.statusCode}");
@@ -71,75 +72,168 @@ class _TeacherschedulescreenState extends State<_Teacherschedulescreen> {
         }
 
         for (var i in jsonData) {
-          arr.add(Schedule.fromJson(i));
+          arr.add(Course.fromJson(i));
         }
-
-        String tasksString = arr
-            .map((task) =>
-        '${task.scheduleID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
-            .join(', ');
-
-      } else {
       }
     } catch (e) {
+      print('Error: $e');
     }
     return arr;
   }
 
   @override
   Widget build(BuildContext context) {
-
     final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(
-        backgroundColor: const Color(0xFFE3DFD6),
-        appBar: AppBar(
-          title: const Text('My Schedule'),
-          backgroundColor: Colors.white,
-          elevation: 1,
-        ),
-        body: FutureBuilder<List<Schedule>>(
-          future: _ScheduleFuture,
-          builder: (context, projectSnap) {
-            if (projectSnap.hasData) {
-              if (projectSnap.data?.isEmpty ?? true) {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * 2,
-                  child: const Align(
-                      alignment: Alignment.center,
-                      child: Text('אין תוצאות',
-                          style: TextStyle(fontSize: 23, color: Colors.black))),
-                );
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                        child: ListView.builder(
-                          itemCount: projectSnap.data?.length,
-                          itemBuilder: (context, index) {
-                            Schedule schedule = projectSnap.data![index];
+      backgroundColor: const Color(0xFFE3DFD6),
+      appBar: AppBar(
+        title: const Text('My Schedule'),
+        backgroundColor: Colors.white,
+        elevation: 1,
+      ),
+      body: Column(
+        children: [
+          // Day filter tabs
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+            child: Row(
+              children: [
+                _buildFilterTab('all', 'All Courses'),
+                _buildFilterTab('monday', 'Monday'),
+                _buildFilterTab('tuesday', 'Tuesday'),
+                _buildFilterTab('wednesday', 'Wednesday'),
+                _buildFilterTab('thursday', 'Thursday'),
+                _buildFilterTab('friday', 'Friday'),
+              ],
+            ),
+          ),
 
-                            return ScheduleScreenDesign(
-                              schedule: schedule,
-                              isStudent: false,
-                              onTaskDeleted: _refreshSchedule,
-                            );
-                          },
-                        )),
-                  ],
-                );
-              }
-            } else if (projectSnap.hasError) {
-              return const Center(
-                  child: Text('שגיאה, נסה שוב',
-                      style: TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold)));
-            }
-            return const Center(
-                child: CircularProgressIndicator(color: Colors.red));
+          // Course list
+          Expanded(
+            child: FutureBuilder<List<Course>>(
+              future: _CoursesFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.red),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                        'שגיאה, נסה שוב',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
+                    ),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return _buildEmptyState();
+                } else {
+                  // Filter courses based on selected day
+                  final filteredCourses = activeTab == 'all'
+                      ? snapshot.data!
+                      : snapshot.data!.where((course) =>
+                      course.day.toLowerCase().contains(activeTab)).toList();
+
+                  if (filteredCourses.isEmpty) {
+                    return _buildEmptyState();
+                  }
+
+                  return ListView.builder(
+                    itemCount: filteredCourses.length,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    itemBuilder: (context, index) {
+                      final course = filteredCourses[index];
+
+                      return ScheduleScreenDesign(
+                        courses: course,
+                        isStudent: isStudent,
+                        onTaskDeleted: _refreshTasks,
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterTab(String tabId, String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Material(
+        color: activeTab == tabId
+            ? const Color(0xFF3B82F6)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              activeTab = tabId;
+            });
           },
-        ));
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              border: activeTab != tabId
+                  ? Border.all(color: const Color(0xFFE5E7EB))
+                  : null,
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: activeTab == tabId
+                    ? Colors.white
+                    : const Color(0xFF6B7280),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.calendar_month,
+              size: 64,
+              color: Color(0xFF9CA3AF),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Get your-self busy',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF1F2937),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              activeTab == 'all'
+                  ? 'You haven\'t enrolled in any courses yet.'
+                  : 'There are no courses scheduled for this day.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

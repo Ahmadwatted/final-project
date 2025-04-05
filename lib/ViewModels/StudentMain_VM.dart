@@ -40,25 +40,7 @@ class StudentDashboardViewModel extends ChangeNotifier {
   }
 
   Future<void> _initializeData() async {
-    courses = [
-      Course(
-          courseID: 1,
-          tutor: 'mohmmad majadly',
-          course: 'Advanced Algorithms',
-          day: 'Monday',
-          location: 'Tech Building, Room 205',
-          c: RandomColor.getRandomShade700(),
-          stunum: 100),
-      Course(
-        courseID: 2,
-        course: 'Data Structures',
-        tutor: 'yamin massri',
-        day: 'Wednesday',
-        location: 'Science Complex, Room 302',
-        c: RandomColor.getRandomShade700(),
-        stunum: 20,
-      ),
-    ];
+
 
     schedule = [
       Schedule(

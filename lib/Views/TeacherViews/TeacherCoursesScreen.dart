@@ -193,6 +193,7 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
                               tutor: course.tutor,
                               day: course.day,
                               location: course.location,
+                              time: course.time,
                               stunum: studentCount
                           );
 

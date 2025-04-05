@@ -278,7 +278,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>  Teacherschedulescreen(title: 'tomainapppage',
+                          builder: (context) =>  TeacherScheduleScreen(title: 'tomainapppage',
                             userID: widget.userID,),
                         ),
                       ),
@@ -303,8 +303,8 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
               ),
               SizedBox(
                 height: 160,
-                child: FutureBuilder<List<Schedule>>(
-                  future: _ScheduleFuture,
+                child: FutureBuilder<List<Course>>(
+                  future: _CoursesFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator(color: Colors.red));
@@ -328,11 +328,11 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                         padding: EdgeInsets.symmetric(horizontal: 16.0),
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
-                          final schedule = snapshot.data![index];
+                          final course = snapshot.data![index];
                           return Padding(
                             padding: EdgeInsets.only(right: 16.0),
                             child: ScheduleCard(
-                              schedule: schedule,
+                              course: course,
                               isStudent: false,
                               onTaskDeleted: _refreshSchedule,
                             ),

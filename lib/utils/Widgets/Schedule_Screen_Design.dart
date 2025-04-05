@@ -1,116 +1,186 @@
 import 'package:flutter/material.dart';
-import 'package:final_project/utils/Widgets/Random_color.dart';
-import '../../Models/schedule.dart';
-import '../Widgets/Confirm_Del.dart';
+import 'package:final_project/Models/course.dart';
+
 
 class ScheduleScreenDesign extends StatelessWidget {
-  final Schedule schedule;
+  final Course courses;
   final bool isStudent;
   final Function onTaskDeleted;
-  final Color scheduleColor = RandomColor.getRandomShade700();
 
-   ScheduleScreenDesign({
+
+  const ScheduleScreenDesign({
     Key? key,
-    required this.schedule,
-    this.isStudent = true,
+    required this.courses,
+    required this.isStudent,
     required this.onTaskDeleted,
   }) : super(key: key);
 
+  Color getCourseColor(int courseId) {
+    const colors = [
+      Color(0xFF3B82F6), // blue
+      Color(0xFF10B981), // green
+      Color(0xFFF59E0B), // orange
+      Color(0xFF8B5CF6), // purple
+      Color(0xFFEC4899), // pink
+      Color(0xFF14B8A6), // teal
+    ];
+
+    return colors[courseId % colors.length];
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: scheduleColor,
-                borderRadius: BorderRadius.circular(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top color strip - increased height to 8
+          Container(
+            height: 8,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: getCourseColor(courses.courseID),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        schedule.course,
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Course title and delete button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        courses.course,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: Color(0xFF1F2937),
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      // if(!isStudent)
-                      //   IconButton(
-                      //     icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      //     onPressed: () {
-                      //       showDialog(
-                      //         context: context,
-                      //         builder: (dialogContext) => TaskDeleteAlert(
-                      //           taskID: schedule.scheduleID,
-                      //           onTaskDeleted: onTaskDeleted,
-                      //         ),
-                      //       ).then((result) {
-                      //         ScaffoldMessenger.of(context).showSnackBar(
-                      //           SnackBar(
-                      //             content: Text(
-                      //               result == true
-                      //                   ? 'Schedule deleted successfully!'
-                      //                   : 'Failed to delete schedule.',
-                      //             ),
-                      //           ),
-                      //         );
-                      //       });
-                      //     },
-                      //     padding: EdgeInsets.zero,
-                      //     constraints: const BoxConstraints(),
-                      //     splashRadius: 24,
-                      //   ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${schedule.day}, ${schedule.time}',
+                    ),
+
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Course details
+                Row(
+                  children: [
+                    const Icon(Icons.person_outline, size: 16, color: Color(0xFF6B7280)),
+                    const SizedBox(width: 8),
+                    Text(
+                      courses.tutor,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF6B7280),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                Row(
+                  children: [
+                    const Icon(Icons.calendar_today, size: 16, color: Color(0xFF6B7280)),
+                    const SizedBox(width: 8),
+                    Text(
+                      "${courses.day},",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF6B7280),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                Row(
+                  children: [
+                    const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF6B7280)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        courses.location,
                         style: const TextStyle(
-                          color: Colors.grey,
                           fontSize: 14,
+                          color: Color(0xFF6B7280),
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                      const SizedBox(width: 8),
-                      Text(
-                        schedule.location,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                Row(
+                  children: [
+                    const Icon(Icons.access_time_outlined, size: 16, color: Color(0xFF6B7280)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        courses.time,
                         style: const TextStyle(
-                          color: Colors.grey,
                           fontSize: 14,
+                          color: Color(0xFF6B7280),
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+
+
+
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Handle view details
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFF3F4F6),
+                      foregroundColor: const Color(0xFF1F2937),
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      textStyle: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text("View Details"),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

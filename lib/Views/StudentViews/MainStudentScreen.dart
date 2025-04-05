@@ -355,8 +355,8 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
   Widget _buildScheduleList() {
     return SizedBox(
       height: 160,
-      child: FutureBuilder<List<Schedule>>(
-        future: _scheduleFuture,
+      child: FutureBuilder<List<Course>>(
+        future: _coursesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return _buildLoadingIndicator();
@@ -370,8 +370,8 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                final schedule = snapshot.data![index];
-                return ScheduleCard(schedule:schedule, isStudent: true,onTaskDeleted: _refreshSchedule,);
+                final course = snapshot.data![index];
+                return ScheduleCard(course:course, isStudent: true,onTaskDeleted: _refreshSchedule,);
               },
             );
           }
