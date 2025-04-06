@@ -1,43 +1,26 @@
-import 'dart:convert';
-
-import 'package:final_project/Models/course.dart';
-import 'package:final_project/utils/Widgets/Courses_Screen_Design.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../Models/clientConfig.dart';
-import '../../ViewModels/StudentMain_VM.dart';
+
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class TeacherCoursesScreen extends StatelessWidget {
+import '../../Models/clientConfig.dart';
+import '../../Models/course.dart';
+import '../../utils/Widgets/Courses_Screen_Design.dart';
+
+class TeacherCoursesScreen extends StatefulWidget {
   final String title;
   final String userID;
 
-  const TeacherCoursesScreen({super.key, required this.title, required this.userID});
+  const TeacherCoursesScreen({Key? key, required this.title, required this.userID}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => StudentDashboardViewModel(),
-      child: _TeacherCoursesScreen(title: title, userID: userID),
-    );
-  }
+  State<TeacherCoursesScreen> createState() => _TeacherCoursesScreen();
 }
 
-class _TeacherCoursesScreen extends StatefulWidget {
-  final String title;
-  final String userID;
-
-  const _TeacherCoursesScreen({required this.title, required this.userID});
-
-  @override
-  State<_TeacherCoursesScreen> createState() => _TeacherCoursesScreenState();
-}
-
-class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
+class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
   late Future<List<Course>> _CoursesFuture;
   bool isStudent = false;
-  String activeTab = 'all';
-  Map<String, Future<int>> _studentCountMap = {};
+  String searchTerm = '';
 
   @override
   void initState() {
@@ -47,42 +30,8 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
 
   void _refreshTasks() {
     setState(() {
-      _CoursesFuture = getUserCourses().then((courses) {
-        for (var course in courses) {
-          _studentCountMap[course.courseID.toString()] = getCourseStunum(course.courseID.toString());
-        }
-        return courses;
-      });
+      _CoursesFuture = getUserCourses();
     });
-  }
-
-  Future<int> getCourseStunum(String courseID) async {
-    int studentCount = 0;
-
-    try {
-      var url = "getCourseDetails/getCourseStunum.php?courseID=$courseID";
-      final response = await http.get(Uri.parse(serverPath + url));
-
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
-      if (response.statusCode == 200) {
-        var jsonData = json.decode(response.body);
-
-        if (jsonData == null) {
-          throw Exception("Response body is null");
-        }
-        if (jsonData is! Map || !jsonData.containsKey('studentCount')) {
-          throw Exception("Invalid response format. Received: $jsonData");
-        }
-
-        studentCount = jsonData['studentCount'];
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
-
-    return studentCount;
   }
 
   Future<List<Course>> getUserCourses() async {
@@ -117,30 +66,48 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<StudentDashboardViewModel>();
-
     return Scaffold(
-      backgroundColor: const Color(0xFFE3DFD6),
+      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: const Text('My Courses'),
+        title: Text(widget.title),
         backgroundColor: Colors.white,
         elevation: 1,
+        actions: [
+          // Add new course button
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed: () {
+              // Navigate to add course page
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Add course functionality"),
+                  backgroundColor: Color(0xFF3B82F6),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
-          // Day filter tabs
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-            child: Row(
-              children: [
-                _buildFilterTab('all', 'All Courses'),
-                _buildFilterTab('monday', 'Monday'),
-                _buildFilterTab('tuesday', 'Tuesday'),
-                _buildFilterTab('wednesday', 'Wednesday'),
-                _buildFilterTab('thursday', 'Thursday'),
-                _buildFilterTab('friday', 'Friday'),
-              ],
+          // Search Row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search courses...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  searchTerm = value;
+                });
+              },
             ),
           ),
 
@@ -151,23 +118,36 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Colors.red),
+                    child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
                   );
                 } else if (snapshot.hasError) {
-                  return const Center(
-                    child: Text(
-                        'שגיאה, נסה שוב',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Error loading courses',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        TextButton(
+                          onPressed: _refreshTasks,
+                          child: const Text('Try Again'),
+                        ),
+                      ],
                     ),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return _buildEmptyState();
                 } else {
-                  // Filter courses based on selected day
-                  final filteredCourses = activeTab == 'all'
-                      ? snapshot.data!
-                      : snapshot.data!.where((course) =>
-                      course.day.toLowerCase().contains(activeTab)).toList();
+                  // Filter courses based on search term
+                  final filteredCourses = snapshot.data!
+                      .where((course) =>
+                  searchTerm.isEmpty ||
+                      course.course.toLowerCase().contains(searchTerm.toLowerCase()) ||
+                      course.day.toLowerCase().contains(searchTerm.toLowerCase())
+                  ).toList();
 
                   if (filteredCourses.isEmpty) {
                     return _buildEmptyState();
@@ -175,33 +155,14 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
 
                   return ListView.builder(
                     itemCount: filteredCourses.length,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.all(16),
                     itemBuilder: (context, index) {
                       final course = filteredCourses[index];
-                      final studentCountFuture = _studentCountMap[course.courseID.toString()] ?? Future.value(0);
-
-                      return FutureBuilder<int>(
-                        future: studentCountFuture,
-                        builder: (context, snapshot) {
-                          final studentCount = snapshot.hasData ? snapshot.data! : 0;
-
-                          // Create updated course with student count
-                          final updatedCourse = Course(
-                              courseID: course.courseID,
-                              course: course.course,
-                              tutor: course.tutor,
-                              day: course.day,
-                              location: course.location,
-                              time: course.time,
-                              stunum: studentCount
-                          );
-
-                          return CoursesScreenDesign(
-                            courses: updatedCourse,
-                            isStudent: isStudent,
-                            onTaskDeleted: _refreshTasks,
-                          );
-                        },
+                      return CoursesScreenDesign(
+                        courses: course,
+                        isStudent: false,
+                        onTaskDeleted: _refreshTasks,
+                        isGridView: false,
                       );
                     },
                   );
@@ -211,58 +172,37 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildFilterTab(String tabId, String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Material(
-        color: activeTab == tabId
-            ? const Color(0xFF3B82F6)
-            : Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              activeTab = tabId;
-            });
-          },
-          borderRadius: BorderRadius.circular(24),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              border: activeTab != tabId
-                  ? Border.all(color: const Color(0xFFE5E7EB))
-                  : null,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF3B82F6),
+        child: const Icon(Icons.add),
+        onPressed: () {
+          // Navigate to add course page
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Add course functionality"),
+              backgroundColor: Color(0xFF3B82F6),
             ),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: activeTab == tabId
-                    ? Colors.white
-                    : const Color(0xFF6B7280),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildEmptyState() {
+    String message = searchTerm.isNotEmpty
+        ? 'No courses matching "$searchTerm"'
+        : 'You haven\'t created any courses yet.';
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.menu_book_outlined,
+            Icon(
+              Icons.school_outlined,
               size: 64,
-              color: Color(0xFF9CA3AF),
+              color: Colors.grey.shade400,
             ),
             const SizedBox(height: 16),
             const Text(
@@ -275,14 +215,35 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              activeTab == 'all'
-                  ? 'You don\'t have any courses yet.'
-                  : 'There are no courses scheduled for this day.',
+              message,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 16,
                 color: Color(0xFF6B7280),
               ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.add),
+              label: const Text('Create Course'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF3B82F6),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: () {
+                // Navigate to add course page
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Add course functionality"),
+                    backgroundColor: Color(0xFF3B82F6),
+                  ),
+                );
+              },
             ),
           ],
         ),

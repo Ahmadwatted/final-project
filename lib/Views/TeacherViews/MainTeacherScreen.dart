@@ -191,7 +191,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => TeacherCoursesScreen(title: 'tomainapppage',
+                          builder: (context) => TeacherCoursesScreen(title: 'My Courses',
                             userID: widget.userID,
 
 
@@ -278,7 +278,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>  TeacherScheduleScreen(title: 'tomainapppage',
+                          builder: (context) =>  TeacherScheduleScreen(title: 'My Schedule',
                             userID: widget.userID,),
                         ),
                       ),
@@ -361,7 +361,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>  Teacheruploadedtasks(title: 'tomainapppage',
+                          builder: (context) =>  Teacheruploadedtasks(title: 'My Courses',
                             userID: widget.userID,),
                         ),
                       ),

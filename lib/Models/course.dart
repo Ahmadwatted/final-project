@@ -9,8 +9,10 @@ class Course {
   final String location;
   final String day;
   final String time;
+  final description;
+  String notes;
    int? stunum;
-   Color? c;
+
 
   Course({
     required this.courseID,
@@ -19,7 +21,8 @@ class Course {
     required this.day,
     required this.location,
     required this.time,
-    this.c,
+    required this.description,
+    this.notes= '',
     this.stunum,
   });
 
@@ -31,6 +34,9 @@ class Course {
       day: json['day'] as String,
       location: json['location'] as String,
       time: json['time'] as String,
+      description: json['description'] as String,
+      notes: json['notes'] ?? '',
+
     );
   }
 
@@ -42,6 +48,7 @@ class Course {
       'day': day,
       'location': location,
       'time' : time,
+      'description' : description,
     };
   }
 }

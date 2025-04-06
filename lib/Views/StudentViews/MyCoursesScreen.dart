@@ -1,42 +1,25 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:final_project/Models/course.dart';
-import 'package:final_project/utils/Widgets/Courses_Screen_Design.dart';
-import 'package:provider/provider.dart';
-import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
+
 import '../../Models/clientConfig.dart';
+import '../../Models/course.dart';
+import '../../utils/Widgets/Courses_Screen_Design.dart';
 
-class MyCoursesScreen extends StatelessWidget {
+class MyCoursesScreen extends StatefulWidget {
   final String title;
   final String userID;
 
-  const MyCoursesScreen({super.key, required this.title, required this.userID});
+  const MyCoursesScreen({Key? key, required this.title, required this.userID}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => StudentDashboardViewModel(),
-      child: _MyCoursesScreen(title: title, userID: userID),
-    );
-  }
+  State<MyCoursesScreen> createState() => _MyCoursesScreenState();
 }
 
-class _MyCoursesScreen extends StatefulWidget {
-  final String title;
-  final String userID;
-
-  const _MyCoursesScreen({required this.title, required this.userID});
-
-  @override
-  State<_MyCoursesScreen> createState() => _MyCoursesScreenState();
-}
-
-class _MyCoursesScreenState extends State<_MyCoursesScreen> {
+class _MyCoursesScreenState extends State<MyCoursesScreen> {
   late Future<List<Course>> _CoursesFuture;
   bool isStudent = true;
-  String activeTab = 'all';
+  String searchTerm = '';
 
   @override
   void initState() {
@@ -49,6 +32,10 @@ class _MyCoursesScreenState extends State<_MyCoursesScreen> {
       _CoursesFuture = getUserCourses();
     });
   }
+
+
+
+
 
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
@@ -82,30 +69,95 @@ class _MyCoursesScreenState extends State<_MyCoursesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<StudentDashboardViewModel>();
-
     return Scaffold(
-      backgroundColor: const Color(0xFFE3DFD6),
+      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: const Text('My Courses'),
+        title: Text(widget.title),
         backgroundColor: Colors.white,
         elevation: 1,
+        actions: [
+          // User type toggle
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Row(
+              children: [
+                TextButton(
+                  onPressed: () => setState(() => isStudent = true),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                      isStudent ? const Color(0xFF3B82F6) : Colors.grey.shade200,
+                    ),
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    shape: MaterialStateProperty.all(
+                      const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          bottomLeft: Radius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Student',
+                    style: TextStyle(
+                      color: isStudent ? Colors.white : Colors.grey.shade700,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => setState(() => isStudent = false),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                      !isStudent ? const Color(0xFF3B82F6) : Colors.grey.shade200,
+                    ),
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    shape: MaterialStateProperty.all(
+                      const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(8),
+                          bottomRight: Radius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Tutor',
+                    style: TextStyle(
+                      color: !isStudent ? Colors.white : Colors.grey.shade700,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
-          // Day filter tabs
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-            child: Row(
-              children: [
-                _buildFilterTab('all', 'All Courses'),
-                _buildFilterTab('monday', 'Monday'),
-                _buildFilterTab('tuesday', 'Tuesday'),
-                _buildFilterTab('wednesday', 'Wednesday'),
-                _buildFilterTab('thursday', 'Thursday'),
-                _buildFilterTab('friday', 'Friday'),
-              ],
+          // Search Row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search courses...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  searchTerm = value;
+                });
+              },
             ),
           ),
 
@@ -116,23 +168,37 @@ class _MyCoursesScreenState extends State<_MyCoursesScreen> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Colors.red),
+                    child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
                   );
                 } else if (snapshot.hasError) {
-                  return const Center(
-                    child: Text(
-                        'שגיאה, נסה שוב',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Error loading courses',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        TextButton(
+                          onPressed: _refreshTasks,
+                          child: const Text('Try Again'),
+                        ),
+                      ],
                     ),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return _buildEmptyState();
                 } else {
-                  // Filter courses based on selected day
-                  final filteredCourses = activeTab == 'all'
-                      ? snapshot.data!
-                      : snapshot.data!.where((course) =>
-                      course.day.toLowerCase().contains(activeTab)).toList();
+                  // Filter courses based on search term only
+                  final filteredCourses = snapshot.data!
+                      .where((course) {
+                    // Apply search filter
+                    return searchTerm.isEmpty ||
+                        course.course.toLowerCase().contains(searchTerm.toLowerCase()) ||
+                        course.tutor.toLowerCase().contains(searchTerm.toLowerCase());
+                  }).toList();
 
                   if (filteredCourses.isEmpty) {
                     return _buildEmptyState();
@@ -140,14 +206,14 @@ class _MyCoursesScreenState extends State<_MyCoursesScreen> {
 
                   return ListView.builder(
                     itemCount: filteredCourses.length,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.all(16),
                     itemBuilder: (context, index) {
                       final course = filteredCourses[index];
-
                       return CoursesScreenDesign(
                         courses: course,
                         isStudent: isStudent,
                         onTaskDeleted: _refreshTasks,
+                        isGridView: false,
                       );
                     },
                   );
@@ -160,55 +226,21 @@ class _MyCoursesScreenState extends State<_MyCoursesScreen> {
     );
   }
 
-  Widget _buildFilterTab(String tabId, String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Material(
-        color: activeTab == tabId
-            ? const Color(0xFF3B82F6)
-            : Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              activeTab = tabId;
-            });
-          },
-          borderRadius: BorderRadius.circular(24),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              border: activeTab != tabId
-                  ? Border.all(color: const Color(0xFFE5E7EB))
-                  : null,
-            ),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: activeTab == tabId
-                    ? Colors.white
-                    : const Color(0xFF6B7280),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildEmptyState() {
+    String message = searchTerm.isNotEmpty
+        ? 'No courses matching "$searchTerm"'
+        : 'You haven\'t enrolled in any courses yet.';
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.menu_book_outlined,
               size: 64,
-              color: Color(0xFF9CA3AF),
+              color: Colors.grey.shade400,
             ),
             const SizedBox(height: 16),
             const Text(
@@ -221,9 +253,7 @@ class _MyCoursesScreenState extends State<_MyCoursesScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              activeTab == 'all'
-                  ? 'You haven\'t enrolled in any courses yet.'
-                  : 'There are no courses scheduled for this day.',
+              message,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 16,

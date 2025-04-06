@@ -216,7 +216,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => MyCoursesScreen(
-                        title: 'tomainapppage',
+                        title: 'My Courses',
                         userID: widget.userID,
                       ),
                     ),
@@ -234,7 +234,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => MyScheduleScreen(
-                        title: 'tomainapppage',
+                        title: 'My Schedule',
                         userID: widget.userID,
                       ),
                     ),
@@ -252,7 +252,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => MyTasksScreen(
-                        title: 'tomainapppage',
+                        title: 'My Tasks',
                         userID: widget.userID,
                       ),
                     ),
