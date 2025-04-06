@@ -48,7 +48,6 @@ class _TeacherCoursesScreenState extends State<_TeacherCoursesScreen> {
   void _refreshTasks() {
     setState(() {
       _CoursesFuture = getUserCourses().then((courses) {
-        // Initialize student count future for each course
         for (var course in courses) {
           _studentCountMap[course.courseID.toString()] = getCourseStunum(course.courseID.toString());
         }
