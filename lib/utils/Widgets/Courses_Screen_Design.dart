@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
 import 'dart:convert';
@@ -38,7 +38,6 @@ Future<int> getCourseStunum(int courseID) async {
   }
 }
 
-
 class CoursesScreenDesign extends StatefulWidget {
   final Course courses;
   final bool isStudent;
@@ -62,13 +61,68 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
   late String notes;
   int? studentCount;
   bool isLoading = false;
+  final TextEditingController _notesController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    notes = widget.courses.notes;
+    notes = '';
+    _loadLocalNotes();
     if (!widget.isStudent) {
       _loadStudentCount();
+    }
+  }
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  // Load notes from local storage
+  Future<void> _loadLocalNotes() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final localNotes = prefs.getString('notes_${widget.courses.courseID}');
+
+      if (mounted) {
+        setState(() {
+          notes = localNotes ?? '';
+          _notesController.text = notes;
+        });
+      }
+    } catch (e) {
+      // Handle error silently
+      if (mounted) {
+        setState(() {
+          notes = '';
+          _notesController.text = '';
+        });
+      }
+    }
+  }
+
+  // Save notes to local storage
+  Future<void> _saveLocalNotes(String noteText) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('notes_${widget.courses.courseID}', noteText);
+
+      if (mounted) {
+        setState(() {
+          notes = noteText;
+        });
+      }
+    } catch (e) {
+      // Show error if saving fails
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to save notes"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -96,7 +150,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     }
   }
 
-
   Color getCourseColor(int courseId) {
     final colors = [
       const Color(0xFF3B82F6), // blue
@@ -111,6 +164,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
 
   @override
   Widget build(BuildContext context) {
+    // IMPORTANT: Remove the Scaffold here and return just the content
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(
@@ -126,6 +180,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
 
   Widget _buildGridLayout() {
     return Column(
+      mainAxisSize: MainAxisSize.min, // Make this take minimum space needed
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
@@ -166,9 +221,13 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
   }
 
   Widget _buildCardContent() {
+    // Get the course color for this card
+    final courseColor = getCourseColor(widget.courses.courseID);
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
+        mainAxisSize: MainAxisSize.min, // Make this take minimum space needed
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -219,17 +278,28 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: Text(showNotes ? "Hide Notes" : "Course Notes"),
+                  child: Text(showNotes ? "Hide Notes" : "My Notes"),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navigate to course details page
+
+
+
+
+
+
+
+
+
+
+
+
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6),
+                    backgroundColor: courseColor,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -237,7 +307,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text("Details"),
+                  child: const Text("Edit"),
                 ),
               ),
             ],
@@ -251,7 +321,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                 children: [
                   TextField(
                     decoration: InputDecoration(
-                      hintText: "Add your course notes here...",
+                      hintText: "Add your personal notes here...",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -259,22 +329,16 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                     ),
                     maxLines: 3,
                     minLines: 3,
-                    onChanged: (value) {
-                      setState(() {
-                        notes = value;
-                      });
-                    },
-                    controller: TextEditingController(text: notes),
+                    controller: _notesController,
                   ),
                   const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () {
-                      // Save notes functionality
-                      widget.courses.notes = notes;
-                      // Additional code to save notes to server/database
+                      // Save notes to local storage
+                      _saveLocalNotes(_notesController.text);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("Notes saved successfully"),
+                          content: Text("Notes saved to your device"),
                           backgroundColor: Colors.green,
                         ),
                       );
@@ -340,7 +404,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
             ),
           ),
           const SizedBox(width: 8),
-
         ],
       );
     } else {
@@ -354,7 +417,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
           const SizedBox(width: 8),
           if(studentCount!=0)...{
             Text(
-
               "${studentCount!-1} Students",
               style: TextStyle(
                 fontSize: 14,
@@ -364,7 +426,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
           }
           else...{
             Text(
-
               "${studentCount ?? 0} Students",
               style: TextStyle(
                 fontSize: 14,
@@ -372,7 +433,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
               ),
             ),
           },
-
         ],
       );
     }

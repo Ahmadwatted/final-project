@@ -21,7 +21,7 @@ class Course {
     required this.day,
     required this.location,
     required this.time,
-    required this.description,
+    this.description="",
     this.notes= '',
     this.stunum
   });

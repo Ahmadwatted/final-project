@@ -22,10 +22,54 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
   bool isStudent = false;
   String searchTerm = '';
 
+  // Form controllers
+  final TextEditingController _tutorController = TextEditingController();
+  final TextEditingController _courseController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _dayController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
     _refreshTasks();
+  }
+  InsertCourse(String tutor, String course, String location, String day, String time, String description) async {
+    var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/courses/insertCourse.php?"
+        "tutor=${Uri.encodeComponent(tutor)}"
+        "&course=${Uri.encodeComponent(course)}"
+        "&location=${Uri.encodeComponent(location)}"
+        "&day=${Uri.encodeComponent(day)}"
+        "&time=${Uri.encodeComponent(time)}"
+        "&description=${Uri.encodeComponent(description)}";
+
+    print("InsertCourse - Final URL: $url");
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      print("InsertCourse Response: ${response.body}");
+    } catch (e) {
+      print("InsertCourse Error: $e");
+    }
+  }
+
+
+
+
+
+
+  @override
+  void dispose() {
+    _tutorController.dispose();
+    _courseController.dispose();
+    _locationController.dispose();
+    _dayController.dispose();
+    _timeController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   void _refreshTasks() {
@@ -63,6 +107,284 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
     }
     return arr;
   }
+  Future<bool> InsertUserCourse(int courseID) async {
+    try {
+      String userID = widget.userID;
+      var url = "userCourses/insertUserCourse.php?"
+          "courseID=$courseID"
+          "&userID=$userID";
+
+      final response = await http.get(Uri.parse(serverPath + url));
+
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+
+        if (data['result'] == '1') {
+          return true;
+        } else {
+          print("Error: ${data['message']}");
+          return false;
+        }
+      } else {
+        print("Error: Server returned ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("Error in InsertUserCourse: $e");
+      return false;
+    }
+  }
+
+
+
+
+
+  void _showAddCourseForm() {
+    _tutorController.clear();
+    _courseController.clear();
+    _locationController.clear();
+    _dayController.clear();
+    _timeController.clear();
+    _descriptionController.clear();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.85,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 20,
+                right: 20,
+                top: 20,
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Add New Course',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1F2937),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Color(0xFF6B7280)),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Form fields
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormField(
+                              label: 'Tutor',
+                              controller: _tutorController,
+                              hint: 'Enter tutor name',
+                              icon: Icons.person_outline,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Course',
+                              controller: _courseController,
+                              hint: 'Enter course name',
+                              icon: Icons.school_outlined,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Location',
+                              controller: _locationController,
+                              hint: 'Enter location',
+                              icon: Icons.location_on_outlined,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Day',
+                              controller: _dayController,
+                              hint: 'Enter a day',
+                              icon: Icons.calendar_today_outlined,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Time',
+                              controller: _timeController,
+                              hint: 'Enter time',
+                              icon: Icons.access_time_outlined,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Description (optional)',
+                              controller: _descriptionController,
+                              hint: 'Enter course description',
+                              icon: Icons.description_outlined,
+                              isRequired: false,
+                              maxLines: 3,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Submit button
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 16),
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1F2937),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () async {
+                          int? newCourseID = await InsertCourse(
+                            _tutorController.text,
+                            _courseController.text,
+                            _locationController.text,
+                            _dayController.text,
+                            _timeController.text,
+                            _descriptionController.text,
+                          );
+
+                          if (newCourseID != null) {
+                            print("lmaoo");
+                            bool success = await InsertUserCourse(newCourseID); // Insert the user to the course
+                            print("123123123123123");
+
+
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Course successfully added!'),
+                                  backgroundColor: Color(0xFF1F2937),
+                                ),
+                              );
+                              _refreshTasks();
+                            } else {  // If adding the user to the course fails
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Failed to add user to course. Please try again.'),
+                                  backgroundColor: Color(0xFF1F2937),
+                                ),
+                              );
+                            }
+                          } else {  // If courseID is null, it means course creation failed
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Failed to add course. Please try again.'),
+                                backgroundColor: Color(0xFF1F2937),
+                              ),
+                            );
+                          }
+                        },
+
+
+                        child: const Text(
+                          'Add Course',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Helper method to build form fields
+  Widget _buildFormField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    required bool isRequired,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF4B5563),
+            ),
+          ),
+          const SizedBox(height: 6),
+          TextFormField(
+            controller: controller,
+            maxLines: maxLines,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: Colors.grey.shade400),
+              prefixIcon: Icon(icon, color: const Color(0xFF6B7280), size: 20),
+              filled: true,
+              fillColor: const Color(0xFFF9FAFB),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF9CA3AF)),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            validator: isRequired
+                ? (value) {
+              if (value == null || value.isEmpty) {
+                return 'This field is required';
+              }
+              return null;
+            }
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,21 +394,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
         title: Text(widget.title),
         backgroundColor: Colors.white,
         elevation: 1,
-        actions: [
-          // Add new course button
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            onPressed: () {
-              // Navigate to add course page
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Add course functionality"),
-                  backgroundColor: Color(0xFF3B82F6),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -118,7 +425,7 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF3B82F6)),
+                    child: CircularProgressIndicator(color: Color(0xFF1F2937)),
                   );
                 } else if (snapshot.hasError) {
                   return Center(
@@ -173,17 +480,10 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF3B82F6),
-        child: const Icon(Icons.add),
-        onPressed: () {
-          // Navigate to add course page
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Add course functionality"),
-              backgroundColor: Color(0xFF3B82F6),
-            ),
-          );
-        },
+        backgroundColor: Colors.white,
+        elevation: 2,
+        child: const Icon(Icons.add, color: Color(0xFF1F2937)),
+        onPressed: _showAddCourseForm,
       ),
     );
   }
@@ -223,28 +523,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.add),
-              label: const Text('Create Course'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3B82F6),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: () {
-                // Navigate to add course page
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Add course functionality"),
-                    backgroundColor: Color(0xFF3B82F6),
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),

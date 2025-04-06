@@ -75,68 +75,6 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
         title: Text(widget.title),
         backgroundColor: Colors.white,
         elevation: 1,
-        actions: [
-          // User type toggle
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Row(
-              children: [
-                TextButton(
-                  onPressed: () => setState(() => isStudent = true),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                      isStudent ? const Color(0xFF3B82F6) : Colors.grey.shade200,
-                    ),
-                    padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                    shape: MaterialStateProperty.all(
-                      const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          bottomLeft: Radius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    'Student',
-                    style: TextStyle(
-                      color: isStudent ? Colors.white : Colors.grey.shade700,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => setState(() => isStudent = false),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                      !isStudent ? const Color(0xFF3B82F6) : Colors.grey.shade200,
-                    ),
-                    padding: MaterialStateProperty.all(
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                    shape: MaterialStateProperty.all(
-                      const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(8),
-                          bottomRight: Radius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    'Tutor',
-                    style: TextStyle(
-                      color: !isStudent ? Colors.white : Colors.grey.shade700,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
       body: Column(
         children: [
