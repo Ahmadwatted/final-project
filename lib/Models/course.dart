@@ -23,7 +23,7 @@ class Course {
     required this.time,
     required this.description,
     this.notes= '',
-    this.stunum,
+    this.stunum
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
