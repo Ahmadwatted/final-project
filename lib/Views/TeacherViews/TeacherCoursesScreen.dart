@@ -33,11 +33,17 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
+  @override
   void initState() {
     super.initState();
-    _refreshTasks();
+
+    // Initialize with a dummy Future that completes immediately
+    _CoursesFuture = Future.value([]);
+
+    // Then refresh the tasks in a separate operation
+    Future.microtask(() => _refreshTasks());
   }
-  InsertCourse(String tutor, String course, String location, String day, String time, String description) async {
+  Future<int?> InsertCourse(String tutor, String course, String location, String day, String time, String description) async {
     var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/courses/insertCourse.php?"
         "tutor=${Uri.encodeComponent(tutor)}"
         "&course=${Uri.encodeComponent(course)}"
@@ -50,9 +56,25 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
 
     try {
       final response = await http.get(Uri.parse(url));
-      print("InsertCourse Response: ${response.body}");
+      print("InsertCourse Status Code: ${response.statusCode}");
+      print("InsertCourse Raw Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        print("Parsed response data: $data");
+
+        if (data['result'] == '1' && data['id'] != null) {
+          print("Successfully created course with ID: ${data['id']}");
+          return int.parse(data['id'].toString());
+        } else {
+          print("API returned unsuccessful result: ${data['result']}");
+          return null;
+        }
+      }
+      return null;
     } catch (e) {
       print("InsertCourse Error: $e");
+      return null;
     }
   }
 
@@ -72,60 +94,107 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
     super.dispose();
   }
 
-  void _refreshTasks() {
-    setState(() {
-      _CoursesFuture = getUserCourses();
-    });
+  // Modify your _refreshTasks function to return a Future
+  Future<void> _refreshTasks() async {
+    // Get the courses first
+    final courses = await getUserCourses();
+
+    // Only call setState if the widget is still mounted
+    if (mounted) {
+      setState(() {
+        _CoursesFuture = Future.value(courses);
+      });
+    }
   }
 
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
 
     try {
-      var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
-      final response = await http.get(Uri.parse(serverPath + url));
+      // Make sure your URL is fully qualified
+      var url = "${serverPath}userCourses/getUserCourses.php?userID=${widget.userID}";
+      print("Fetching user courses from: $url"); // Add for debugging
+
+      final response = await http.get(Uri.parse(url));
 
       print("Response Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
-        var jsonData = json.decode(response.body);
-
-        if (jsonData == null) {
-          throw Exception("Response body is null");
-        }
-        if (jsonData is! List) {
-          throw Exception("Response is not a List. Received: $jsonData");
+        // Handle empty response
+        if (response.body.trim().isEmpty) {
+          print("Empty response received");
+          return [];
         }
 
-        for (var i in jsonData) {
-          arr.add(Course.fromJson(i));
+        try {
+          var jsonData = json.decode(response.body);
+
+          if (jsonData == null) {
+            print("Response body decoded to null");
+            return [];
+          }
+
+          if (jsonData is! List) {
+            print("Response is not a List. Received: $jsonData");
+            // Try to handle the case where it's an object with an error message
+            if (jsonData is Map && jsonData.containsKey('error')) {
+              print("Error from API: ${jsonData['error']}");
+            }
+            return [];
+          }
+
+          for (var i in jsonData) {
+            try {
+              arr.add(Course.fromJson(i));
+            } catch (e) {
+              print('Error parsing course data: $e');
+              // Continue with next item instead of failing completely
+            }
+          }
+        } catch (e) {
+          print('JSON parsing error: $e');
         }
+      } else {
+        print('HTTP error: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error: $e');
+      print('Network error: $e');
     }
+
     return arr;
   }
+
   Future<bool> InsertUserCourse(int courseID) async {
     try {
       String userID = widget.userID;
-      var url = "userCourses/insertUserCourse.php?"
+
+      var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/userCourses/insertUserCourse.php?"
           "courseID=$courseID"
           "&userID=$userID";
 
-      final response = await http.get(Uri.parse(serverPath + url));
+      print("InsertUserCourse - Final URL: $url");
 
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
+      final response = await http.get(Uri.parse(url));
+
+      print("InsertUserCourse Response Status Code: ${response.statusCode}");
+      print("InsertUserCourse Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
 
-        if (data['result'] == '1') {
-          return true;
+        // Check if the result is a non-zero number (meaning success)
+        if (data['result'] != null) {
+          // Try parsing as int first to check if it's a numeric value
+          try {
+            int resultValue = int.parse(data['result'].toString());
+            return resultValue > 0; // Consider any positive number a success
+          } catch (e) {
+            // If it can't be parsed as int, check if it's "1" (the original success condition)
+            return data['result'] == '1';
+          }
         } else {
-          print("Error: ${data['message']}");
+          print("Error: No result field in response");
           return false;
         }
       } else {
@@ -265,44 +334,78 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                           ),
                         ),
                         onPressed: () async {
-                          int? newCourseID = await InsertCourse(
-                            _tutorController.text,
-                            _courseController.text,
-                            _locationController.text,
-                            _dayController.text,
-                            _timeController.text,
-                            _descriptionController.text,
-                          );
-
-                          if (newCourseID != null) {
-                            print("lmaoo");
-                            bool success = await InsertUserCourse(newCourseID); // Insert the user to the course
-                            print("123123123123123");
-
-
-                            if (success) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Course successfully added!'),
-                                  backgroundColor: Color(0xFF1F2937),
-                                ),
-                              );
-                              _refreshTasks();
-                            } else {  // If adding the user to the course fails
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Failed to add user to course. Please try again.'),
-                                  backgroundColor: Color(0xFF1F2937),
-                                ),
-                              );
-                            }
-                          } else {  // If courseID is null, it means course creation failed
+                          if (_formKey.currentState!.validate()) {
+                            // Show loading indicator
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Failed to add course. Please try again.'),
+                                content: Text('Adding course...'),
+                                duration: Duration(seconds: 1),
                                 backgroundColor: Color(0xFF1F2937),
                               ),
                             );
+
+                            try {
+                              int? newCourseID = await InsertCourse(
+                                _tutorController.text,
+                                _courseController.text,
+                                _locationController.text,
+                                _dayController.text,
+                                _timeController.text,
+                                _descriptionController.text,
+                              );
+
+                              print("Course created with ID: $newCourseID");
+
+                              if (newCourseID != null) {
+                                bool success = await InsertUserCourse(newCourseID);
+                                print("User added to course: $success");
+
+                                if (success) {
+                                  // First clear any existing SnackBars
+                                  ScaffoldMessenger.of(context).clearSnackBars();
+
+                                  // First refresh the data
+                                  await _refreshTasks();
+
+                                  // Then close the form
+                                  Navigator.pop(context);
+
+                                  // Then show success message with a slight delay to ensure it appears after navigation
+                                  Future.delayed(const Duration(milliseconds: 300), () {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Course successfully added!'),
+                                          backgroundColor: Color(0xFF1F2937),
+                                        ),
+                                      );
+                                    }
+                                  });
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Failed to add user to course. Please try again.'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Failed to add course. Please try again.'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              print("Error in form submission: $e");
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           }
                         },
 
