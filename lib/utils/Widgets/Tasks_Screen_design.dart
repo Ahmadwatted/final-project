@@ -1,7 +1,7 @@
 import 'package:final_project/utils/Widgets/Random_color.dart';
 import 'package:flutter/material.dart';
 import '../../Models/task.dart';
-import '../Widgets/Confirm_Del.dart';
+import '../Widgets/Confirm_Del_Task.dart';
 
 class TasksScreenDesign extends StatelessWidget {
   final Task task;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../Models/task.dart';
-import '../Widgets/Confirm_Del.dart';
+import '../Widgets/Confirm_Del_Task.dart';
 import 'Random_color.dart';
 
 class TaskCard extends StatelessWidget {

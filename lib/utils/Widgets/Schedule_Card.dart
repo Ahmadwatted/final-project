@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../Models/course.dart';
 import '../../Models/schedule.dart';
-import 'Confirm_Del.dart';
+import 'Confirm_Del_Task.dart';
 import 'Random_color.dart';
 
 class ScheduleCard extends StatelessWidget {

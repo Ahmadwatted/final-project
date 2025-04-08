@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../Models/course.dart';
-import 'Confirm_Del.dart';
+import 'Confirm_Del_Task.dart';
 import 'Random_color.dart';
 
 class CourseCard extends StatelessWidget {

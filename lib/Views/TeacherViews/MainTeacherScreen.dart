@@ -20,11 +20,10 @@ class MainTeacherScreen extends StatefulWidget {
   final String userID;
 
 
+
   const MainTeacherScreen({super.key,
     required this.title,
     required  this.userID
-
-
   });
 
   @override
@@ -34,15 +33,21 @@ class MainTeacherScreen extends StatefulWidget {
 class _MainTeacherScreenState extends State<MainTeacherScreen> {
   late Future<List<Task>> _tasksFuture;
   late Future<List<Course>> _CoursesFuture;
-  late Future<List<Schedule>> _ScheduleFuture;
+
+  final TextEditingController _tutorController = TextEditingController();
+  final TextEditingController _courseController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _dayController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _refreshTasks();
     _refreshCourses();
-    _refreshSchedule();
   }
+
 
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
@@ -140,12 +145,6 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
     });
   }
 
-  void _refreshSchedule() {
-    setState(() {
-      _ScheduleFuture = getUserSchedule();
-    });
-  }
-
   void _handleJoinCourse(String code) {
     // backend
     print('Joining course with code: $code');
@@ -162,8 +161,6 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Removed the viewModel reference as it was causing errors
-
     return Scaffold(
       backgroundColor: const Color(0xFFE3DFD6),
       appBar: AppBar(
@@ -188,17 +185,21 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TeacherCoursesScreen(title: 'My Courses',
-                            userID: widget.userID,
-
-
-
+                      onPressed: () {
+                        // Navigate to TeacherCoursesScreen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TeacherCoursesScreen(
+                              title: 'My Courses',
+                              userID: widget.userID,
+                            ),
                           ),
-                        ),
-                      ),
+                        ).then((_) {
+                          // Refresh courses when coming back from the courses screen
+                          _refreshCourses();
+                        });
+                      },
                       child: Row(
                         children: [
                           Text(
@@ -281,7 +282,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                           builder: (context) =>  TeacherScheduleScreen(title: 'My Schedule',
                             userID: widget.userID,),
                         ),
-                      ),
+                      ).then((_) => _refreshCourses()),
                       child: Row(
                         children: [
                           Text(
@@ -334,7 +335,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                             child: ScheduleCard(
                               course: course,
                               isStudent: false,
-                              onTaskDeleted: _refreshSchedule,
+                              onTaskDeleted: _refreshCourses,
                             ),
                           );
                         },
@@ -364,7 +365,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                           builder: (context) =>  Teacheruploadedtasks(title: 'My Courses',
                             userID: widget.userID,),
                         ),
-                      ),
+                      ).then((_) => _refreshTasks()),
                       child: Row(
                         children: [
                           Text(

@@ -143,7 +143,6 @@ class RegisterPage extends StatelessWidget {
                       ),
                       child: ElevatedButton(
                         onPressed: () async {
-                          // Call the insertUser function and get the user ID
                           final userID = await insertUser(
                               context,
                               2,
@@ -154,7 +153,6 @@ class RegisterPage extends StatelessWidget {
                               _txtphoneNumber.text
                           );
 
-                          // Navigate to MainStudentScreen with the user ID
                           Navigator.push(
                             context,
                             MaterialPageRoute(

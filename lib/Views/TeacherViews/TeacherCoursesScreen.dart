@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -22,7 +21,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
   bool isStudent = false;
   String searchTerm = '';
 
-  // Form controllers
   final TextEditingController _tutorController = TextEditingController();
   final TextEditingController _courseController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
@@ -33,16 +31,25 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
-  @override
   void initState() {
     super.initState();
-
     // Initialize with a dummy Future that completes immediately
     _CoursesFuture = Future.value([]);
-
     // Then refresh the tasks in a separate operation
     Future.microtask(() => _refreshTasks());
   }
+
+  @override
+  void dispose() {
+    _tutorController.dispose();
+    _courseController.dispose();
+    _locationController.dispose();
+    _dayController.dispose();
+    _timeController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
   Future<int?> InsertCourse(String tutor, String course, String location, String day, String time, String description) async {
     var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/courses/insertCourse.php?"
         "tutor=${Uri.encodeComponent(tutor)}"
@@ -78,23 +85,7 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
     }
   }
 
-
-
-
-
-
-  @override
-  void dispose() {
-    _tutorController.dispose();
-    _courseController.dispose();
-    _locationController.dispose();
-    _dayController.dispose();
-    _timeController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
-
-  // Modify your _refreshTasks function to return a Future
+  // Refresh tasks and update the state
   Future<void> _refreshTasks() async {
     // Get the courses first
     final courses = await getUserCourses();
@@ -113,7 +104,7 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
     try {
       // Make sure your URL is fully qualified
       var url = "${serverPath}userCourses/getUserCourses.php?userID=${widget.userID}";
-      print("Fetching user courses from: $url"); // Add for debugging
+      print("Fetching user courses from: $url");
 
       final response = await http.get(Uri.parse(url));
 
@@ -206,10 +197,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
       return false;
     }
   }
-
-
-
-
 
   void _showAddCourseForm() {
     _tutorController.clear();
@@ -361,16 +348,14 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                                 print("User added to course: $success");
 
                                 if (success) {
-                                  // First clear any existing SnackBars
                                   ScaffoldMessenger.of(context).clearSnackBars();
 
-                                  // First refresh the data
                                   await _refreshTasks();
 
-                                  // Then close the form
+                                  // Close the form
                                   Navigator.pop(context);
 
-                                  // Then show success message with a slight delay to ensure it appears after navigation
+                                  // Show success message with a slight delay
                                   Future.delayed(const Duration(milliseconds: 300), () {
                                     if (mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
@@ -379,6 +364,16 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                                           backgroundColor: Color(0xFF1F2937),
                                         ),
                                       );
+                                    }
+                                  });
+
+                                  // We don't navigate back to MainTeacherScreen
+                                  // Just set that a course was added so we'll need to refresh later
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    if (mounted) {
+                                      setState(() {
+                                        // This forces a state update after the modal is closed
+                                      });
                                     }
                                   });
                                 } else {
@@ -408,8 +403,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                             }
                           }
                         },
-
-
                         child: const Text(
                           'Add Course',
                           style: TextStyle(
@@ -429,7 +422,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
     );
   }
 
-  // Helper method to build form fields
   Widget _buildFormField({
     required String label,
     required TextEditingController controller,
