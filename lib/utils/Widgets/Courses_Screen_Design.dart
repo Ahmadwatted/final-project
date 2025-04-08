@@ -540,41 +540,43 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (dialogContext) => CourseDeleteAlert(
-                      courseID: widget.courses.courseID,
-                      onTaskDeleted: () {
-                        widget.onTaskDeleted();
-                      },
-                    ),
-                  ).then((result) {
-                    if (result == true) {
-                      // Show success message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Course deleted successfully!'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    } else if (result == false) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Failed to delete course.'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  });
-                },
-                child: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.red,
-                  size: 20,
+              if(!widget.isStudent)...{
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) => CourseDeleteAlert(
+                        courseID: widget.courses.courseID,
+                        onTaskDeleted: () {
+                          widget.onTaskDeleted();
+                        },
+                      ),
+                    ).then((result) {
+                      if (result == true) {
+                        // Show success message
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Course deleted successfully!'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } else if (result == false) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to delete course.'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    });
+                  },
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.red,
+                    size: 20,
+                  ),
                 ),
-              ),
+              },
             ],
           ),
           const SizedBox(height: 8),
@@ -621,48 +623,48 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                 ),
               ),
               const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _isLoadingStudents
-                      ? null
-                      : () {
-                    _showCourseStudents();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey.shade100,
-                    foregroundColor: Colors.black87,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+              if(!widget.isStudent)
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _isLoadingStudents
+                        ? null
+                        : () {
+                      _showCourseStudents();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.lerp(Colors.grey.shade100, getCourseColor(widget.courses.courseID), 0.5),
+                      foregroundColor: Colors.black87,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      disabledBackgroundColor: Colors.grey.shade200,
+                      disabledForegroundColor: Colors.grey.shade400,
                     ),
-                    disabledBackgroundColor: Colors.grey.shade200,
-                    disabledForegroundColor: Colors.grey.shade400,
+                    child: _isLoadingStudents
+                        ? SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.grey.shade400,
+                      ),
+                    )
+                        : const Text("Participants"),
                   ),
-                  child: _isLoadingStudents
-                      ? SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.grey.shade400,
-                    ),
-                  )
-                      : Text("Show Students"),
                 ),
-              ),
-
-              const SizedBox(width: 8),
-
-              if(!widget.isStudent)...{
+              if(!widget.isStudent)
+                const SizedBox(width: 8),
+              if(!widget.isStudent)
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
                       _showEditCourseForm();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: courseColor,
-                      foregroundColor: Colors.white,
+                      backgroundColor: getCourseColor(widget.courses.courseID),
+                      foregroundColor: Colors.black87,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
@@ -672,7 +674,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                     child: const Text("Edit"),
                   ),
                 ),
-              },
             ],
           ),
 
