@@ -42,9 +42,39 @@ Future<int> getCourseStunum(int courseID) async {
   }
 }
 
+Future<int> getUserID(String email, String phoneNumber) async {
+  try {
+    var url = "users/getUserID.php?email=$email&phoneNumber=$phoneNumber";
 
+    final response = await http.get(Uri.parse(serverPath+url));
 
-// Replace the existing getCourseStudents function with this updated version:
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      if (jsonData == null) {
+        return 0;
+      }
+
+      if (jsonData is Map<String, dynamic>) {
+        var userID = jsonData['userID'];
+        if (userID is int) {
+          return userID;
+        } else if (userID is String) {
+          return int.tryParse(userID) ?? 0;
+        }
+        return 0;
+      }
+
+      return 0;
+    } else {
+      throw Exception("Failed to load user ID: ${response.statusCode}");
+    }
+  } catch (e) {
+    print("Error getting user ID: $e");
+    return 0;
+  }
+}
+
 
 Future<List<User>> getCourseStudents(int courseID) async {
   List<User> arr = [];
@@ -85,6 +115,49 @@ Future<List<User>> getCourseStudents(int courseID) async {
   print("Returning ${arr.length} course Students");
   return arr;
 }
+
+Future<bool> InsertUserCourse(int userID, int courseID) async {
+  try {
+
+    var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/userCourses/insertUserCourse.php?"
+        "courseID=$courseID"
+        "&userID=$userID";
+
+    print("InsertUserCourse - Final URL: $url");
+
+    final response = await http.get(Uri.parse(url));
+
+    print("InsertUserCourse Response Status Code: ${response.statusCode}");
+    print("InsertUserCourse Response Body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+
+      // Check if the result is a non-zero number (meaning success)
+      if (data['result'] != null) {
+        // Try parsing as int first to check if it's a numeric value
+        try {
+          int resultValue = int.parse(data['result'].toString());
+          return resultValue > 0; // Consider any positive number a success
+        } catch (e) {
+          // If it can't be parsed as int, check if it's "1" (the original success condition)
+          return data['result'] == '1';
+        }
+      } else {
+        print("Error: No result field in response");
+        return false;
+      }
+    } else {
+      print("Error: Server returned ${response.statusCode}");
+      return false;
+    }
+  } catch (e) {
+    print("Error in InsertUserCourse: $e");
+    return false;
+  }
+}
+
+
 class CoursesScreenDesign extends StatefulWidget {
   final Course courses;
   final bool isStudent;
@@ -112,6 +185,10 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
   bool _isLoadingStudents = false;
 
   TextEditingController _notesController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _phoneNumberController = TextEditingController();
+
+
   TextEditingController _tutorController = TextEditingController();
   TextEditingController _courseController = TextEditingController();
   TextEditingController _locationController = TextEditingController();
@@ -252,162 +329,176 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.7,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Course Students',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F2937),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Color(0xFF6B7280)),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Student count
-              Text(
-                "${_courseStudents.length} Students Enrolled",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.w500,
+        return Stack(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 0.7,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                 ),
               ),
-              const SizedBox(height: 16),
-
-              // Student list
-              Expanded(
-                child: _courseStudents.isEmpty
-                    ? Center(
-                  child: Text(
-                    "No students enrolled in this course yet",
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 16,
-                    ),
-                  ),
-                )
-                    : ListView.separated(
-                  itemCount: _courseStudents.length,
-                  separatorBuilder: (context, index) => Divider(height: 1, color: Colors.grey.shade200),
-                  itemBuilder: (context, index) {
-                    final student = _courseStudents[index];
-                    final fullName = "${student.firstName ?? ''} ${student.secondName ?? ''}".trim();
-                    print(student.userID);
-
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: getCourseColor(widget.courses.courseID),
-                        child: Text(
-                          fullName.isNotEmpty
-                              ? fullName.substring(0, 1).toUpperCase()
-                              : "?",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Course Students',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1F2937),
                         ),
                       ),
-                      title: Text(
-                        fullName.isNotEmpty ? fullName : "Unknown",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFF6B7280)),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Student count
+                  Text(
+                    "${_courseStudents.length} Students Enrolled",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Student list
+                  Expanded(
+                    child: _courseStudents.isEmpty
+                        ? Center(
+                      child: Text(
+                        "No students enrolled in this course yet",
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
                           fontSize: 16,
                         ),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 4),
-                          if (student.email.isNotEmpty)
-                            Text(
-                              "Email: ${student.email}",
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 14,
+                    )
+                        : ListView.separated(
+                      itemCount: _courseStudents.length,
+                      separatorBuilder: (context, index) => Divider(height: 1, color: Colors.grey.shade200),
+                      itemBuilder: (context, index) {
+                        final student = _courseStudents[index];
+                        final fullName = "${student.firstName ?? ''} ${student.secondName ?? ''}".trim();
+                        print(student.userID);
+
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: getCourseColor(widget.courses.courseID),
+                            child: Text(
+                              fullName.isNotEmpty
+                                  ? fullName.substring(0, 1).toUpperCase()
+                                  : "?",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          if (student.phoneNumber.isNotEmpty)
-                            Text(
-                              "Phone: ${student.phoneNumber}",
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 14,
-                              ),
+                          ),
+                          title: Text(
+                            fullName.isNotEmpty ? fullName : "Unknown",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
                             ),
-                        ],
-                      ),
-
-                      // Add trailing delete button
-                      trailing: GestureDetector(
-
-                        onTap: () {
-                          showDialog(
-
-                            context: context,
-                            builder: (dialogContext) => UserCourseDeleteAlert(
-                              userID: student.userID,
-
-                              courseID: widget.courses.courseID,// Assuming student has userID property
-                              onTaskDeleted: () {
-                                // After successful deletion, refresh the student list
-                                Navigator.pop(context); // Close the bottom sheet
-                                _showCourseStudents(); // Reload the student list
-                              },
-                            ),
-                          ).then((result) {
-                            if (result != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    result == true
-                                        ? 'Student removed successfully!'
-                                        : 'Failed to remove student.',
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 4),
+                              if (student.email.isNotEmpty)
+                                Text(
+                                  "Email: ${student.email}",
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 14,
                                   ),
-                                  backgroundColor: result == true ? Colors.green : Colors.red,
                                 ),
-                              );
-                            }
-                          });
-                        },
-                        child: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
-                          size: 20,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    );
-                  },
-                ),
+                              if (student.phoneNumber.isNotEmpty)
+                                Text(
+                                  "Phone: ${student.phoneNumber}",
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                            ],
+                          ),
+
+                          trailing: GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (dialogContext) => UserCourseDeleteAlert(
+                                  userID: student.userID,
+                                  courseID: widget.courses.courseID,
+                                  onTaskDeleted: () {
+                                    // After successful deletion, refresh the student list
+                                    Navigator.pop(context); // Close the bottom sheet
+                                    _showCourseStudents(); // Reload the student list
+                                  },
+                                ),
+                              ).then((result) {
+                                if (result != null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        result == true
+                                            ? 'Student removed successfully!'
+                                            : 'Failed to remove student.',
+                                      ),
+                                      backgroundColor: result == true ? Colors.green : Colors.red,
+                                    ),
+                                  );
+                                }
+                              });
+                            },
+                            child: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.red,
+                              size: 20,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              right: 20,
+              bottom: 20,
+              child: FloatingActionButton(
+                backgroundColor: Colors.white,
+                elevation: 2,
+                child: const Icon(Icons.add, color: Color(0xFF1F2937)),
+                onPressed: () {
+                  // Show a dialog or another bottom sheet with your form
+                  _showAddStudentForm(context);
+                },
+              ),
+            ),
+          ],
         );
       },
     );
   }
+
 
   Future<bool> EditCourse(int courseID, String tutor, String course, String location, String day, String time, String description) async {
     try {
@@ -1061,6 +1152,72 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
           ),
         ],
       ),
+    );
+  }
+  void _showAddStudentForm(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Add New Student'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildFormField(
+                  label: 'Student e-Mail',
+                  controller: _emailController,
+                  hint: 'Enter Student e-Mail',
+                  icon: Icons.person_outline,
+                  isRequired: true,
+                ),
+                _buildFormField(
+                  label: 'Student PhoneNumber',
+                  controller: _phoneNumberController,
+                  hint: 'Enter Student PhoneNumber',
+                  icon: Icons.school_outlined,
+                  isRequired: true,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Add'),
+              onPressed: () async {
+                int uID = await getUserID(_emailController.text, _phoneNumberController.text);
+
+                if(uID == 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('No student found with the matching credentials'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                } else {
+
+
+
+
+
+
+
+
+
+
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
