@@ -52,11 +52,9 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
 
           if (jsonResponse is Map && jsonResponse.containsKey('result')) {
             if (jsonResponse['result'] == '1' || jsonResponse['result'] == 1) {
-              // Execute the callback before returning
               widget.onTaskDeleted();
               return true;
             } else {
-              // If deletion failed, display the message from PHP
               showErrorDialog(context, jsonResponse['message'] ?? 'Unknown error');
               return false;
             }
@@ -71,7 +69,6 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
           return false;
         }
       } else {
-        // If the status code is not 200, display a generic error message
         showErrorDialog(context, 'Failed to connect to the server');
         return false;
       }

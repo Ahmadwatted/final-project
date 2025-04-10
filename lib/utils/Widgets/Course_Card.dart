@@ -50,7 +50,6 @@ class CourseCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top color strip
           Container(
             height: 8,
             width: double.infinity,
@@ -86,12 +85,6 @@ class CourseCard extends StatelessWidget {
                     ),
 
                   ],
-
-
-
-
-
-
 
                 ),
                 const SizedBox(height: 8),

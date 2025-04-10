@@ -446,9 +446,11 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                                   userID: student.userID,
                                   courseID: widget.courses.courseID,
                                   onTaskDeleted: () {
-                                    // After successful deletion, refresh the student list
-                                    Navigator.pop(context); // Close the bottom sheet
-                                    _showCourseStudents(); // Reload the student list
+
+                                    Navigator.pop(context);
+                                    _showCourseStudents();
+                                    _loadStudentCount();
+
                                   },
                                 ),
                               ).then((result) {
@@ -841,7 +843,10 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
 
   Widget _buildStudentCountRow() {
     if (isLoading) {
+      _loadStudentCount();
+
       return Row(
+
         children: [
           Icon(
             Icons.group_outlined,
@@ -868,10 +873,12 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
             size: 16,
             color: Colors.grey.shade600,
           ),
+
+
           const SizedBox(width: 8),
           if(studentCount!=0)...{
             Text(
-              "${studentCount!-1} Students",
+              "${studentCount} Students",
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey.shade600,
@@ -1155,67 +1162,127 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     );
   }
   void _showAddStudentForm(BuildContext context) {
+    // Store the scaffold context
+    final scaffoldContext = ScaffoldMessenger.of(context);
+
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Add New Student'),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildFormField(
-                  label: 'Student e-Mail',
-                  controller: _emailController,
-                  hint: 'Enter Student e-Mail',
-                  icon: Icons.person_outline,
-                  isRequired: true,
+      builder: (BuildContext dialogContext) {
+        _emailController.clear();
+        _phoneNumberController.clear();
+        bool isLoading = false;
+
+        return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: Text('Add New Student'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildFormField(
+                        label: 'Student e-Mail',
+                        controller: _emailController,
+                        hint: 'Enter Student e-Mail',
+                        icon: Icons.person_outline,
+                        isRequired: true,
+                      ),
+                      _buildFormField(
+                        label: 'Student PhoneNumber',
+                        controller: _phoneNumberController,
+                        hint: 'Enter Student PhoneNumber',
+                        icon: Icons.school_outlined,
+                        isRequired: true,
+                      ),
+                      if (isLoading)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                              SizedBox(width: 12),
+                              Text('Processing...'),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-                _buildFormField(
-                  label: 'Student PhoneNumber',
-                  controller: _phoneNumberController,
-                  hint: 'Enter Student PhoneNumber',
-                  icon: Icons.school_outlined,
-                  isRequired: true,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Add'),
-              onPressed: () async {
-                int uID = await getUserID(_emailController.text, _phoneNumberController.text);
+                actions: [
+                  TextButton(
+                    child: Text('Cancel'),
+                    onPressed: isLoading ? null : () {
+                      Navigator.of(dialogContext).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: Text('Add'),
+                    onPressed: isLoading ? null : () async {
+                      // Show loading indicator
+                      setState(() {
+                        isLoading = true;
+                      });
 
-                if(uID == 0) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('No student found with the matching credentials'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                } else {
+                      int uID = await getUserID(_emailController.text, _phoneNumberController.text);
 
+                      if(uID == 0) {
+                        // Close the dialog
+                        Navigator.of(dialogContext).pop();
+                        // Close the bottom sheet
+                        Navigator.pop(context);
 
+                        // Display the error message
+                        scaffoldContext.showSnackBar(
+                          const SnackBar(
+                            content: Text('No student found with the matching credentials'),
+                            backgroundColor: Colors.red,
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                      } else {
+                        bool success = await InsertUserCourse(uID, widget.courses.courseID);
 
+                        // Close the dialog
+                        Navigator.of(dialogContext).pop();
+                        // Close the bottom sheet
+                        Navigator.pop(context);
 
+                        if (success) {
+                          scaffoldContext.showSnackBar(
+                            const SnackBar(
+                              content: Text('Added Student successfully'),
+                              backgroundColor: Colors.green,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
 
-
-
-
-
-
-                }
-              },
-            ),
-          ],
+                          // Refresh data with a slight delay
+                          Future.delayed(Duration(milliseconds: 300), () {
+                            if (mounted) {
+                              _showCourseStudents();
+                              _loadStudentCount();
+                            }
+                          });
+                        } else {
+                          scaffoldContext.showSnackBar(
+                            const SnackBar(
+                              content: Text('Failed to add student to course'),
+                              backgroundColor: Colors.red,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              );
+            }
         );
       },
     );

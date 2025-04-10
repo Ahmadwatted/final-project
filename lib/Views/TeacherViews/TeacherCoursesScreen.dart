@@ -367,12 +367,10 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                                     }
                                   });
 
-                                  // We don't navigate back to MainTeacherScreen
-                                  // Just set that a course was added so we'll need to refresh later
+
                                   WidgetsBinding.instance.addPostFrameCallback((_) {
                                     if (mounted) {
                                       setState(() {
-                                        // This forces a state update after the modal is closed
                                       });
                                     }
                                   });
