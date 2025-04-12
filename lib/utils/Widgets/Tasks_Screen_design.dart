@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../Models/task.dart';
 
 class TasksScreenDesign extends StatefulWidget {
@@ -6,6 +7,7 @@ class TasksScreenDesign extends StatefulWidget {
   final bool isStudent;
   final Function onTaskDeleted;
   final Function? onToggleCompletion;
+  final Function? onToggleBookmark;
 
   const TasksScreenDesign({
     Key? key,
@@ -13,6 +15,7 @@ class TasksScreenDesign extends StatefulWidget {
     required this.isStudent,
     required this.onTaskDeleted,
     this.onToggleCompletion,
+    this.onToggleBookmark,
   }) : super(key: key);
 
   @override
@@ -35,27 +38,52 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
   }
 
   String getDaysRemaining(String dueDate) {
-    if (dueDate.isEmpty) return '';
+    if (dueDate.isEmpty) return 'No due date';
+
+    final today = DateTime.now();
 
     try {
-      final today = DateTime.now();
-      final due = DateTime.parse(dueDate);
+      // Parse the date in DD/MM/YYYY format
+      final DateFormat formatter = DateFormat('dd/MM/yyyy');
+      final due = formatter.parse(dueDate);
+
       final difference = due.difference(today).inDays;
 
       if (difference < 0) return 'Overdue';
       if (difference == 0) return 'Due today';
       return '$difference days left';
     } catch (e) {
-      return '';
+      print('Error parsing date: $e');
+      return 'Invalid date';
+    }
+  }
+
+  void _toggleCompletion() {
+    // Call the parent's toggle function if provided
+    if (widget.onToggleCompletion != null) {
+      widget.onToggleCompletion!(widget.task.taskID);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final courseColor = getCourseColor(widget.task.taskID);
-    final daysRemaining = widget.task.dueDate.isNotEmpty ? getDaysRemaining(widget.task.dueDate) : '';
+    final daysRemaining = getDaysRemaining(widget.task.dueDate);
     final isDueToday = daysRemaining == 'Due today';
     final isOverdue = daysRemaining == 'Overdue';
+
+    final isCompleted = widget.task.isCompleted;
+
+    Color borderColor;
+    if (isCompleted) {
+      borderColor = const Color(0xFF10B981);
+    } else if (isOverdue) {
+      borderColor = const Color(0xFFEF4444);
+    } else if (isDueToday) {
+      borderColor = const Color(0xFFF59E0B);
+    } else {
+      borderColor = courseColor;
+    }
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -71,7 +99,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
         ],
         border: Border(
           left: BorderSide(
-            color: courseColor,
+            color: borderColor,
             width: 4,
           ),
         ),
@@ -112,7 +140,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
-                                decoration: widget.task.isCompleted
+                                decoration: isCompleted
                                     ? TextDecoration.lineThrough
                                     : TextDecoration.none,
                                 decorationColor: Colors.black54,
@@ -124,88 +152,92 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                     ),
                     Row(
                       children: [
-                        IconButton(
-                          icon: Icon(
-                            widget.task.isCompleted
-                                ? Icons.check_circle
-                                : Icons.check_circle_outline,
-                            color: widget.task.isCompleted
-                                ? const Color(0xFF10B981)
-                                : Colors.grey,
-                            size: 20,
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(50),
+                            onTap: _toggleCompletion,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              child: Icon(
+                                isCompleted
+                                    ? Icons.check_circle
+                                    : Icons.check_circle_outline,
+                                color: isCompleted
+                                    ? const Color(0xFF10B981)
+                                    : Colors.grey,
+                                size: 22,
+                              ),
+                            ),
                           ),
-                          onPressed: () {
-                            widget.onToggleCompletion?.call(widget.task.taskID);
-                          },
-                          constraints: const BoxConstraints(
-                            minWidth: 36,
-                            minHeight: 36,
-                          ),
-                          padding: EdgeInsets.zero,
-                          splashRadius: 20,
                         ),
-                        if (!widget.isStudent)
-                          IconButton(
-                            icon: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.redAccent,
-                              size: 20,
-                            ),
-                            onPressed: () async {
-                              // Show confirmation dialog
-                              bool confirmDelete = await showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Delete Task'),
-                                  content: const Text(
-                                    'Are you sure you want to delete this task?',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
-                                      child: const Text('Delete'),
-                                    ),
-                                  ],
-                                ),
-                              ) ??
-                                  false;
 
-                              if (confirmDelete) {
-                                widget.onTaskDeleted();
-                              }
-                            },
-                            constraints: const BoxConstraints(
-                              minWidth: 36,
-                              minHeight: 36,
+                        // Delete button for non-students
+                        if (!widget.isStudent)
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(50),
+                              onTap: () async {
+                                // Show confirmation dialog
+                                bool confirmDelete = await showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Delete Task'),
+                                    content: const Text(
+                                      'Are you sure you want to delete this task?',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        child: const Text('Delete'),
+                                      ),
+                                    ],
+                                  ),
+                                ) ?? false;
+
+                                if (confirmDelete) {
+                                  widget.onTaskDeleted();
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                child: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.redAccent,
+                                  size: 22,
+                                ),
+                              ),
                             ),
-                            padding: EdgeInsets.zero,
-                            splashRadius: 20,
                           ),
-                        IconButton(
-                          icon: Icon(
-                            isExpanded
-                                ? Icons.keyboard_arrow_up
-                                : Icons.keyboard_arrow_down,
-                            color: Colors.grey,
-                            size: 20,
+
+                        // Expand/collapse button
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(50),
+                            onTap: () {
+                              setState(() {
+                                isExpanded = !isExpanded;
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              child: Icon(
+                                isExpanded
+                                    ? Icons.keyboard_arrow_up
+                                    : Icons.keyboard_arrow_down,
+                                color: Colors.grey,
+                                size: 22,
+                              ),
+                            ),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              isExpanded = !isExpanded;
-                            });
-                          },
-                          constraints: const BoxConstraints(
-                            minWidth: 36,
-                            minHeight: 36,
-                          ),
-                          padding: EdgeInsets.zero,
-                          splashRadius: 20,
                         ),
                       ],
                     ),
@@ -247,6 +279,25 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                   const SizedBox(height: 12),
                   const Divider(height: 1, color: Colors.black12),
                   const SizedBox(height: 12),
+                  // Check if description exists before displaying it
+                  if (widget.task.description != null && widget.task.description.isNotEmpty)
+                    Text(
+                      widget.task.description,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
+                    )
+                  else
+                    const Text(
+                      '',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black38,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -257,33 +308,32 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                           color: Colors.grey,
                         ),
                       ),
-                      if (daysRemaining.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isOverdue
+                              ? const Color(0xFFFEE2E2)
+                              : isDueToday
+                              ? const Color(0xFFFEF3C7)
+                              : const Color(0xFFE0F2FE),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          daysRemaining,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
                             color: isOverdue
-                                ? const Color(0xFFFEE2E2)
+                                ? const Color(0xFFB91C1C)
                                 : isDueToday
-                                ? const Color(0xFFFEF3C7)
-                                : const Color(0xFFE0F2FE),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            daysRemaining,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: isOverdue
-                                  ? const Color(0xFFB91C1C)
-                                  : isDueToday
-                                  ? const Color(0xFF92400E)
-                                  : const Color(0xFF1E40AF),
-                            ),
+                                ? const Color(0xFF92400E)
+                                : const Color(0xFF1E40AF),
                           ),
                         ),
+                      ),
                     ],
                   ),
                 ],

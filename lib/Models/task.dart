@@ -6,6 +6,7 @@ class Task {
   final String day;
   final bool isCompleted;
   final String dueDate;
+  final  description;
 
   Task({
     required this.taskID,
@@ -15,6 +16,7 @@ class Task {
     required this.time,
     this.isCompleted = false,
     this.dueDate = '',
+    this.description='',
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Task {
       time: json['time'] ?? '',
       isCompleted: json['isCompleted'] ?? false,
       dueDate: json['dueDate'] ?? '',
+      description: json['description'] ?? '',
     );
   }
 
@@ -38,6 +41,7 @@ class Task {
       'time': time,
       'isCompleted': isCompleted,
       'dueDate': dueDate,
+      'description' : description
     };
   }
 }
