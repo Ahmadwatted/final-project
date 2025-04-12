@@ -162,16 +162,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
         title: Text(widget.title),
         backgroundColor: Colors.white,
         elevation: 1,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () {
-              setState(() {
-                _isFilterMenuOpen = !_isFilterMenuOpen;
-              });
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -260,34 +250,9 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
             ),
 
           // Course Colors Legend
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Course Colors',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black54,
-                  ),
-                ),
+
                 const SizedBox(height: 8),
-                Wrap(
-                  spacing: 12,
-                  children: [
-                    _buildColorLegend(0, 'Advanced'),
-                    _buildColorLegend(1, 'Data'),
-                    _buildColorLegend(2, 'UX'),
-                    _buildColorLegend(3, 'Machine'),
-                    _buildColorLegend(4, 'Creative'),
-                    _buildColorLegend(5, 'Database'),
-                  ],
-                ),
-              ],
-            ),
-          ),
+
 
           // Task List
           Expanded(
@@ -346,7 +311,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                           ),
                           const SizedBox(height: 16),
                           const Text(
-                            'No tasks found with current filters',
+                            'Keep going :)',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
@@ -376,16 +341,10 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Implement add new task functionality
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Add new task functionality coming soon!'),
-            ),
-          );
-        },
-        backgroundColor: const Color(0xFF3B82F6),
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.white,
+        elevation: 2,
+        child: const Icon(Icons.add, color: Color(0xFF1F2937)),
+        onPressed: (){},
       ),
     );
   }

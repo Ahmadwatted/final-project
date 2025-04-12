@@ -105,7 +105,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
       return true; // 'all' filter
     }).toList();
 
-    // Filter based on search term
     if (_searchTerm.isNotEmpty) {
       filteredTasks = filteredTasks.where((task) {
         return task.course.toLowerCase().contains(_searchTerm.toLowerCase()) ||
@@ -113,7 +112,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
       }).toList();
     }
 
-    // Sort the tasks
     filteredTasks.sort((a, b) {
       int comparison;
 
@@ -194,7 +192,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
             ),
           ),
 
-          // Filter options row
           if (_isFilterMenuOpen)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),

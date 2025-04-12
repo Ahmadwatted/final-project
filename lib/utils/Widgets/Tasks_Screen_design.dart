@@ -1,5 +1,7 @@
+import 'package:final_project/utils/Widgets/Confirm_Del_Task.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Models/task.dart';
 
 class TasksScreenDesign extends StatefulWidget {
@@ -24,6 +26,34 @@ class TasksScreenDesign extends StatefulWidget {
 
 class _TasksScreenDesignState extends State<TasksScreenDesign> {
   bool isExpanded = false;
+  bool _isCompleted = false; // Local state to track completion
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCompletionStatus();
+  }
+
+  Future<void> _loadCompletionStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedStatus = prefs.getBool('task_${widget.task.taskID}_completed');
+
+    // If we have a saved status, use it; otherwise use the task's initial value
+    if (savedStatus != null) {
+      setState(() {
+        _isCompleted = savedStatus;
+      });
+    } else {
+      setState(() {
+        _isCompleted = widget.task.isCompleted;
+      });
+    }
+  }
+
+  Future<void> _saveCompletionStatus(bool isCompleted) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('task_${widget.task.taskID}_completed', isCompleted);
+  }
 
   Color getCourseColor(int courseId) {
     final colors = [
@@ -58,10 +88,38 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     }
   }
 
-  void _toggleCompletion() {
+  void _toggleCompletion() async {
+    // Update local state
+    setState(() {
+      _isCompleted = !_isCompleted;
+    });
+
+    // Persist the state
+    await _saveCompletionStatus(_isCompleted);
+
     // Call the parent's toggle function if provided
     if (widget.onToggleCompletion != null) {
       widget.onToggleCompletion!(widget.task.taskID);
+    }
+  }
+
+  void _showDeleteConfirmation() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => TaskDeleteAlert(
+        taskID: widget.task.taskID,
+        onTaskDeleted: widget.onTaskDeleted,
+      ),
+    );
+
+    // If the result is true, task was successfully deleted
+    if (result == true) {
+      // Clean up the SharedPreferences when task is deleted
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('task_${widget.task.taskID}_completed');
+
+      // Call the parent's onTaskDeleted function
+      widget.onTaskDeleted();
     }
   }
 
@@ -72,7 +130,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     final isDueToday = daysRemaining == 'Due today';
     final isOverdue = daysRemaining == 'Overdue';
 
-    final isCompleted = widget.task.isCompleted;
+    // Use our local state instead of widget.task.isCompleted
+    final isCompleted = _isCompleted;
 
     Color borderColor;
     if (isCompleted) {
@@ -178,34 +237,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(50),
-                              onTap: () async {
-                                // Show confirmation dialog
-                                bool confirmDelete = await showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('Delete Task'),
-                                    content: const Text(
-                                      'Are you sure you want to delete this task?',
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(true),
-                                        child: const Text('Delete'),
-                                      ),
-                                    ],
-                                  ),
-                                ) ?? false;
-
-                                if (confirmDelete) {
-                                  widget.onTaskDeleted();
-                                }
-                              },
+                              onTap: _showDeleteConfirmation,
                               child: Container(
                                 padding: const EdgeInsets.all(8),
                                 child: const Icon(
@@ -217,7 +249,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                             ),
                           ),
 
-                        // Expand/collapse button
                         Material(
                           color: Colors.transparent,
                           child: InkWell(
