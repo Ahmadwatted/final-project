@@ -208,7 +208,6 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // COURSES SECTION
                 _buildSectionHeader(
                   'My Courses',
                   Icons.book_outlined,
@@ -226,7 +225,6 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
 
                 const SizedBox(height: 24),
 
-                // SCHEDULE SECTION
                 _buildSectionHeader(
                   'My Schedule',
                   Icons.schedule_outlined,
@@ -244,7 +242,6 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
 
                 const SizedBox(height: 24),
 
-                // TASKS SECTION
                 _buildSectionHeader(
                   'My Tasks',
                   Icons.check_box_outlined,

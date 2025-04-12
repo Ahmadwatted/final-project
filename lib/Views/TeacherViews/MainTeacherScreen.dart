@@ -34,12 +34,6 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
   late Future<List<Task>> _tasksFuture;
   late Future<List<Course>> _CoursesFuture;
 
-  final TextEditingController _tutorController = TextEditingController();
-  final TextEditingController _courseController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _dayController = TextEditingController();
-  final TextEditingController _timeController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -145,19 +139,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
     });
   }
 
-  void _handleJoinCourse(String code) {
-    // backend
-    print('Joining course with code: $code');
-  }
 
-  void _showJoinSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => AddButtonDesign(
-        onJoinCourse: _handleJoinCourse,
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -362,7 +344,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>  Teacheruploadedtasks(title: 'My Courses',
+                          builder: (context) =>  TeacherUploadedTasks(title: 'My Courses',
                             userID: widget.userID,),
                         ),
                       ).then((_) => _refreshTasks()),
@@ -433,14 +415,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showJoinSheet(context),
-        child: const Icon(Icons.add_circle_outline, color: Colors.black),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        splashColor: Colors.transparent,
-        highlightElevation: 0,
-      ),
+
     );
   }
 }

@@ -1,39 +1,33 @@
 import 'dart:convert';
-
 import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../Models/clientConfig.dart';
 import '../../Models/task.dart';
-import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
 
-class Teacheruploadedtasks extends StatelessWidget {
+class TeacherUploadedTasks extends StatelessWidget {
   final String title;
   final String userID;
 
-  const Teacheruploadedtasks({super.key, required this.title, required this.userID});
+  const TeacherUploadedTasks({super.key, required this.title, required this.userID});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => StudentDashboardViewModel(),
-      child: _Teacheruploadedtasks(title: title, userID:userID),
-    );
+    return  _TeacherUploadedTasks(title: title, userID:userID);
   }
 }
 
-class _Teacheruploadedtasks extends StatefulWidget {
+class _TeacherUploadedTasks extends StatefulWidget {
   final String title;
   final String userID;
 
-  const _Teacheruploadedtasks({required this.title, required this.userID});
+  const _TeacherUploadedTasks({required this.title, required this.userID});
 
   @override
-  State<_Teacheruploadedtasks> createState() => _MyTasksScreenState();
+  State<_TeacherUploadedTasks> createState() => _MyTasksScreenState();
 }
 
-class _MyTasksScreenState extends State<_Teacheruploadedtasks> {
+class _MyTasksScreenState extends State<_TeacherUploadedTasks> {
   late Future<List<Task>> _tasksFuture;
 
   @override
@@ -72,17 +66,10 @@ class _MyTasksScreenState extends State<_Teacheruploadedtasks> {
           arr.add(Task.fromJson(i));
         }
 
-        String tasksString = arr
-            .map((task) =>
-        '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
-            .join(', ');
 
-        // print("Formatted Task List: $tasksString");
-      } else {
-        // throw Exception('Failed to load tasks: ${response.statusCode}');
+
       }
     } catch (e) {
-      // print('Error: $e');
     }
     return arr;
   }
@@ -90,7 +77,6 @@ class _MyTasksScreenState extends State<_Teacheruploadedtasks> {
   @override
   Widget build(BuildContext context) {
 
-    final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(
         backgroundColor: const Color(0xFFE3DFD6),

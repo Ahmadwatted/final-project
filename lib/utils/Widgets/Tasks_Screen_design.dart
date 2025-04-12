@@ -1,4 +1,3 @@
-import 'package:final_project/utils/Widgets/Random_color.dart';
 import 'package:flutter/material.dart';
 import '../../Models/task.dart';
 import '../Widgets/Confirm_Del_Task.dart';
@@ -7,7 +6,6 @@ class TasksScreenDesign extends StatelessWidget {
   final Task task;
   final bool isStudent;
   final Function onTaskDeleted;
-  final Color taskColor = RandomColor.getRandomShade700();
 
    TasksScreenDesign({
     Key? key,
@@ -32,7 +30,7 @@ class TasksScreenDesign extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: taskColor,
+                color: Colors.black,
                 borderRadius: BorderRadius.circular(8),
               ),
             ),

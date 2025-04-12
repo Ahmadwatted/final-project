@@ -1,4 +1,3 @@
-
 class UserType {
    final int userTypeID;
   final String userTypeName;
@@ -9,8 +8,6 @@ class UserType {
 
 
   });
-
-
   factory UserType.fromJson(Map<String, dynamic> json) {
     return UserType(
       userTypeID: json["userTypeID"],
@@ -19,13 +16,6 @@ class UserType {
 
 
   }
-
-
-
-
-
-
-
 
   Map<String, dynamic> toJson() {
     return {

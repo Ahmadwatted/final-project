@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../Models/course.dart';
 import 'Confirm_Del_Task.dart';
-import 'Random_color.dart';
 
 class CourseCard extends StatelessWidget {
   final Course courses;
   final bool isStudent;
   final Function onTaskDeleted;
-  final Color courseColor = RandomColor.getRandomShade700();
 
    CourseCard({
     Key? key,
@@ -67,10 +65,7 @@ class CourseCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Day badge
-
                 const SizedBox(height: 8),
-                // Course title
                 Row(
                   children: [
                     Text(

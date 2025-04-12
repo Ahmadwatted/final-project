@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../Models/course.dart';
-import '../../Models/schedule.dart';
-import 'Confirm_Del_Task.dart';
-import 'Random_color.dart';
+
 
 class ScheduleCard extends StatelessWidget {
   final Course course;
   final bool isStudent;
   final Function onTaskDeleted;
-  final Color courseColor = RandomColor.getRandomShade700();
 
   ScheduleCard({
     Key? key,
@@ -35,7 +32,7 @@ class ScheduleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 320, // Increased width to prevent overflow
+      width: 320,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -51,8 +48,8 @@ class ScheduleCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Top color strip
           Container(
+            // لون الكرت من فوق
             height: 8,
             width: double.infinity,
             decoration: BoxDecoration(
@@ -69,7 +66,6 @@ class ScheduleCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Day badge
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                   decoration: BoxDecoration(
@@ -93,7 +89,6 @@ class ScheduleCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                // Course title
                 Text(
                   course.course,
                   style: const TextStyle(
@@ -105,7 +100,6 @@ class ScheduleCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
-                // Info rows with overflow protection
                 infoRow(Icons.person_2_sharp, course.tutor),
                 infoRow(Icons.access_time, course.time),
                 infoRow(Icons.location_on, course.location),
@@ -121,10 +115,10 @@ class ScheduleCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center, // Changed from start to center
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 20, // Fixed width container for icon
+            width: 20,
             child: Icon(icon, size: 12, color: Colors.grey.shade600),
           ),
           Expanded(

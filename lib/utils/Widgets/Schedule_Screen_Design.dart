@@ -47,7 +47,6 @@ class ScheduleScreenDesign extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top color strip - increased height to 8
           Container(
             height: 8,
             width: double.infinity,
@@ -65,7 +64,6 @@ class ScheduleScreenDesign extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Course title and delete button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,8 +83,6 @@ class ScheduleScreenDesign extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-
-                // Course details
                 Row(
                   children: [
                     const Icon(Icons.person_outline, size: 16, color: Color(0xFF6B7280)),

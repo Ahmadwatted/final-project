@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../Models/task.dart';
 import '../Widgets/Confirm_Del_Task.dart';
-import 'Random_color.dart';
 
 class TaskCard extends StatelessWidget {
   final Task tasks;
   final bool isStudent;
   final Function onTaskDeleted;
-  final Color courseColor = RandomColor.getRandomShade700();
 
   TaskCard({
     Key? key,

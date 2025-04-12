@@ -22,7 +22,6 @@ class AddButtonDesign extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Bottom sheet handle
           Container(
             width: 40,
             height: 4,
@@ -50,7 +49,6 @@ class AddButtonDesign extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          // Join button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(

@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/checkLoginModel.dart';
-import '../Models/user.dart';
 import '../Models/clientConfig.dart';
 import '../utils/Utils.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
@@ -26,9 +24,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home:  LoginPage(),
-      // routes: {
-      //   '/MainAppPage': (context) => LoginPage(),
-      // },
+
     );
   }
 }
@@ -47,13 +43,12 @@ class LoginPage extends StatelessWidget {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('connected to internet');// print(result);// return 1;
+        print('connected to internet');
       }
     } on SocketException catch (_) {
-      print('not connected to internet');// print(result);
+      print('not connected to internet');
       var uti = new Utils();
       uti.showMyDialog2(context, "אין אינטרנט", "האפליקציה דורשת חיבור לאינטרנט, נא להתחבר בבקשה");
-      // return;
     }
   }
 
@@ -70,7 +65,6 @@ class LoginPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back Button
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Row(
@@ -89,7 +83,6 @@ class LoginPage extends StatelessWidget {
               ),
               const SizedBox(height: 32),
 
-              // Main Content
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
@@ -120,7 +113,6 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // Email Field
                     CustomTextField(
                       controller: _txtemail,
                       label: 'Email',
@@ -130,7 +122,6 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Password Field
                     CustomTextField(
                       controller: _txtpassword,
                       label: 'Password',
@@ -139,7 +130,6 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // Sign In Button
                     Container(
                       width: double.infinity,
                       height: 56,
@@ -158,11 +148,9 @@ class LoginPage extends StatelessWidget {
                       ),
                       child: ElevatedButton(
                         onPressed: () async {
-                          // Call the checkLogin function
                           bool isLoginSuccessful = await checkLogin(context, _txtemail.text, _txtpassword.text);
 
                           if (isLoginSuccessful) {
-                            // Get the userTypeID from the login response
                             try {
                               var url = "checkLogins/checkLogin.php?email=${_txtemail.text}&password=${_txtpassword.text}";
                               final response = await http.get(Uri.parse(serverPath + url));
@@ -175,7 +163,6 @@ class LoginPage extends StatelessWidget {
                                   String userID = decodedData['userID'].toString();
 
                                   if (userTypeID == "1") {
-                                    // Navigate to Teacher Main Screen with userID
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -186,7 +173,6 @@ class LoginPage extends StatelessWidget {
                                       ),
                                     );
                                   } else if (userTypeID == "2") {
-                                    // Navigate to Student Main Screen with userID
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -201,7 +187,6 @@ class LoginPage extends StatelessWidget {
                               }
                             } catch (e) {
                               print("Error routing user: $e");
-                              // Fallback to original behavior
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -237,7 +222,6 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Register Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

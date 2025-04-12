@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-
 class Task {
   final int taskID;
   final String tutor;

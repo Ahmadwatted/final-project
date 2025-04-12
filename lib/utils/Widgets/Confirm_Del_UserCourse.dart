@@ -12,7 +12,7 @@ class UserCourseDeleteAlert extends StatefulWidget {
   const UserCourseDeleteAlert({
     Key? key,
     required this.courseID,
-     required  this.userID,  // Receive userID as parameter
+     required  this.userID,
     required this.onTaskDeleted,
   }) : super(key: key);
 

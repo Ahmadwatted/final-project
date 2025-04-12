@@ -490,7 +490,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                 elevation: 2,
                 child: const Icon(Icons.add, color: Color(0xFF1F2937)),
                 onPressed: () {
-                  // Show a dialog or another bottom sheet with your form
                   _showAddStudentForm(context);
                 },
               ),
@@ -1162,7 +1161,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     );
   }
   void _showAddStudentForm(BuildContext context) {
-    // Store the scaffold context
     final scaffoldContext = ScaffoldMessenger.of(context);
 
     showDialog(

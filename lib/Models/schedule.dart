@@ -7,7 +7,6 @@ class Schedule {
   final String day;
   final String time;
   final String location;
-   Color? c;
 
   Schedule({
     required this.scheduleID,
@@ -16,7 +15,6 @@ class Schedule {
     required this.day,
     required this.time,
     required this.location,
-     this.c,
   });
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
@@ -45,15 +43,3 @@ class Schedule {
 }
 
 
-class StudentViewModel extends ChangeNotifier {
-  List<Schedule> schedule = [];
-
-  void loadScheduleFromJson(List<Map<String, dynamic>> jsonList) {
-    schedule = jsonList.map((json) => Schedule.fromJson(json)).toList();
-    notifyListeners();
-  }
-
-  List<Map<String, dynamic>> scheduleToJson() {
-    return schedule.map((schedule) => schedule.toJson()).toList();
-  }
-}

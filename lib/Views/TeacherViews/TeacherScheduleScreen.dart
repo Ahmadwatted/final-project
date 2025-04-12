@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:final_project/Models/course.dart';
 import 'package:final_project/utils/Widgets/Courses_Screen_Design.dart';
 import 'package:provider/provider.dart';
-import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
 import '../../Models/clientConfig.dart';
 
@@ -17,10 +16,8 @@ class TeacherScheduleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => StudentDashboardViewModel(),
-      child: _TeacherScheduleScreen(title: title, userID: userID),
-    );
+    return  _TeacherScheduleScreen(title: title, userID: userID);
+
   }
 }
 
@@ -83,7 +80,6 @@ class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(
       backgroundColor: const Color(0xFFE3DFD6),

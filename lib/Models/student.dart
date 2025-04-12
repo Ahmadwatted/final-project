@@ -4,7 +4,6 @@ class Student {
   final String secondName;
   final String phoneNumber;
   final String email;
-
   Student({
     required this.studentID,
     required this.firstName,
@@ -12,8 +11,6 @@ class Student {
     required this.phoneNumber,
     required this.email,
   });
-
-
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
       studentID: json['studentID'],
@@ -24,7 +21,6 @@ class Student {
 
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       "studentID": studentID,

@@ -47,7 +47,6 @@ class _CourseDeleteAlertState extends State<CourseDeleteAlert> {
 
           if (jsonResponse is Map && jsonResponse.containsKey('result')) {
             if (jsonResponse['result'] == '1' || jsonResponse['result'] == 1) {
-              // Execute the callback before returning
               widget.onTaskDeleted();
               return true;
             } else {

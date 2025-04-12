@@ -1,5 +1,3 @@
-import 'course.dart';
-
 class Tutor {
   final int tutorID;
   final String firstName;

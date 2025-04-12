@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import '../Models/clientConfig.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
 
@@ -13,7 +12,6 @@ class RegisterPage extends StatelessWidget {
   final TextEditingController _txtpassword = TextEditingController();
   final TextEditingController _txtphoneNumber = TextEditingController();
   final TextEditingController _txtemail = TextEditingController();
-  final TextEditingController _txtuserTypeID = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +23,6 @@ class RegisterPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back Button
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Row(
@@ -44,7 +41,6 @@ class RegisterPage extends StatelessWidget {
               ),
               const SizedBox(height: 32),
 
-              // Main Content
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
@@ -75,7 +71,6 @@ class RegisterPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // First Name and Last Name
                     Row(
                       children: [
                         Expanded(
@@ -97,7 +92,6 @@ class RegisterPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Email
                     CustomTextField(
                       controller: _txtemail,
                       label: 'Email',
@@ -106,7 +100,6 @@ class RegisterPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Phone Number
                     CustomTextField(
                       controller: _txtphoneNumber,
                       label: 'Phone Number',
@@ -115,7 +108,6 @@ class RegisterPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Password
                     CustomTextField(
                       controller: _txtpassword,
                       label: 'Password',
@@ -124,7 +116,6 @@ class RegisterPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // Register Button
                     Container(
                       width: double.infinity,
                       height: 56,
@@ -181,7 +172,6 @@ class RegisterPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Login Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -228,18 +218,15 @@ class RegisterPage extends StatelessWidget {
         "&userTypeID=$userTypeID";
 
     final response = await http.get(Uri.parse(serverPath + url));
-
-    // Parse the response to get the new userID
-    // Assuming your PHP returns the new user ID
     if (response.statusCode == 200) {
       try {
         final data = json.decode(response.body);
         return data['userID'].toString();
       } catch (e) {
         print("Error parsing user ID: $e");
-        return "1"; // Default ID if parsing fails
+        return "1";
       }
     }
-    return "1"; // Default ID
+    return "1";
   }
 }

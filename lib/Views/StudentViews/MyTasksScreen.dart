@@ -1,11 +1,8 @@
 import 'dart:convert';
-
 import 'package:final_project/utils/Widgets/Tasks_Screen_design.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../Models/clientConfig.dart';
 import '../../Models/task.dart';
-import '../../ViewModels/StudentMain_VM.dart';
 import 'package:http/http.dart' as http;
 
 class MyTasksScreen extends StatelessWidget {
@@ -16,10 +13,7 @@ class MyTasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => StudentDashboardViewModel(),
-      child: _MyTasksScreen(title: title, userID: userID),
-    );
+    return  _MyTasksScreen(title: title, userID: userID);
   }
 }
 
@@ -51,7 +45,6 @@ class _MyTasksScreenState extends State<_MyTasksScreen> {
   Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
 
-    try {
       var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
@@ -72,24 +65,13 @@ class _MyTasksScreenState extends State<_MyTasksScreen> {
           arr.add(Task.fromJson(i));
         }
 
-        String tasksString = arr
-            .map((task) =>
-        '${task.taskID}, ${task.tutor}, ${task.course}, ${task.day},${task.time}')
-            .join(', ');
 
-        // print("Formatted Task List: $tasksString");
-      } else {
-        // throw Exception('Failed to load tasks: ${response.statusCode}');
       }
-    } catch (e) {
-      // print('Error: $e');
-    }
-    return arr;
+        return arr;
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<StudentDashboardViewModel>();
 
     return Scaffold(
         backgroundColor: const Color(0xFFE3DFD6),
