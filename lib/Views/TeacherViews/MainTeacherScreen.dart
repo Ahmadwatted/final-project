@@ -344,7 +344,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>  TeacherUploadedTasks(title: 'My Courses',
+                          builder: (context) =>  TeacherTasksScreen(title: 'My Courses',
                             userID: widget.userID,),
                         ),
                       ).then((_) => _refreshTasks()),

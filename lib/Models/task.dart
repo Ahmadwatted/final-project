@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
 class Task {
   final int taskID;
   final String tutor;
   final String course;
   final String time;
   final String day;
-   Color? c;
+  final bool isCompleted;
+  final String dueDate;
 
   Task({
     required this.taskID,
@@ -13,28 +13,31 @@ class Task {
     required this.course,
     required this.day,
     required this.time,
-     this.c,
+    this.isCompleted = false,
+    this.dueDate = '',
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       taskID: json['taskID'] ?? 0,
-      tutor: json['tutor'] ,
-      course: json['course'] ,
-      day: json['day'] ,
-      time: json['time'] ,
+      tutor: json['tutor'] ?? '',
+      course: json['course'] ?? '',
+      day: json['day'] ?? '',
+      time: json['time'] ?? '',
+      isCompleted: json['isCompleted'] ?? false,
+      dueDate: json['dueDate'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'taskID': taskID,
-      'tutor' : tutor,
+      'tutor': tutor,
       'course': course,
       'day': day,
       'time': time,
+      'isCompleted': isCompleted,
+      'dueDate': dueDate,
     };
   }
 }
-
-
