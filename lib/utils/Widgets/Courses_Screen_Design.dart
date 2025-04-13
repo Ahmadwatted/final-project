@@ -201,8 +201,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
   @override
   void initState() {
     super.initState();
-    notes = '';
-    _loadLocalNotes();
     if (!widget.isStudent) {
       _loadStudentCount();
     }
@@ -220,51 +218,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     super.dispose();
   }
 
-  // Load notes from local storage
-  Future<void> _loadLocalNotes() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final localNotes = prefs.getString('notes_${widget.courses.courseID}');
 
-      if (mounted) {
-        setState(() {
-          notes = localNotes ?? '';
-          _notesController.text = notes;
-        });
-      }
-    } catch (e) {
-      // Handle error silently
-      if (mounted) {
-        setState(() {
-          notes = '';
-          _notesController.text = '';
-        });
-      }
-    }
-  }
-
-  Future<void> _saveLocalNotes(String noteText) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('notes_${widget.courses.courseID}', noteText);
-
-      if (mounted) {
-        setState(() {
-          notes = noteText;
-        });
-      }
-    } catch (e) {
-      // Show error if saving fails
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Failed to save notes"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
 
   Future<void> _loadStudentCount() async {
     setState(() {
@@ -790,13 +744,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                   const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () {
-                      _saveLocalNotes(_notesController.text);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Notes saved to your device"),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
+                      ///// hen lazem tsawe save notes y3ne a3mal new row named notes in the data base and winscp
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,

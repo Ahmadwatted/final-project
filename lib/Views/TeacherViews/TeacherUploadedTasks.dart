@@ -19,13 +19,22 @@ class TeacherTasksScreen extends StatefulWidget {
   State<TeacherTasksScreen> createState() => _TeacherTasksScreenState();
 }
 
+
 class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   late Future<List<Task>> _tasksFuture;
   String _searchTerm = '';
   String _filterStatus = 'all';
   String _sortBy = 'dueDate';
   bool _isAscending = true;
   bool _isFilterMenuOpen = false;
+  final TextEditingController _tutorController = TextEditingController();
+  final TextEditingController _courseController = TextEditingController();
+  final TextEditingController _dueDateController = TextEditingController();
+  final TextEditingController _dayController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   @override
   void initState() {
@@ -68,11 +77,91 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     }
     return arr;
   }
+  Future<int?> InsertTask(
+      String tutor,
+      String course,
+      String time,
+      String day,
+      String isCompleted,
+      String dueDate,
+      String description) async {
+
+    var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/tasks/insertTask.php?"
+        "tutor=${Uri.encodeComponent(tutor)}"
+        "&course=${Uri.encodeComponent(course)}"
+        "&time=${Uri.encodeComponent(time)}"
+        "&day=${Uri.encodeComponent(day)}"
+        "&isCompleted=${Uri.encodeComponent(isCompleted)}"
+        "&dueDate=${Uri.encodeComponent(dueDate)}"
+        "&description=${Uri.encodeComponent(description)}";
+
+    print("InsertTask - Final URL: $url");
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      print("InsertTask Status Code: ${response.statusCode}");
+      print("InsertTask Raw Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        print("Parsed response data: $data");
+
+        if (data['result'] == '1' && data['taskID'] != null) {
+          print("Successfully created task with ID: ${data['taskID']}");
+          return int.parse(data['taskID'].toString());
+        } else {
+          print("API returned unsuccessful result: ${data['result']}");
+          return null;
+        }
+      }
+      return null;
+    } catch (e) {
+      print("InsertTask Error: $e");
+      return null;
+    }
+  }
+  Future<bool> InsertUserTask(int taskID) async {
+    try {
+      String userID = widget.userID;
+
+      var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/userTasks/insertUserTask.php?"
+          "taskID=$taskID"
+          "&userID=$userID";
+
+      print("InsertUserTask - Final URL: $url");
+
+      final response = await http.get(Uri.parse(url));
+
+      print("InsertUserCourse Response Status Code: ${response.statusCode}");
+      print("InsertUserCourse Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+
+        if (data['result'] != null) {
+          try {
+            int resultValue = int.parse(data['result'].toString());
+            return resultValue > 0;
+          } catch (e) {
+            return data['result'] == '1';
+          }
+        } else {
+          print("Error: No result field in response");
+          return false;
+        }
+      } else {
+        print("Error: Server returned ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("Error in InsertUserTask: $e");
+      return false;
+    }
+  }
 
   void _toggleTaskCompletion(int taskId) async {
     try {
-      // This would normally call an API to update the task status
-      // For now we'll just update it in the local state
+
       setState(() {
         _tasksFuture = _tasksFuture.then((tasks) {
           return tasks.map((task) {
@@ -344,7 +433,10 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
         backgroundColor: Colors.white,
         elevation: 2,
         child: const Icon(Icons.add, color: Color(0xFF1F2937)),
-        onPressed: (){},
+        onPressed: (){
+
+
+        },
       ),
     );
   }
@@ -440,4 +532,285 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     ];
     return colors[courseId % colors.length];
   }
+  void _showAddTaskForm() {
+    _tutorController.clear();
+    _courseController.clear();
+    _timeController.clear();
+    _dayController.clear();
+    _dueDateController.clear();
+    _descriptionController.clear();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.85,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 20,
+                right: 20,
+                top: 20,
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Add New Task',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1F2937),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Color(0xFF6B7280)),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Form fields
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildFormField(
+                              label: 'Tutor',
+                              controller: _tutorController,
+                              hint: 'Enter tutor name',
+                              icon: Icons.person_outline,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Course',
+                              controller: _courseController,
+                              hint: 'Enter course name',
+                              icon: Icons.school_outlined,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Time',
+                              controller: _timeController,
+                              hint: 'Enter time',
+                              icon: Icons.access_time_outlined,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Day',
+                              controller: _dayController,
+                              hint: 'Enter a day',
+                              icon: Icons.calendar_today_outlined,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Due Date',
+                              controller: _dueDateController,
+                              hint: 'Enter due date (DD/MM/YYYY)',
+                              icon: Icons.event_outlined,
+                              isRequired: true,
+                            ),
+                            _buildFormField(
+                              label: 'Description (optional)',
+                              controller: _descriptionController,
+                              hint: 'Enter task description',
+                              icon: Icons.description_outlined,
+                              isRequired: false,
+                              maxLines: 3,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Submit button
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 16),
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1F2937),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            // Show loading indicator
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Adding task...'),
+                                duration: Duration(seconds: 1),
+                                backgroundColor: Color(0xFF1F2937),
+                              ),
+                            );
+
+                            try {
+                              // Set isCompleted to "0" (false) as a string
+                              String isCompleted = "0";
+
+                              int? newTaskID = await InsertTask(
+                                _tutorController.text,
+                                _courseController.text,
+                                _timeController.text,
+                                _dayController.text,
+                                isCompleted,
+                                _dueDateController.text,
+                                _descriptionController.text,
+                              );
+
+                              print("Task created with ID: $newTaskID");
+
+                              if (newTaskID != null) {
+                                bool success = await InsertUserTask(newTaskID);
+                                print("User added to task: $success");
+
+                                if (success) {
+                                  ScaffoldMessenger.of(context).clearSnackBars();
+
+                                   _refreshTasks();
+
+                                  Navigator.pop(context);
+
+                                  Future.delayed(const Duration(milliseconds: 300), () {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Task successfully added!'),
+                                          backgroundColor: Color(0xFF1F2937),
+                                        ),
+                                      );
+                                    }
+                                  });
+
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    if (mounted) {
+                                      setState(() {
+                                      });
+                                    }
+                                  });
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Failed to add user to task. Please try again.'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Failed to add task. Please try again.'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              print("Error in form submission: $e");
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text(
+                          'Add Task',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+  Widget _buildFormField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    required bool isRequired,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF4B5563),
+            ),
+          ),
+          const SizedBox(height: 6),
+          TextFormField(
+            controller: controller,
+            maxLines: maxLines,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: Colors.grey.shade400),
+              prefixIcon: Icon(icon, color: const Color(0xFF6B7280), size: 20),
+              filled: true,
+              fillColor: const Color(0xFFF9FAFB),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF9CA3AF)),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            validator: isRequired
+                ? (value) {
+              if (value == null || value.isEmpty) {
+                return 'This field is required';
+              }
+              return null;
+            }
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+
 }

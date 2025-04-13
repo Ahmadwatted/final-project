@@ -84,13 +84,9 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
       return null;
     }
   }
-
-  // Refresh tasks and update the state
   Future<void> _refreshTasks() async {
-    // Get the courses first
     final courses = await getUserCourses();
 
-    // Only call setState if the widget is still mounted
     if (mounted) {
       setState(() {
         _CoursesFuture = Future.value(courses);

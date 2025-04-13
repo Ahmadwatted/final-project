@@ -89,15 +89,12 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
   }
 
   void _toggleCompletion() async {
-    // Update local state
     setState(() {
       _isCompleted = !_isCompleted;
     });
 
-    // Persist the state
     await _saveCompletionStatus(_isCompleted);
 
-    // Call the parent's toggle function if provided
     if (widget.onToggleCompletion != null) {
       widget.onToggleCompletion!(widget.task.taskID);
     }
@@ -112,13 +109,10 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       ),
     );
 
-    // If the result is true, task was successfully deleted
     if (result == true) {
-      // Clean up the SharedPreferences when task is deleted
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('task_${widget.task.taskID}_completed');
 
-      // Call the parent's onTaskDeleted function
       widget.onTaskDeleted();
     }
   }
@@ -130,7 +124,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     final isDueToday = daysRemaining == 'Due today';
     final isOverdue = daysRemaining == 'Overdue';
 
-    // Use our local state instead of widget.task.isCompleted
     final isCompleted = _isCompleted;
 
     Color borderColor;
