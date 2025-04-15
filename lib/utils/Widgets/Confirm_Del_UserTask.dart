@@ -3,37 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../Models/clientConfig.dart';
 
-class UserCourseDeleteAlert extends StatefulWidget {
-  final int courseID;
+class UserTaskDeleteAlert extends StatefulWidget {
+  final int taskID;
   final Function onTaskDeleted;
   final int userID;
 
 
-  const UserCourseDeleteAlert({
+  const UserTaskDeleteAlert({
     Key? key,
-    required this.courseID,
-     required  this.userID,
+    required this.taskID,
+    required  this.userID,
     required this.onTaskDeleted,
   }) : super(key: key);
 
   @override
-  _UserCourseDeleteAlertState createState() => _UserCourseDeleteAlertState();
+  _UserTaskDeleteAlert createState() => _UserTaskDeleteAlert();
 }
 
-class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
+class _UserTaskDeleteAlert extends State<UserTaskDeleteAlert> {
   bool _isDeleting = false;
 
-  Future<bool> deleteUserCourse(BuildContext context) async {
+  Future<bool> deleteUserTask(BuildContext context) async {
     setState(() => _isDeleting = true);
 
     try {
-      var url = "userCourses/deleteUserCourse.php?courseID=${widget.courseID}&userID=${widget.userID}";
+      var url = "userTasks/deleteUserTask.php?taskID=${widget.taskID}&userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Full Delete Response:");
       print("Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
-      print("Attempting to delete Course ID: ${widget.courseID}");
+      print("Attempting to delete task ID: ${widget.taskID}");
       print("Attempting to delete userID: ${widget.userID}");
 
 
@@ -42,7 +42,6 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
 
       if (response.statusCode == 200) {
         if (response.body.trim().startsWith('[')) {
-          print("Server returned a list of courses instead of a deletion confirmation");
           return false;
         }
 
@@ -108,12 +107,12 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
       ),
       title: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 18),
+          const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
           const SizedBox(width: 8),
-          const Text('Delete the student from the course', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          const Text('Delete Student From Task', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         ],
       ),
-      content: const Text('Are you sure you want to delete this student from your course?', style: TextStyle(fontSize: 16)),
+      content: const Text('Are you sure you want to delete this student from your task?', style: TextStyle(fontSize: 16)),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: [
         ElevatedButton(
@@ -126,7 +125,7 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
         ),
         ElevatedButton(
           onPressed: _isDeleting ? null : () async {
-            final result = await deleteUserCourse(context);
+            final result = await deleteUserTask(context);
             Navigator.of(context).pop(result);
           },
           style: ElevatedButton.styleFrom(

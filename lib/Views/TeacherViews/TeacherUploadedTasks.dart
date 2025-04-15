@@ -48,6 +48,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     });
   }
 
+
   Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
 
@@ -166,8 +167,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
         _tasksFuture = _tasksFuture.then((tasks) {
           return tasks.map((task) {
             if (task.taskID == taskId) {
-              // Create a new task with the isCompleted value toggled
-              // Note: Since Task is immutable, we need to create a new instance
               return Task(
                 taskID: task.taskID,
                 tutor: task.tutor,
@@ -188,7 +187,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
   }
 
   List<Task> _filterAndSortTasks(List<Task> tasks) {
-    // Filter based on status
     var filteredTasks = tasks.where((task) {
       if (_filterStatus == 'completed') return task.isCompleted;
       if (_filterStatus == 'pending') return !task.isCompleted;
@@ -203,12 +201,10 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
       }).toList();
     }
 
-    // Sort the tasks
     filteredTasks.sort((a, b) {
       int comparison;
 
       if (_sortBy == 'dueDate') {
-        // Handle cases where dueDate might be empty
         if (a.dueDate.isEmpty || b.dueDate.isEmpty) {
           return a.dueDate.isEmpty && b.dueDate.isEmpty
               ? 0
@@ -435,10 +431,13 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
         child: const Icon(Icons.add, color: Color(0xFF1F2937)),
         onPressed: (){
 
+          _showAddTaskForm();
 
         },
       ),
     );
+
+
   }
 
   Widget _buildFilterTab(String title, String value, Color activeColor) {
@@ -495,31 +494,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     );
   }
 
-  Widget _buildColorLegend(int index, String label) {
-    Color color = getCourseColor(index);
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.black54,
-          ),
-        ),
-      ],
-    );
-  }
 
   Color getCourseColor(int courseId) {
     final colors = [
@@ -532,6 +507,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     ];
     return colors[courseId % colors.length];
   }
+
   void _showAddTaskForm() {
     _tutorController.clear();
     _courseController.clear();
@@ -587,7 +563,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Form fields
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(

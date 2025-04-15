@@ -80,7 +80,6 @@ Future<List<User>> getCourseStudents(int courseID) async {
   List<User> arr = [];
 
   try {
-    // Note: Change userID to courseID in URL parameter
     var url = "getCourseDetails/getCourseStudents.php?courseID=$courseID";
     print("Fetching Course Students with URL: ${serverPath + url}");
     final response = await http.get(Uri.parse(serverPath + url));
