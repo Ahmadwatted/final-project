@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:final_project/utils/Widgets/Teacher_Tasks_Screen_Design.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../Models/clientConfig.dart';
@@ -193,7 +194,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
       return true; // 'all' filter
     }).toList();
 
-    // Filter based on search term
     if (_searchTerm.isNotEmpty) {
       filteredTasks = filteredTasks.where((task) {
         return task.course.toLowerCase().contains(_searchTerm.toLowerCase()) ||
@@ -286,60 +286,11 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                   ),
                 ],
               ),
-              child: Row(
-                children: [
-                  _buildFilterTab('All', 'all', const Color(0xFF3B82F6)),
-                  _buildFilterTab('Pending', 'pending', const Color(0xFFF59E0B)),
-                  _buildFilterTab('Done', 'completed', const Color(0xFF10B981)),
-                ],
-              ),
+
             ),
           ),
 
-          // Sort Options (Conditionally shown)
-          if (_isFilterMenuOpen)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Text(
-                        'Sort by',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    const Divider(height: 1),
-                    _buildSortOption('Due Date', 'dueDate'),
-                    _buildSortOption('Course Name', 'course'),
-                  ],
-                ),
-              ),
-            ),
 
-          // Course Colors Legend
-
-                const SizedBox(height: 8),
-
-
-          // Task List
           Expanded(
             child: FutureBuilder<List<Task>>(
               future: _tasksFuture,
@@ -411,7 +362,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                     itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
                       final task = filteredTasks[index];
-                      return TasksScreenDesign(
+                      return TeacherTasksScreenDesign(
                         task: task,
                         isStudent: false,
                         onTaskDeleted: _refreshTasks,

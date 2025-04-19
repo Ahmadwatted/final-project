@@ -6,7 +6,7 @@ class Task {
   final String day;
   final bool isCompleted;
   final String dueDate;
-  final  description;
+  final description;
 
   Task({
     required this.taskID,

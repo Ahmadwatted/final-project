@@ -1,6 +1,3 @@
-
-
-
 class Course {
   final int courseID;
   final String tutor;

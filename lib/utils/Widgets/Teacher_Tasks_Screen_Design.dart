@@ -12,14 +12,14 @@ import '../../Models/user.dart';
 import 'Confirm_Del_UserTask.dart';
 import 'Courses_Screen_Design.dart';
 
-class TasksScreenDesign extends StatefulWidget {
+class TeacherTasksScreenDesign extends StatefulWidget {
   final Task task;
   final bool isStudent;
   final Function onTaskDeleted;
   final Function? onToggleCompletion;
   final Function? onToggleBookmark;
 
-  const TasksScreenDesign({
+  const TeacherTasksScreenDesign({
     Key? key,
     required this.task,
     required this.isStudent,
@@ -29,10 +29,10 @@ class TasksScreenDesign extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<TasksScreenDesign> createState() => _TasksScreenDesignState();
+  State<TeacherTasksScreenDesign> createState() => _TeacherTasksScreenDesign();
 }
 
-class _TasksScreenDesignState extends State<TasksScreenDesign> {
+class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
   bool isExpanded = false;
   bool _isCompleted = false;
   bool isLoading = false;
@@ -41,6 +41,9 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
   bool _isLoadingStudents = false;
   List<User> _taskStudents = [];
   int? studentCount;
+  late Color priorityColor;
+  late Color badgeColor;
+  late Color badgeTextColor;
 
 
 
@@ -54,10 +57,12 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneNumberController = TextEditingController();
 
+
   @override
   void initState() {
     super.initState();
     _loadCompletionStatus();
+    _loadStudentCount();
   }
   Future<void> _loadStudentCount() async {
     setState(() {
@@ -236,6 +241,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       },
     );
   }
+
 
   Future<void> _loadCompletionStatus() async {
     final prefs = await SharedPreferences.getInstance();
@@ -633,7 +639,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
 
                         return ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: getCourseColor(widget.task.taskID),
+                            backgroundColor: getCourseColor(student.userID),
+
                             child: Text(
                               fullName.isNotEmpty
                                   ? fullName.substring(0, 1).toUpperCase()
@@ -760,7 +767,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
         var data = json.decode(response.body);
         print("Parsed response data: $data");
 
-        // Check if the result is a success indicator
         if (data['result'] == '1' || data['result'] == 1) {
           print("Successfully updated task with ID: $taskID");
           return true;
@@ -771,7 +777,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       }
       return false;
     } catch (e) {
-      print("EditTask Error: $e"); // Changed from EditCourse to EditTask for clarity
+      print("EditTask Error: $e");
       return false;
     }
   }
@@ -840,17 +846,24 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     await prefs.setBool('task_${widget.task.taskID}_completed', isCompleted);
   }
 
-  Color getCourseColor(int courseId) {
+  Color getCourseColor(int taskID) {
     final colors = [
-      const Color(0xFF3B82F6), // blue
-      const Color(0xFF10B981), // green
-      const Color(0xFFF59E0B), // orange
-      const Color(0xFF8B5CF6), // purple
-      const Color(0xFFEC4899), // pink
-      const Color(0xFF14B8A6), // teal
+      const Color(0xFF3B82F6),
+      const Color(0xFF10B981),
+      const Color(0xFFF59E0B),
+      const Color(0xFF8B5CF6),
+      const Color(0xFFEC4899),
+      const Color(0xFF14B8A6),
     ];
-    return colors[courseId % colors.length];
+    final hash = taskID.toString().hashCode;
+    final index = hash.abs() % colors.length;
+    print("taskID: $taskID => color index: $index");
+
+    return colors[hash.abs() % colors.length];
+
   }
+
+
 
   String getDaysRemaining(String dueDate) {
     if (dueDate.isEmpty) return 'No due date';
@@ -920,6 +933,23 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     } else {
       borderColor = courseColor;
     }
+    if (isCompleted) {
+      priorityColor = const Color(0xFF10B981); // green
+      badgeColor = const Color(0xFFD1FAE5);
+      badgeTextColor = const Color(0xFF065F46);
+    } else if (isOverdue) {
+      priorityColor = const Color(0xFFEF4444); // red
+      badgeColor = const Color(0xFFFEE2E2);
+      badgeTextColor = const Color(0xFFB91C1C);
+    } else if (isDueToday) {
+      priorityColor = const Color(0xFFF59E0B); // yellow
+      badgeColor = const Color(0xFFFEF3C7);
+      badgeTextColor = const Color(0xFF92400E);
+    } else {
+      priorityColor = const Color(0xFF3B82F6); // blue
+      badgeColor = const Color(0xFFE0F2FE);
+      badgeTextColor = const Color(0xFF1E40AF);
+    }
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -928,14 +958,14 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
             offset: const Offset(0, 2),
           ),
         ],
         border: Border(
           left: BorderSide(
-            color: borderColor,
+            color: priorityColor,
             width: 4,
           ),
         ),
@@ -954,9 +984,11 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Header section
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Course name and indicator
                     Expanded(
                       child: Row(
                         children: [
@@ -964,7 +996,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                             width: 8,
                             height: 8,
                             decoration: BoxDecoration(
-                              color: courseColor,
+                              color: priorityColor,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -974,8 +1006,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                               widget.task.course,
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF1F2937),
                                 decoration: isCompleted
                                     ? TextDecoration.lineThrough
                                     : TextDecoration.none,
@@ -986,9 +1018,10 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                         ],
                       ),
                     ),
+                    // Action buttons
                     Row(
                       children: [
-                        if(widget.isStudent)
+                        if (widget.isStudent)
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
@@ -1008,23 +1041,22 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                               ),
                             ),
                           ),
-
-                        if (!widget.isStudent) ...[
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(50),
-                              onTap: showEditTaskForm,
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                child: const Icon(
-                                  Icons.mode_edit,
-                                  color: Colors.grey,
-                                  size: 22,
-                                ),
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(50),
+                            onTap: showEditTaskForm,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              child: const Icon(
+                                Icons.mode_edit,
+                                color: Color(0xFF6B7280),
+                                size: 20,
                               ),
                             ),
                           ),
+                        ),
+                        if (!widget.isStudent) ...[
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
@@ -1034,8 +1066,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                                 padding: const EdgeInsets.all(8),
                                 child: const Icon(
                                   Icons.people_outline,
-                                  color: Colors.blueAccent,
-                                  size: 22,
+                                  color: Color(0xFF3B82F6),
+                                  size: 20,
                                 ),
                               ),
                             ),
@@ -1049,8 +1081,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                                 padding: const EdgeInsets.all(8),
                                 child: const Icon(
                                   Icons.delete_outline,
-                                  color: Colors.redAccent,
-                                  size: 22,
+                                  color: Color(0xFFEF4444),
+                                  size: 20,
                                 ),
                               ),
                             ),
@@ -1071,8 +1103,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                                 isExpanded
                                     ? Icons.keyboard_arrow_up
                                     : Icons.keyboard_arrow_down,
-                                color: Colors.grey,
-                                size: 22,
+                                color: const Color(0xFF6B7280),
+                                size: 20,
                               ),
                             ),
                           ),
@@ -1081,69 +1113,107 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     const Icon(
                       Icons.calendar_today,
-                      size: 14,
-                      color: Colors.grey,
+                      size: 16,
+                      color: Color(0xFF6B7280),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       widget.task.day,
                       style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
+                        fontSize: 13,
+                        color: Color(0xFF6B7280),
                       ),
                     ),
                     const SizedBox(width: 12),
                     const Icon(
                       Icons.access_time,
-                      size: 14,
-                      color: Colors.grey,
+                      size: 16,
+                      color: Color(0xFF6B7280),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       widget.task.time,
                       style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
+                        fontSize: 13,
+                        color: Color(0xFF6B7280),
                       ),
                     ),
+                    if (!widget.isStudent) ...[
+                      const SizedBox(width: 12),
+                      const Icon(
+                        Icons.people,
+                        size: 16,
+                        color: Color(0xFF6B7280),
+                      ),
+                      const SizedBox(width: 4),
+                      FutureBuilder(
+                        future: getTaskStunum(widget.task.taskID),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Text(
+                                "...",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Color(0xFF6B7280),
+                                )
+                            );
+                          }
+                          return Text(
+
+                            "${snapshot.data ?? 0} students",
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF6B7280),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ],
                 ),
+
                 if (isExpanded) ...[
-                  const SizedBox(height: 12),
-                  const Divider(height: 1, color: Colors.black12),
-                  const SizedBox(height: 12),
-                  // Check if description exists before displaying it
-                  if (widget.task.description != null && widget.task.description.isNotEmpty)
-                    Text(
-                      widget.task.description,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
-                    )
-                  else
-                    const Text(
-                      '',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black38,
-                        fontStyle: FontStyle.italic,
-                      ),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1, color: Color(0xFFE5E7EB)),
+                  const SizedBox(height: 16),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Description',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF4B5563),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.task.description,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF6B7280),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ),
-                  const SizedBox(height: 12),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Tutor: ${widget.task.tutor}',
                         style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
+                          fontSize: 13,
+                          color: Color(0xFF6B7280),
                         ),
                       ),
                       Container(
@@ -1152,11 +1222,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: isOverdue
-                              ? const Color(0xFFFEE2E2)
-                              : isDueToday
-                              ? const Color(0xFFFEF3C7)
-                              : const Color(0xFFE0F2FE),
+                          color: badgeColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -1164,16 +1230,41 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: isOverdue
-                                ? const Color(0xFFB91C1C)
-                                : isDueToday
-                                ? const Color(0xFF92400E)
-                                : const Color(0xFF1E40AF),
+                            color: badgeTextColor,
                           ),
                         ),
                       ),
                     ],
                   ),
+
+                  if (!widget.isStudent) ...[
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: const Color(0xFF3B82F6),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: showTaskStudents,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.people, size: 18),
+                          SizedBox(width: 8),
+                          Text(
+                            'Manage Students',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ],
             ),

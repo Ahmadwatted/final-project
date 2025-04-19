@@ -91,7 +91,6 @@ Future<List<User>> getCourseStudents(int courseID) async {
         throw Exception("Response body is null");
       }
 
-      // Check if the response has a "users" property which contains the array
       if (jsonData is Map<String, dynamic> && jsonData.containsKey('users')) {
         var users = jsonData['users'];
 
@@ -132,14 +131,11 @@ Future<bool> InsertUserCourse(int userID, int courseID) async {
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
 
-      // Check if the result is a non-zero number (meaning success)
       if (data['result'] != null) {
-        // Try parsing as int first to check if it's a numeric value
         try {
           int resultValue = int.parse(data['result'].toString());
-          return resultValue > 0; // Consider any positive number a success
+          return resultValue > 0;
         } catch (e) {
-          // If it can't be parsed as int, check if it's "1" (the original success condition)
           return data['result'] == '1';
         }
       } else {
@@ -196,6 +192,17 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
   TextEditingController _descriptionController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  Future<void> _loadCourseNotes() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedNotes = prefs.getString('course_${widget.courses.courseID}_notes');
+
+    setState(() {
+      _notesController.text = savedNotes ?? widget.courses.notes;
+    });
+  }
+
+
+
 
   @override
   void initState() {
@@ -203,6 +210,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     if (!widget.isStudent) {
       _loadStudentCount();
     }
+    _loadCourseNotes();
   }
 
   @override
@@ -521,7 +529,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
 
   Widget _buildGridLayout() {
     return Column(
-      mainAxisSize: MainAxisSize.min, // Make this take minimum space needed
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
@@ -570,7 +578,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Replace your existing Row with this code
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -647,8 +654,11 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
 
           const SizedBox(height: 16),
           Row(
+
             children: [
               Expanded(
+
+
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -664,7 +674,8 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: Text(showNotes ? "Hide Notes" : "My Notes"),
+
+                  child: Text(showNotes ? "Hide Notes" : "Show Notes"),
                 ),
               ),
               const SizedBox(width: 8),
@@ -739,26 +750,35 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                     maxLines: 3,
                     minLines: 3,
                     controller: _notesController,
+                    readOnly: widget.isStudent,
                   ),
                   const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: () {
-                      ///// hen lazem tsawe save notes y3ne a3mal new row named notes in the data base and winscp
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                  if (!widget.isStudent)
+                    ElevatedButton(
+                      onPressed: () async {
+                        final prefs = await SharedPreferences.getInstance();
+                        final userNote = _notesController.text.trim();
+
+                        await prefs.setString('course_${widget.courses.courseID}_notes', userNote);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Notes saved successfully!')),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                      child: const Text("Save Notes"),
                     ),
-                    child: const Text("Save Notes"),
-                  ),
                 ],
               ),
             ),

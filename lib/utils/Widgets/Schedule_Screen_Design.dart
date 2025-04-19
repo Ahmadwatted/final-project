@@ -155,7 +155,6 @@ class ScheduleScreenDesign extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle view details
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFF3F4F6),
