@@ -271,7 +271,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
         if (data['result'] != null) {
           try {
             int resultValue = int.parse(data['result'].toString());
-            return resultValue > 0; // Consider any positive number a success
+            return resultValue > 0;
           } catch (e) {
             return data['result'] == '1';
           }
@@ -1117,7 +1117,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                   const SizedBox(height: 12),
                   const Divider(height: 1, color: Colors.black12),
                   const SizedBox(height: 12),
-                  // Check if description exists before displaying it
                   if (widget.task.description != null && widget.task.description.isNotEmpty)
                     Text(
                       widget.task.description,

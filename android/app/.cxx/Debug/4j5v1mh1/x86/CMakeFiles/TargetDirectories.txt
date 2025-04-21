@@ -1,0 +1,2 @@
+C:/Users/Kareem/StudioProjects/final-project/android/app/.cxx/Debug/4j5v1mh1/x86/CMakeFiles/edit_cache.dir
+C:/Users/Kareem/StudioProjects/final-project/android/app/.cxx/Debug/4j5v1mh1/x86/CMakeFiles/rebuild_cache.dir
