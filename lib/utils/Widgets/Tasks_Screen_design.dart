@@ -176,7 +176,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                   TextButton(
                     child: Text('Add'),
                     onPressed: isLoading ? null : () async {
-                      // Show loading indicator
                       setState(() {
                         isLoading = true;
                       });
