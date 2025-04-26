@@ -24,10 +24,10 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   @override
   void initState() {
     super.initState();
-    _refreshTasks();
+    _refreshCourses();
   }
 
-  void _refreshTasks() {
+  void _refreshCourses() {
     setState(() {
       _CoursesFuture = getUserCourses();
     });
@@ -46,6 +46,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
 
       print("Response Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
+      print(widget.userID);
 
       if (response.statusCode == 200) {
         var jsonData = json.decode(response.body);
@@ -120,7 +121,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         TextButton(
-                          onPressed: _refreshTasks,
+                          onPressed: _refreshCourses,
                           child: const Text('Try Again'),
                         ),
                       ],
@@ -129,10 +130,8 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return _buildEmptyState();
                 } else {
-                  // Filter courses based on search term only
                   final filteredCourses = snapshot.data!
                       .where((course) {
-                    // Apply search filter
                     return searchTerm.isEmpty ||
                         course.course.toLowerCase().contains(searchTerm.toLowerCase()) ||
                         course.tutor.toLowerCase().contains(searchTerm.toLowerCase());
@@ -150,7 +149,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       return CoursesScreenDesign(
                         courses: course,
                         isStudent: isStudent,
-                        onTaskDeleted: _refreshTasks,
+                        onTaskDeleted: _refreshCourses,
                         isGridView: false,
                       );
                     },
@@ -165,6 +164,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   }
 
   Widget _buildEmptyState() {
+
     String message = searchTerm.isNotEmpty
         ? 'No courses matching "$searchTerm"'
         : 'You haven\'t enrolled in any courses yet.';
@@ -183,6 +183,8 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
             const SizedBox(height: 16),
             const Text(
               'No courses found',
+
+
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
