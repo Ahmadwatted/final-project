@@ -9,9 +9,11 @@ import '../utils/Utils.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
 import 'RegisterPage.dart';
 import 'TeacherViews/MainTeacherScreen.dart';
- void main() {
-   runApp(const MyApp());
- }
+
+void main() {
+  runApp(const MyApp());
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
@@ -23,21 +25,15 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home:  LoginPage(),
-
+      home: LoginPage(),
     );
   }
 }
 
-
 class LoginPage extends StatelessWidget {
-
-
   LoginPage({Key? key}) : super(key: key);
   final TextEditingController _txtemail = TextEditingController();
   final TextEditingController _txtpassword = TextEditingController();
-
-
 
   checkConction(BuildContext context) async {
     try {
@@ -54,204 +50,187 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     checkConction(context);
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Row(
-                  children: [
-                    Icon(Icons.arrow_back, color: Colors.grey[600]),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Home Page',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
+        child: Center( // Add this Center widget
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: double.infinity,
+                  constraints: BoxConstraints(maxWidth: 400),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
+                    ],
+                    border: Border.all(
+                      color: Colors.grey.withOpacity(0.1),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                  border: Border.all(
-                    color: Colors.grey.withOpacity(0.1),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Welcome Back',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    CustomTextField(
-                      controller: _txtemail,
-                      label: 'Email',
-                      hint: 'Enter your email',
-                      keyboardType: TextInputType.emailAddress,
-
-                    ),
-                    const SizedBox(height: 24),
-
-                    CustomTextField(
-                      controller: _txtpassword,
-                      label: 'Password',
-                      hint: 'Enter your password',
-                      isPassword: true,
-                    ),
-                    const SizedBox(height: 32),
-
-                    Container(
-                      width: double.infinity,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Colors.blue, Colors.blueAccent],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Welcome Back',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
                       ),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          bool isLoginSuccessful = await checkLogin(context, _txtemail.text, _txtpassword.text);
+                      const SizedBox(height: 32),
 
-                          if (isLoginSuccessful) {
-                            try {
-                              var url = "checkLogins/checkLogin.php?email=${_txtemail.text}&password=${_txtpassword.text}";
-                              final response = await http.get(Uri.parse(serverPath + url));
+                      CustomTextField(
+                        controller: _txtemail,
+                        label: 'Email',
+                        hint: 'Enter your email',
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(height: 24),
 
-                              if (response.statusCode == 200) {
-                                final decodedData = jsonDecode(response.body);
+                      CustomTextField(
+                        controller: _txtpassword,
+                        label: 'Password',
+                        hint: 'Enter your password',
+                        isPassword: true,
+                      ),
+                      const SizedBox(height: 32),
 
-                                if (decodedData is Map<String, dynamic>) {
-                                  String userTypeID = decodedData['usertypeID'].toString();
-                                  String userID = decodedData['userID'].toString();
+                      Container(
+                        width: double.infinity,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Colors.blue, Colors.blueAccent],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            bool isLoginSuccessful = await checkLogin(context, _txtemail.text, _txtpassword.text);
 
-                                  if (userTypeID == "1") {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MainTeacherScreen(
-                                          title: 'pepo',
-                                          userID: userID,
+                            if (isLoginSuccessful) {
+                              try {
+                                var url = "checkLogins/checkLogin.php?email=${_txtemail.text}&password=${_txtpassword.text}";
+                                final response = await http.get(Uri.parse(serverPath + url));
+
+                                if (response.statusCode == 200) {
+                                  final decodedData = jsonDecode(response.body);
+
+                                  if (decodedData is Map<String, dynamic>) {
+                                    String userTypeID = decodedData['usertypeID'].toString();
+                                    String userID = decodedData['userID'].toString();
+
+                                    if (userTypeID == "1") {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => MainTeacherScreen(
+                                            title: 'pepo',
+                                            userID: userID,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  } else if (userTypeID == "2") {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MainStudentScreen(
-                                          title: 'pepo',
-                                          userID: userID,
+                                      );
+                                    } else if (userTypeID == "2") {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => MainStudentScreen(
+                                            title: 'pepo',
+                                            userID: userID,
+                                          ),
                                         ),
-                                      ),
-                                    );
+                                      );
+                                    }
                                   }
                                 }
+                              } catch (e) {
+                                print("Error routing user: $e");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginPage()
+                                  ),
+                                );
                               }
-                            } catch (e) {
-                              print("Error routing user: $e");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LoginPage()
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Invalid email or password. Please try again.'),
+                                  backgroundColor: Colors.red,
+                                  duration: Duration(seconds: 3),
                                 ),
                               );
                             }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Invalid email or password. Please try again.'),
-                                backgroundColor: Colors.red,
-                                duration: Duration(seconds: 3),
-                              ),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: const Text(
-                          'Sign In',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>  RegisterPage(),
-                              ),
-                            );
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
                           child: const Text(
-                            'Register',
+                            'Sign In',
                             style: TextStyle(
-                              color: Colors.blue,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Don't have an account? ",
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RegisterPage(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Register',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

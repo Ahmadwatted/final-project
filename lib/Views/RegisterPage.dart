@@ -18,183 +18,168 @@ class RegisterPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Row(
-                  children: [
-                    Icon(Icons.arrow_back, color: Colors.grey[600]),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Home Page',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
+        child: Center( // Add this Center widget
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: double.infinity,
+                  constraints: BoxConstraints(maxWidth: 400),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
+                    ],
+                    border: Border.all(
+                      color: Colors.grey.withOpacity(0.1),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                  border: Border.all(
-                    color: Colors.grey.withOpacity(0.1),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Create Account',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Create Account',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 32),
+                      const SizedBox(height: 32),
 
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomTextField(
-                            controller: _txtfirstName,
-                            label: 'First Name',
-                            hint: 'Enter first name',
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomTextField(
+                              controller: _txtfirstName,
+                              label: 'First Name',
+                              hint: 'Enter first name',
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: CustomTextField(
-                            controller: _txtsecondName,
-                            label: 'Second Name',
-                            hint: 'Enter Second name',
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    CustomTextField(
-                      controller: _txtemail,
-                      label: 'Email',
-                      hint: 'Enter your email',
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 24),
-
-                    CustomTextField(
-                      controller: _txtphoneNumber,
-                      label: 'Phone Number',
-                      hint: 'Enter phone number',
-                      keyboardType: TextInputType.phone,
-                    ),
-                    const SizedBox(height: 24),
-
-                    CustomTextField(
-                      controller: _txtpassword,
-                      label: 'Password',
-                      hint: 'Create a password',
-                      isPassword: true,
-                    ),
-                    const SizedBox(height: 32),
-
-                    Container(
-                      width: double.infinity,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Colors.blue, Colors.blueAccent],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: CustomTextField(
+                              controller: _txtsecondName,
+                              label: 'Second Name',
+                              hint: 'Enter Second name',
+                            ),
                           ),
                         ],
                       ),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final userID = await insertUser(
-                              context,
-                              2,
-                              _txtfirstName.text,
-                              _txtsecondName.text,
-                              _txtemail.text,
-                              _txtpassword.text,
-                              _txtphoneNumber.text
-                          );
+                      const SizedBox(height: 24),
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MainStudentScreen(
-                                title: 'pepo',
-                                userID: userID,
-                              ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: const Text(
-                          'Create Account',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      CustomTextField(
+                        controller: _txtemail,
+                        label: 'Email',
+                        hint: 'Enter your email',
+                        keyboardType: TextInputType.emailAddress,
                       ),
-                    ),
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Already have an account? ',
-                          style: TextStyle(color: Colors.grey[600]),
+                      CustomTextField(
+                        controller: _txtphoneNumber,
+                        label: 'Phone Number',
+                        hint: 'Enter phone number',
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 24),
+
+                      CustomTextField(
+                        controller: _txtpassword,
+                        label: 'Password',
+                        hint: 'Create a password',
+                        isPassword: true,
+                      ),
+                      const SizedBox(height: 32),
+
+                      Container(
+                        width: double.infinity,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Colors.blue, Colors.blueAccent],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final userID = await insertUser(
+                                context,
+                                2,
+                                _txtfirstName.text,
+                                _txtsecondName.text,
+                                _txtemail.text,
+                                _txtpassword.text,
+                                _txtphoneNumber.text
+                            );
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MainStudentScreen(
+                                  title: 'pepo',
+                                  userID: userID,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
                           child: const Text(
-                            'Sign In',
+                            'Create Account',
                             style: TextStyle(
-                              color: Colors.blue,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Already have an account? ',
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: const Text(
+                              'Sign In',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
