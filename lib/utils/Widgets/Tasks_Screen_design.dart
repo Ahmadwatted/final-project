@@ -197,9 +197,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                       } else {
                         bool success = await InsertUserTask(uID, widget.task.taskID);
 
-                        // Close the dialog
                         Navigator.of(dialogContext).pop();
-                        // Close the bottom sheet
                         Navigator.pop(context);
 
                         if (success) {
