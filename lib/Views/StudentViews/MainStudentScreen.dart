@@ -162,29 +162,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
 
 
 
-  void _showJoinSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 16,
-        ),
-        child: AddButtonDesign(
-          onJoinCourse: (String code) {
-            print('Joining course with code: $code');
-            Navigator.pop(context);
-          },
-        ),
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -261,12 +239,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showJoinSheet(context),
-        backgroundColor: Colors.blue.shade600,
-        elevation: 4,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+
     );
   }
 
