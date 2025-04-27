@@ -149,29 +149,6 @@ class ScheduleScreenDesign extends StatelessWidget {
                 ),
 
 
-
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF3F4F6),
-                      foregroundColor: const Color(0xFF1F2937),
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      textStyle: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text("View Details"),
-                  ),
-                ),
               ],
             ),
           ),
