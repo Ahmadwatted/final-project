@@ -187,7 +187,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     }
   }
 
-  List<Task> _filterAndSortTasks(List<Task> tasks) {
+  List<Task> filterAndSortTasks(List<Task> tasks) {
     var filteredTasks = tasks.where((task) {
       if (_filterStatus == 'completed') return task.isCompleted;
       if (_filterStatus == 'pending') return !task.isCompleted;
@@ -333,7 +333,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                     ),
                   );
                 } else {
-                  final filteredTasks = _filterAndSortTasks(snapshot.data!);
+                  final filteredTasks = filterAndSortTasks(snapshot.data!);
 
                   if (filteredTasks.isEmpty) {
                     return Center(
@@ -390,62 +390,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
 
 
   }
-
-  Widget _buildFilterTab(String title, String value, Color activeColor) {
-    bool isActive = _filterStatus == value;
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _filterStatus = value;
-          });
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isActive ? activeColor : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: isActive ? Colors.white : Colors.black54,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSortOption(String title, String value) {
-    return InkWell(
-      onTap: () => _toggleSort(value),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 14),
-            ),
-            if (_sortBy == value)
-              Icon(
-                _isAscending ? Icons.arrow_upward : Icons.arrow_downward,
-                size: 16,
-                color: const Color(0xFF3B82F6),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-
 
   Color getCourseColor(int courseId) {
     final colors = [

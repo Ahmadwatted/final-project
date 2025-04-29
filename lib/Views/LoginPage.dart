@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/checkLoginModel.dart';
 import '../Models/clientConfig.dart';
 import '../utils/Utils.dart';
@@ -30,12 +31,109 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LoginPage extends StatelessWidget {
-  LoginPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _txtemail = TextEditingController();
   final TextEditingController _txtpassword = TextEditingController();
+  bool _isLoading = false;
 
-  checkConction(BuildContext context) async {
+  @override
+  void initState() {
+    super.initState();
+    fillSavedPars();
+  }
+
+  Future<void> fillSavedPars() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _txtemail.text = prefs.getString("Email") ?? "";
+    _txtpassword.text = prefs.getString("password") ?? "";
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<void> processLogin(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    bool isLoginSuccessful = await checkLogin(context, _txtemail.text, _txtpassword.text);
+
+    if (isLoginSuccessful) {
+      try {
+        var url = "checkLogins/checkLogin.php?email=${_txtemail.text}&password=${_txtpassword.text}";
+        final response = await http.get(Uri.parse(serverPath + url));
+
+        if (response.statusCode == 200) {
+          final decodedData = jsonDecode(response.body);
+
+          if (decodedData is Map<String, dynamic>) {
+            String userTypeID = decodedData['usertypeID'].toString();
+            String userID = decodedData['userID'].toString();
+
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString("Email", _txtemail.text);
+            await prefs.setString("password", _txtpassword.text);
+
+            if (userTypeID == "1") {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MainTeacherScreen(
+                    title: 'pepo',
+                    userID: userID,
+                  ),
+                ),
+              );
+            } else if (userTypeID == "2") {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MainStudentScreen(
+                    title: 'pepo',
+                    userID: userID,
+                  ),
+                ),
+              );
+            }
+          }
+        }
+      } catch (e) {
+        print("Error routing user: $e");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const LoginPage()
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid email or password. Please try again.'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  checkConnection(BuildContext context) async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -50,20 +148,22 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    checkConction(context);
+    checkConnection(context);
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
-        child: Center( // Add this Center widget
-          child: SingleChildScrollView(
+        child: Center(
+          child: _isLoading
+              ? const CircularProgressIndicator()
+              : SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   width: double.infinity,
-                  constraints: BoxConstraints(maxWidth: 400),
+                  constraints: const BoxConstraints(maxWidth: 400),
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.7),
@@ -126,61 +226,7 @@ class LoginPage extends StatelessWidget {
                         ),
                         child: ElevatedButton(
                           onPressed: () async {
-                            bool isLoginSuccessful = await checkLogin(context, _txtemail.text, _txtpassword.text);
-
-                            if (isLoginSuccessful) {
-                              try {
-                                var url = "checkLogins/checkLogin.php?email=${_txtemail.text}&password=${_txtpassword.text}";
-                                final response = await http.get(Uri.parse(serverPath + url));
-
-                                if (response.statusCode == 200) {
-                                  final decodedData = jsonDecode(response.body);
-
-                                  if (decodedData is Map<String, dynamic>) {
-                                    String userTypeID = decodedData['usertypeID'].toString();
-                                    String userID = decodedData['userID'].toString();
-
-                                    if (userTypeID == "1") {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => MainTeacherScreen(
-                                            title: 'pepo',
-                                            userID: userID,
-                                          ),
-                                        ),
-                                      );
-                                    } else if (userTypeID == "2") {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => MainStudentScreen(
-                                            title: 'pepo',
-                                            userID: userID,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  }
-                                }
-                              } catch (e) {
-                                print("Error routing user: $e");
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginPage()
-                                  ),
-                                );
-                              }
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Invalid email or password. Please try again.'),
-                                  backgroundColor: Colors.red,
-                                  duration: Duration(seconds: 3),
-                                ),
-                              );
-                            }
+                            await processLogin(context);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
