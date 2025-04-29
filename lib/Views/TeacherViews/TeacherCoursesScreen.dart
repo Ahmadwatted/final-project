@@ -33,9 +33,7 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize with a dummy Future that completes immediately
     _CoursesFuture = Future.value([]);
-    // Then refresh the tasks in a separate operation
     Future.microtask(() => _refreshTasks());
   }
 
@@ -537,7 +535,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return _buildEmptyState();
                 } else {
-                  // Filter courses based on search term
                   final filteredCourses = snapshot.data!
                       .where((course) =>
                   searchTerm.isEmpty ||

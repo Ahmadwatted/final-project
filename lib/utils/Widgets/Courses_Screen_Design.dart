@@ -989,7 +989,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // Show loading indicator
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Updating course...'),
@@ -1014,13 +1013,10 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                               if (success) {
                                 ScaffoldMessenger.of(context).clearSnackBars();
 
-                                // Close the form
                                 Navigator.pop(context);
 
-                                // Call the refresh callback to update the course list
                                 widget.onTaskDeleted();
 
-                                // Show success message with a slight delay
                                 Future.delayed(const Duration(milliseconds: 300), () {
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
