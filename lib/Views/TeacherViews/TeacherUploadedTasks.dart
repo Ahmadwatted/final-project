@@ -189,9 +189,9 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
 
   List<Task> filterAndSortTasks(List<Task> tasks) {
     var filteredTasks = tasks.where((task) {
-      if (_filterStatus == 'completed') return task.isCompleted;
-      if (_filterStatus == 'pending') return !task.isCompleted;
-      return true; // 'all' filter
+      if (_filterStatus == 'Completed') return task.isCompleted;
+      if (_filterStatus == 'Pending') return !task.isCompleted;
+      return true; //
     }).toList();
 
     if (_searchTerm.isNotEmpty) {
@@ -228,16 +228,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     return filteredTasks;
   }
 
-  void _toggleSort(String field) {
-    setState(() {
-      if (_sortBy == field) {
-        _isAscending = !_isAscending;
-      } else {
-        _sortBy = field;
-        _isAscending = true;
-      }
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -271,7 +262,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
             ),
           ),
 
-          // Filter Tabs
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -382,7 +372,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
         child: const Icon(Icons.add, color: Color(0xFF1F2937)),
         onPressed: (){
 
-          _showAddTaskForm();
+          showAddTaskForm();
 
         },
       ),
@@ -403,7 +393,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     return colors[courseId % colors.length];
   }
 
-  void _showAddTaskForm() {
+  void showAddTaskForm() {
     _tutorController.clear();
     _courseController.clear();
     _timeController.clear();
@@ -463,42 +453,42 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormField(
+                            buildFormField(
                               label: 'Tutor',
                               controller: _tutorController,
                               hint: 'Enter tutor name',
                               icon: Icons.person_outline,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Course',
                               controller: _courseController,
                               hint: 'Enter course name',
                               icon: Icons.school_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Time',
                               controller: _timeController,
                               hint: 'Enter time',
                               icon: Icons.access_time_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Day',
                               controller: _dayController,
                               hint: 'Enter a day',
                               icon: Icons.calendar_today_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Due Date',
                               controller: _dueDateController,
                               hint: 'Enter due date (DD/MM/YYYY)',
                               icon: Icons.event_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Description (optional)',
                               controller: _descriptionController,
                               hint: 'Enter task description',
@@ -536,7 +526,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                             );
 
                             try {
-                              // Set isCompleted to "0" (false) as a string
                               String isCompleted = "0";
 
                               int? newTaskID = await InsertTask(
@@ -624,7 +613,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
       },
     );
   }
-  Widget _buildFormField({
+  Widget buildFormField({
     required String label,
     required TextEditingController controller,
     required String hint,
