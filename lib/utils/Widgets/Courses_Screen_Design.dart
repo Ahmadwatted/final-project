@@ -741,7 +741,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                 children: [
                   TextField(
                     decoration: InputDecoration(
-                      hintText: "Add your personal notes here...",
+                      hintText: "",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

@@ -110,7 +110,7 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
         children: [
           const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 18),
           const SizedBox(width: 8),
-          const Text('Delete the student from the course', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          const Text('Delete Student', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         ],
       ),
       content: const Text('Are you sure you want to delete this student from your course?', style: TextStyle(fontSize: 16)),

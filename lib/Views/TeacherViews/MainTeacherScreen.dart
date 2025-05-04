@@ -145,7 +145,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         title: const Text(
-          'Teacher Dashboard',
+          'My Dashboard',
           style: TextStyle(
             color: Color(0xFF1A1F36),
             fontWeight: FontWeight.w600,

@@ -67,8 +67,10 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _isLoading = true;
     });
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
     bool isLoginSuccessful = await checkLogin(context, _txtemail.text, _txtpassword.text);
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
     if (isLoginSuccessful) {
       try {
@@ -287,6 +289,7 @@ class _LoginPageState extends State<LoginPage> {
 Future<bool> checkLogin(BuildContext context, String email, String password) async {
   var url = "checkLogins/checkLogin.php?email=$email&password=$password";
   final response = await http.get(Uri.parse(serverPath + url));
+  print("bbbbbbbbbbbbbb");
 
   print("Response Body: ${response.body}");
 
