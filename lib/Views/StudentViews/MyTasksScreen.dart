@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Models/clientConfig.dart';
 import '../../Models/task.dart';
 import '../../utils/Widgets/Tasks_Screen_design.dart';
@@ -26,7 +27,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
   String _sortBy = 'dueDate';
   bool _isAscending = true;
   bool _isFilterMenuOpen = false;
-  Task? _selectedTask;
 
   @override
   void initState() {
@@ -38,6 +38,79 @@ class _MyTasksScreen extends State<MyTasksScreen> {
     setState(() {
       _tasksFuture = getUserTasks();
     });
+  }
+  // In MyTasksScreen class - replace this entire method
+  void _toggleTaskCompletion(int taskId) async {
+    try {
+      // Load the current tasks list
+      final currentTasks = await _tasksFuture;
+
+      // Find the task and toggle its completion status in memory
+      final updatedTasks = currentTasks.map((task) {
+        if (task.taskID == taskId) {
+          return Task(
+            taskID: task.taskID,
+            tutor: task.tutor,
+            course: task.course,
+            day: task.day,
+            time: task.time,
+            isCompleted: !task.isCompleted,
+            dueDate: task.dueDate,
+            description: task.description,
+          );
+        }
+        return task;
+      }).toList();
+
+      // Update the SharedPreferences directly
+      final prefs = await SharedPreferences.getInstance();
+      final taskToUpdate = updatedTasks.firstWhere((task) => task.taskID == taskId);
+      await prefs.setBool('task_${taskId}_completed', taskToUpdate.isCompleted);
+
+      // Update the state with the new task list
+      setState(() {
+        _tasksFuture = Future.value(updatedTasks);
+        // Force refresh by triggering a rebuild
+        _filterStatus = _filterStatus; // This forces the filter to be reapplied
+      });
+    } catch (e) {
+      print("Error toggling task completion: $e");
+    }
+  }
+
+// And also fix the _filterAndSortTasks method to ensure proper filtering
+  List<Task> _filterAndSortTasks(List<Task> tasks) {
+    // First apply the status filter
+    var filteredTasks = tasks.where((task) {
+      bool taskCompletionStatus = task.isCompleted;
+
+      // Get the stored completion status if available
+      try {
+        final prefs = SharedPreferences.getInstance();
+        prefs.then((p) {
+          final savedStatus = p.getBool('task_${task.taskID}_completed');
+          if (savedStatus != null) {
+            taskCompletionStatus = savedStatus;
+          }
+        });
+      } catch (e) {
+        print("Error reading completion status: $e");
+      }
+
+      if (_filterStatus == 'completed') return taskCompletionStatus;
+      if (_filterStatus == 'pending') return !taskCompletionStatus;
+      return true; // 'all' filter
+    }).toList();
+
+    // Then apply the search filter if needed
+    if (_searchTerm.isNotEmpty) {
+      filteredTasks = filteredTasks.where((task) {
+        return task.course.toLowerCase().contains(_searchTerm.toLowerCase()) ||
+            task.tutor.toLowerCase().contains(_searchTerm.toLowerCase());
+      }).toList();
+    }
+
+    return filteredTasks;
   }
 
   Future<List<Task>> getUserTasks() async {
@@ -70,74 +143,11 @@ class _MyTasksScreen extends State<MyTasksScreen> {
     return arr;
   }
 
-  void _toggleTaskCompletion(int taskId) async {
-    try {
-      setState(() {
-        _tasksFuture = _tasksFuture.then((tasks) {
-          return tasks.map((task) {
-            if (task.taskID == taskId) {
-              return Task(
-                taskID: task.taskID,
-                tutor: task.tutor,
-                course: task.course,
-                day: task.day,
-                time: task.time,
-                isCompleted: !task.isCompleted,
-                dueDate: task.dueDate,
-              );
-            }
-            return task;
-          }).toList();
-        });
-      });
-    } catch (e) {
-      print("Error toggling task completion: $e");
-    }
-  }
 
-  List<Task> _filterAndSortTasks(List<Task> tasks) {
-    var filteredTasks = tasks.where((task) {
-      if (_filterStatus == 'completed') return task.isCompleted;
-      if (_filterStatus == 'pending') return !task.isCompleted;
-      return true; // 'all' filter
-    }).toList();
 
-    // Filter based on search term
-    if (_searchTerm.isNotEmpty) {
-      filteredTasks = filteredTasks.where((task) {
-        return task.course.toLowerCase().contains(_searchTerm.toLowerCase()) ||
-            task.tutor.toLowerCase().contains(_searchTerm.toLowerCase());
-      }).toList();
-    }
 
-    filteredTasks.sort((a, b) {
-      int comparison;
 
-      if (_sortBy == 'dueDate') {
-        if (a.dueDate.isEmpty || b.dueDate.isEmpty) {
-          return a.dueDate.isEmpty && b.dueDate.isEmpty
-              ? 0
-              : a.dueDate.isEmpty ? 1 : -1;
-        }
-
-        try {
-          comparison = DateTime.parse(a.dueDate).compareTo(DateTime.parse(b.dueDate));
-        } catch (e) {
-          comparison = 0;
-        }
-      } else if (_sortBy == 'course') {
-        comparison = a.course.compareTo(b.course);
-      } else {
-        comparison = 0;
-      }
-
-      return _isAscending ? comparison : -comparison;
-    });
-
-    return filteredTasks;
-  }
-
-  void _toggleSort(String field) {
+  void toggleSort(String field) {
     setState(() {
       if (_sortBy == field) {
         _isAscending = !_isAscending;
@@ -180,7 +190,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
             ),
           ),
 
-          // Filter Tabs - From TeacherTasksScreen
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -197,15 +206,14 @@ class _MyTasksScreen extends State<MyTasksScreen> {
               ),
               child: Row(
                 children: [
-                  _buildFilterTab('All', 'all', const Color(0xFF3B82F6)),
-                  _buildFilterTab('Pending', 'pending', const Color(0xFFF59E0B)),
-                  _buildFilterTab('Done', 'completed', const Color(0xFF10B981)),
+                  buildFilterTab('All', 'all', const Color(0xFF3B82F6)),
+                  buildFilterTab('Pending', 'pending', const Color(0xFFF59E0B)),
+                  buildFilterTab('Done', 'completed', const Color(0xFF10B981)),
                 ],
               ),
             ),
           ),
 
-          // Sort Options (Conditionally shown)
           if (_isFilterMenuOpen)
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -222,30 +230,12 @@ class _MyTasksScreen extends State<MyTasksScreen> {
                     ),
                   ],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Text(
-                        'Sort by',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    const Divider(height: 1),
-                    _buildSortOption('Due Date', 'dueDate'),
-                    _buildSortOption('Course Name', 'course'),
-                  ],
-                ),
+
               ),
             ),
 
           const SizedBox(height: 8),
 
-          // Task List
           Expanded(
             child: FutureBuilder<List<Task>>(
               future: _tasksFuture,
@@ -289,7 +279,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
                   );
                 } else {
                   final filteredTasks = _filterAndSortTasks(snapshot.data!);
-
                   if (filteredTasks.isEmpty) {
                     return Center(
                       child: Column(
@@ -334,8 +323,7 @@ class _MyTasksScreen extends State<MyTasksScreen> {
 
     );
   }
-
-  Widget _buildFilterTab(String title, String value, Color activeColor) {
+  Widget buildFilterTab(String title, String value, Color activeColor) {
     bool isActive = _filterStatus == value;
 
     return Expanded(
@@ -365,9 +353,9 @@ class _MyTasksScreen extends State<MyTasksScreen> {
     );
   }
 
-  Widget _buildSortOption(String title, String value) {
+  Widget buildSortOption(String title, String value) {
     return InkWell(
-      onTap: () => _toggleSort(value),
+      onTap: () => toggleSort(value),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(

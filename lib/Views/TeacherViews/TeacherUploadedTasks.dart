@@ -29,7 +29,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
   String _filterStatus = 'all';
   String _sortBy = 'dueDate';
   bool _isAscending = true;
-  bool _isFilterMenuOpen = false;
   final TextEditingController _tutorController = TextEditingController();
   final TextEditingController _courseController = TextEditingController();
   final TextEditingController _dueDateController = TextEditingController();
@@ -161,31 +160,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     }
   }
 
-  void _toggleTaskCompletion(int taskId) async {
-    try {
 
-      setState(() {
-        _tasksFuture = _tasksFuture.then((tasks) {
-          return tasks.map((task) {
-            if (task.taskID == taskId) {
-              return Task(
-                taskID: task.taskID,
-                tutor: task.tutor,
-                course: task.course,
-                day: task.day,
-                time: task.time,
-                isCompleted: !task.isCompleted,
-                dueDate: task.dueDate,
-              );
-            }
-            return task;
-          }).toList();
-        });
-      });
-    } catch (e) {
-      print("Error toggling task completion: $e");
-    }
-  }
 
   List<Task> filterAndSortTasks(List<Task> tasks) {
     var filteredTasks = tasks.where((task) {
@@ -356,7 +331,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                         task: task,
                         isStudent: false,
                         onTaskDeleted: _refreshTasks,
-                        onToggleCompletion: _toggleTaskCompletion,
                       );
                     },
                   );
@@ -456,10 +430,11 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                             buildFormField(
                               label: 'Tutor',
                               controller: _tutorController,
-                              hint: 'Enter tutor name',
-                              icon: Icons.person_outline,
+                              hint: 'Enter Tutor name',
+                              icon: Icons.person_2_outlined,
                               isRequired: true,
                             ),
+
                             buildFormField(
                               label: 'Course',
                               controller: _courseController,

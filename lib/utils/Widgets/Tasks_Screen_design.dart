@@ -53,11 +53,50 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
   final TextEditingController _descriptionController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneNumberController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     _loadCompletionStatus();
+    if (!widget.isStudent) {
+      _loadStudentCount();
+    }
+  }
+  Future<void> _loadCompletionStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedStatus = prefs.getBool('task_${widget.task.taskID}_completed');
+
+    if (savedStatus != null) {
+      setState(() {
+        _isCompleted = savedStatus;
+      });
+    } else {
+      // Only use the default value from task object on first load
+      setState(() {
+        _isCompleted = widget.task.isCompleted;
+      });
+      // Save this initial value to SharedPreferences
+      await prefs.setBool('task_${widget.task.taskID}_completed', widget.task.isCompleted);
+    }
+  }
+
+  void _toggleCompletion() async {
+    // Update local state immediately for UI responsiveness
+    setState(() {
+      _isCompleted = !_isCompleted;
+    });
+
+    // Save to SharedPreferences
+    await _saveCompletionStatus(_isCompleted);
+
+    // Notify parent about the change
+    if (widget.onToggleCompletion != null) {
+      widget.onToggleCompletion!(widget.task.taskID);
+    }
+  }
+
+  Future<void> _saveCompletionStatus(bool isCompleted) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('task_${widget.task.taskID}_completed', isCompleted);
   }
   Future<void> _loadStudentCount() async {
     setState(() {
@@ -115,7 +154,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       }
     }
   }
-  void _showAddStudentForm(BuildContext context) {
+  void showAddStudentForm(BuildContext context) {
     final scaffoldContext = ScaffoldMessenger.of(context);
 
     showDialog(
@@ -134,14 +173,14 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildFormField(
+                      buildFormField(
                         label: 'Student e-Mail',
                         controller: _emailController,
                         hint: 'Enter Student e-Mail',
                         icon: Icons.person_outline,
                         isRequired: true,
                       ),
-                      _buildFormField(
+                      buildFormField(
                         label: 'Student PhoneNumber',
                         controller: _phoneNumberController,
                         hint: 'Enter Student PhoneNumber',
@@ -234,20 +273,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     );
   }
 
-  Future<void> _loadCompletionStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedStatus = prefs.getBool('task_${widget.task.taskID}_completed');
 
-    if (savedStatus != null) {
-      setState(() {
-        _isCompleted = savedStatus;
-      });
-    } else {
-      setState(() {
-        _isCompleted = widget.task.isCompleted;
-      });
-    }
-  }
   Future<bool> InsertUserTask(int userID, int taskID) async {
     try {
 
@@ -416,42 +442,42 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormField(
+                            buildFormField(
                               label: 'Tutor',
                               controller: _tutorController,
                               hint: 'Enter tutor name',
                               icon: Icons.person_outline,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Task ',
                               controller: _courseController,
                               hint: 'Enter task subject name',
                               icon: Icons.school_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Time',
                               controller: _timeController,
                               hint: 'Enter for which time the task is up for',
                               icon: Icons.location_on_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Day',
                               controller: _dayController,
                               hint: 'Enter a day',
                               icon: Icons.calendar_today_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Due Date',
                               controller: _dueDateController,
                               hint: 'Enter time',
                               icon: Icons.access_time_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Description (optional)',
                               controller: _descriptionController,
                               hint: 'Enter course description',
@@ -478,7 +504,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // Show loading indicator
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Updating course...'),
@@ -723,7 +748,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                 elevation: 2,
                 child: const Icon(Icons.add, color: Color(0xFF1F2937)),
                 onPressed: () {
-                  _showAddStudentForm(context);
+                  showAddStudentForm(context);
                 },
               ),
             ),
@@ -757,7 +782,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
         var data = json.decode(response.body);
         print("Parsed response data: $data");
 
-        // Check if the result is a success indicator
         if (data['result'] == '1' || data['result'] == 1) {
           print("Successfully updated task with ID: $taskID");
           return true;
@@ -768,12 +792,12 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       }
       return false;
     } catch (e) {
-      print("EditTask Error: $e"); // Changed from EditCourse to EditTask for clarity
+      print("EditTask Error: $e");
       return false;
     }
   }
 
-  Widget _buildFormField({
+  Widget buildFormField({
     required String label,
     required TextEditingController controller,
     required String hint,
@@ -832,10 +856,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     );
   }
 
-  Future<void> _saveCompletionStatus(bool isCompleted) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('task_${widget.task.taskID}_completed', isCompleted);
-  }
+
 
   Color getCourseColor(int courseId) {
     final colors = [
@@ -869,17 +890,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     }
   }
 
-  void _toggleCompletion() async {
-    setState(() {
-      _isCompleted = !_isCompleted;
-    });
 
-    await _saveCompletionStatus(_isCompleted);
-
-    if (widget.onToggleCompletion != null) {
-      widget.onToggleCompletion!(widget.task.taskID);
-    }
-  }
 
   void _showDeleteConfirmation() async {
     final result = await showDialog<bool>(
