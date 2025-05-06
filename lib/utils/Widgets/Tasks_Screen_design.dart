@@ -758,7 +758,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     );
   }
 
-  Future<bool> EditTask(int taskID, String tutor, String course, String time, String day, String dueDate, String description, bool isCompleted) async {
+  Future<bool> EditTask(int taskID, String tutor, String course, String time, String day,
+      String dueDate, String description, bool isCompleted) async {
     try {
       String descriptionValue = description.isNotEmpty ? description : "";
 
@@ -770,24 +771,14 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
           "&day=${Uri.encodeComponent(day)}"
           "&dueDate=${Uri.encodeComponent(dueDate)}"
           "&description=${Uri.encodeComponent(descriptionValue)}"
-          "&isCompleted=${isCompleted ? '1' : '0'}";
-
-      print("EditTask - Final URL: $url");
+          "&isCompleted=0"; // Always send 0 to the database
 
       final response = await http.get(Uri.parse(url));
-      print("EditTask Status Code: ${response.statusCode}");
-      print("EditTask Raw Response: ${response.body}");
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        print("Parsed response data: $data");
-
         if (data['result'] == '1' || data['result'] == 1) {
-          print("Successfully updated task with ID: $taskID");
           return true;
-        } else {
-          print("API returned unsuccessful result: ${data['result']}");
-          return false;
         }
       }
       return false;
@@ -943,7 +934,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
         ],
         border: Border(
           left: BorderSide(
-            color: borderColor,
+            color: courseColor,
             width: 4,
           ),
         ),
@@ -972,7 +963,10 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                             width: 8,
                             height: 8,
                             decoration: BoxDecoration(
-                              color: courseColor,
+                              color: isCompleted
+                                  ? Color(0xFF10B981):
+                               courseColor
+                        ,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -1163,7 +1157,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                               ? const Color(0xFFFEE2E2)
                               : isDueToday
                               ? const Color(0xFFFEF3C7)
-                              : const Color(0xFFE0F2FE),
+                              : courseColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -1175,7 +1169,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                                 ? const Color(0xFFB91C1C)
                                 : isDueToday
                                 ? const Color(0xFF92400E)
-                                : const Color(0xFF1E40AF),
+                                : Colors.white,
                           ),
                         ),
                       ),

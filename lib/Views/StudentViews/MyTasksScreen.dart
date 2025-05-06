@@ -117,24 +117,40 @@ class _MyTasksScreen extends State<MyTasksScreen> {
     List<Task> arr = [];
 
     try {
+      // Get SharedPreferences first
+      final prefs = await SharedPreferences.getInstance();
+
+      // Fetch tasks from API
       var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
       if (response.statusCode == 200) {
         var jsonData = json.decode(response.body);
-
-        if (jsonData == null) {
-          throw Exception("Response body is null");
-        }
-        if (jsonData is! List) {
-          throw Exception("Response is not a List. Received: $jsonData");
+        if (jsonData == null || jsonData is! List) {
+          throw Exception("Invalid response format");
         }
 
         for (var i in jsonData) {
-          arr.add(Task.fromJson(i));
+          // Create task from API (isCompleted will be false)
+          Task task = Task.fromJson(i);
+
+          // Check for locally stored completion status
+          final savedStatus = prefs.getBool('task_${task.taskID}_completed');
+
+          if (savedStatus != null) {
+            // We have a local status, use it
+            task = Task(
+              taskID: task.taskID,
+              tutor: task.tutor,
+              course: task.course,
+              day: task.day,
+              time: task.time,
+              isCompleted: savedStatus,
+              dueDate: task.dueDate,
+              description: task.description,
+            );
+          }
+          arr.add(task);
         }
       }
     } catch (e) {

@@ -16,7 +16,6 @@ class TeacherTasksScreenDesign extends StatefulWidget {
   final Task task;
   final bool isStudent;
   final Function onTaskDeleted;
-  final Function? onToggleCompletion;
   final Function? onToggleBookmark;
 
   const TeacherTasksScreenDesign({
@@ -24,7 +23,6 @@ class TeacherTasksScreenDesign extends StatefulWidget {
     required this.task,
     required this.isStudent,
     required this.onTaskDeleted,
-    this.onToggleCompletion,
     this.onToggleBookmark,
   }) : super(key: key);
 
@@ -34,7 +32,6 @@ class TeacherTasksScreenDesign extends StatefulWidget {
 
 class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
   bool isExpanded = false;
-  bool _isCompleted = false;
   bool isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -61,7 +58,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
   @override
   void initState() {
     super.initState();
-    _loadCompletionStatus();
     _loadStudentCount();
   }
   Future<void> _loadStudentCount() async {
@@ -243,20 +239,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
   }
 
 
-  Future<void> _loadCompletionStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedStatus = prefs.getBool('task_${widget.task.taskID}_completed');
 
-    if (savedStatus != null) {
-      setState(() {
-        _isCompleted = savedStatus;
-      });
-    } else {
-      setState(() {
-        _isCompleted = widget.task.isCompleted;
-      });
-    }
-  }
   Future<bool> InsertUserTask(int userID, int taskID) async {
     try {
 
@@ -371,7 +354,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     _dayController.text = widget.task.day;
     _dueDateController.text = widget.task.dueDate;
     _descriptionController.text = widget.task.description;
-    bool isCompleted = widget.task.isCompleted;
 
     showModalBottomSheet(
       context: context,
@@ -504,8 +486,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                                   _timeController.text,
                                   _dayController.text,
                                   _dueDateController.text,
-                                  _descriptionController.text,
-                                  isCompleted
+                                  _descriptionController.text
                               );
 
                               print("Task updated: $success");
@@ -743,7 +724,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     );
   }
 
-  Future<bool> EditTask(int taskID, String tutor, String course, String time, String day, String dueDate, String description, bool isCompleted) async {
+  Future<bool> EditTask(int taskID, String tutor, String course, String time, String day, String dueDate, String description) async {
     try {
       String descriptionValue = description.isNotEmpty ? description : "";
 
@@ -754,8 +735,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
           "&time=${Uri.encodeComponent(time)}"
           "&day=${Uri.encodeComponent(day)}"
           "&dueDate=${Uri.encodeComponent(dueDate)}"
-          "&description=${Uri.encodeComponent(descriptionValue)}"
-          "&isCompleted=${isCompleted ? '1' : '0'}";
+          "&description=${Uri.encodeComponent(descriptionValue)}";
 
       print("EditTask - Final URL: $url");
 
@@ -848,19 +828,14 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
 
   Color getCourseColor(int taskID) {
     final colors = [
-      const Color(0xFF3B82F6),
-      const Color(0xFF10B981),
-      const Color(0xFFF59E0B),
-      const Color(0xFF8B5CF6),
-      const Color(0xFFEC4899),
-      const Color(0xFF14B8A6),
+      const Color(0xFF3B82F6), // blue
+      const Color(0xFF10B981), // green
+      const Color(0xFFF59E0B), // orange
+      const Color(0xFF8B5CF6), // purple
+      const Color(0xFFEC4899), // pink
+      const Color(0xFF14B8A6), // teal
     ];
-    final hash = taskID.toString().hashCode;
-    final index = hash.abs() % colors.length;
-    print("taskID: $taskID => color index: $index");
-
-    return colors[hash.abs() % colors.length];
-
+    return colors[taskID % colors.length];
   }
 
 
@@ -885,17 +860,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     }
   }
 
-  void _toggleCompletion() async {
-    setState(() {
-      _isCompleted = !_isCompleted;
-    });
 
-    await _saveCompletionStatus(_isCompleted);
-
-    if (widget.onToggleCompletion != null) {
-      widget.onToggleCompletion!(widget.task.taskID);
-    }
-  }
 
   void _showDeleteConfirmation() async {
     final result = await showDialog<bool>(
@@ -921,33 +886,28 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     final isDueToday = daysRemaining == 'Due today';
     final isOverdue = daysRemaining == 'Overdue';
 
-    final isCompleted = _isCompleted;
 
     Color borderColor;
-    if (isCompleted) {
-      borderColor = const Color(0xFF10B981);
-    } else if (isOverdue) {
+    if (isOverdue) {
       borderColor = const Color(0xFFEF4444);
     } else if (isDueToday) {
       borderColor = const Color(0xFFF59E0B);
     } else {
       borderColor = courseColor;
     }
-    if (isCompleted) {
-      priorityColor = const Color(0xFF10B981); // green
-      badgeColor = const Color(0xFFD1FAE5);
-      badgeTextColor = const Color(0xFF065F46);
-    } else if (isOverdue) {
-      priorityColor = const Color(0xFFEF4444); // red
+
+    // Get vibrant color based on taskID
+    priorityColor = getCourseColor(widget.task.taskID);
+
+    // Set status colors
+    if (isOverdue) {
       badgeColor = const Color(0xFFFEE2E2);
       badgeTextColor = const Color(0xFFB91C1C);
     } else if (isDueToday) {
-      priorityColor = const Color(0xFFF59E0B); // yellow
       badgeColor = const Color(0xFFFEF3C7);
       badgeTextColor = const Color(0xFF92400E);
     } else {
-      priorityColor = const Color(0xFF3B82F6); // blue
-      badgeColor = const Color(0xFFE0F2FE);
+      badgeColor = Color.fromARGB(255, 229, 241, 255);
       badgeTextColor = const Color(0xFF1E40AF);
     }
 
@@ -1004,14 +964,10 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                           Expanded(
                             child: Text(
                               widget.task.course,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF1F2937),
-                                decoration: isCompleted
-                                    ? TextDecoration.lineThrough
-                                    : TextDecoration.none,
-                                decorationColor: Colors.black54,
+                                color: Color(0xFF1F2937),
                               ),
                             ),
                           ),
@@ -1021,26 +977,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                     // Action buttons
                     Row(
                       children: [
-                        if (widget.isStudent)
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(50),
-                              onTap: _toggleCompletion,
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                child: Icon(
-                                  isCompleted
-                                      ? Icons.check_circle
-                                      : Icons.check_circle_outline,
-                                  color: isCompleted
-                                      ? const Color(0xFF10B981)
-                                      : Colors.grey,
-                                  size: 22,
-                                ),
-                              ),
-                            ),
-                          ),
                         Material(
                           color: Colors.transparent,
                           child: InkWell(
@@ -1057,21 +993,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                           ),
                         ),
                         if (!widget.isStudent) ...[
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(50),
-                              onTap: showTaskStudents,
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                child: const Icon(
-                                  Icons.people_outline,
-                                  color: Color(0xFF3B82F6),
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
+
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
@@ -1183,28 +1105,28 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                   const Divider(height: 1, color: Color(0xFFE5E7EB)),
                   const SizedBox(height: 16),
 
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Description',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF4B5563),
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF4B5563),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          widget.task.description,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF6B7280),
-                          ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        widget.task.description,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF6B7280),
                         ),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1216,21 +1138,22 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                           color: Color(0xFF6B7280),
                         ),
                       ),
+                      // Update this part in the build method
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: badgeColor,
+                          color: getCourseColor(widget.task.taskID),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           daysRemaining,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: badgeTextColor,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -1242,7 +1165,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: const Color(0xFF3B82F6),
+                        backgroundColor: getCourseColor(widget.task.taskID),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
