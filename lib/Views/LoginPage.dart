@@ -156,9 +156,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: Center(
-          child: _isLoading
-              ? const CircularProgressIndicator()
-              : SingleChildScrollView(
+          child:SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -237,13 +235,23 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          child: const Text(
+                          child: _isLoading
+                              ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                              : const Text(
                             'Sign In',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -289,7 +297,6 @@ class _LoginPageState extends State<LoginPage> {
 Future<bool> checkLogin(BuildContext context, String email, String password) async {
   var url = "checkLogins/checkLogin.php?email=$email&password=$password";
   final response = await http.get(Uri.parse(serverPath + url));
-  print("bbbbbbbbbbbbbb");
 
   print("Response Body: ${response.body}");
 
