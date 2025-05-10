@@ -5,13 +5,36 @@ import 'package:http/http.dart' as http;
 import '../Models/clientConfig.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   RegisterPage({Key? key}) : super(key: key);
+
+  @override
+  _RegisterPageState createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _txtfirstName = TextEditingController();
   final TextEditingController _txtsecondName = TextEditingController();
   final TextEditingController _txtpassword = TextEditingController();
   final TextEditingController _txtphoneNumber = TextEditingController();
   final TextEditingController _txtemail = TextEditingController();
+  bool _isLoading = false;
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Registration Failed'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,26 +140,70 @@ class RegisterPage extends StatelessWidget {
                           ],
                         ),
                         child: ElevatedButton(
-                          onPressed: () async {
-                            final userID = await insertUser(
-                                context,
-                                2,
-                                _txtfirstName.text,
-                                _txtsecondName.text,
-                                _txtemail.text,
-                                _txtpassword.text,
-                                _txtphoneNumber.text
-                            );
+                          onPressed: _isLoading
+                              ? null
+                              : () async {
+                            // Validate inputs first
+                            if (_txtfirstName.text.isEmpty ||
+                                _txtsecondName.text.isEmpty ||
+                                _txtemail.text.isEmpty ||
+                                _txtpassword.text.isEmpty ||
+                                _txtphoneNumber.text.isEmpty) {
+                              _showErrorDialog('Please fill in all required fields.');
+                              return;
+                            }
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MainStudentScreen(
-                                  title: 'pepo',
-                                  userID: userID,
-                                ),
-                              ),
-                            );
+
+
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            try {
+                              final result = await insertUser(
+                                  context,
+                                  2,
+                                  _txtfirstName.text,
+                                  _txtsecondName.text,
+                                  _txtemail.text,
+                                  _txtpassword.text,
+                                  _txtphoneNumber.text
+                              );
+
+                              setState(() {
+                                _isLoading = false;
+                              });
+
+                              if (result['success']) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Account created successfully!'),
+                                    backgroundColor: Colors.green,
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+
+                                await Future.delayed(Duration(milliseconds: 500));
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MainStudentScreen(
+                                      title: 'Student Dashboard',
+                                      userID: result['userID'],
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                _showErrorDialog(result['message']);
+                              }
+                            } catch (e) {
+                              print("Exception in registration button: $e");
+                              setState(() {
+                                _isLoading = false;
+                              });
+                              _showErrorDialog('An unexpected error occurred: ${e.toString()}');
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
@@ -145,7 +212,9 @@ class RegisterPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          child: const Text(
+                          child: _isLoading
+                              ? CircularProgressIndicator(color: Colors.white)
+                              : const Text(
                             'Create Account',
                             style: TextStyle(
                               fontSize: 16,
@@ -186,14 +255,15 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Future<String> insertUser(
+  Future<Map<String, dynamic>> insertUser(
       BuildContext context,
       int userTypeID,
       String firstName,
       String secondName,
       String email,
       String password,
-      String phoneNumber) async {
+      String phoneNumber
+      ) async {
     var url = "users/insertUser.php?"
         "firstName=$firstName"
         "&secondName=$secondName"
@@ -203,15 +273,25 @@ class RegisterPage extends StatelessWidget {
         "&userTypeID=$userTypeID";
 
     final response = await http.get(Uri.parse(serverPath + url));
-    if (response.statusCode == 200) {
-      try {
-        final data = json.decode(response.body);
-        return data['userID'].toString();
-      } catch (e) {
-        print("Error parsing user ID: $e");
-        return "1";
-      }
+    final data = json.decode(response.body);
+
+    if (data['message'] == 'Email already registered') {
+      return {
+        'success': false,
+        'message': 'An account with this email already exists. Please use a different email.'
+      };
     }
-    return "1";
+
+    if (data['result'] == '1' && data['userID'] != null) {
+      return {
+        'success': true,
+        'userID': data['userID'].toString()
+      };
+    } else {
+      return {
+        'success': false,
+        'message': data['message'] ?? 'Failed to create account. Please try again.'
+      };
+    }
   }
 }

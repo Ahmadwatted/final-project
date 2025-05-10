@@ -67,10 +67,8 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _isLoading = true;
     });
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
     bool isLoginSuccessful = await checkLogin(context, _txtemail.text, _txtpassword.text);
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
     if (isLoginSuccessful) {
       try {
@@ -144,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
     } on SocketException catch (_) {
       print('not connected to internet');
       var uti = new Utils();
-      uti.showMyDialog2(context, "אין אינטרנט", "האפליקציה דורשת חיבור לאינטרנט, נא להתחבר בבקשה");
+      uti.showMyDialog2(context, "لا يوجد اتصال بالانترنت", "لا يوجد اتصال بالانترنت. يرجى التأكد من اتصالك بالإنترنت والمحاولة مرة أخرى.");
     }
   }
 

@@ -227,7 +227,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
 
                         scaffoldContext.showSnackBar(
                           const SnackBar(
-                            content: Text('No student found with the matching credentials'),
+                            content: Text('لم يتم العثور على طالب لديه معلومات مطابقة.'),
                             backgroundColor: Colors.red,
                             duration: Duration(seconds: 3),
                           ),
@@ -241,7 +241,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                         if (success) {
                           scaffoldContext.showSnackBar(
                             const SnackBar(
-                              content: Text('Added Student successfully'),
+                              content: Text('تم إضافة الطالب إلى المهمة بنجاح.'),
                               backgroundColor: Colors.green,
                               duration: Duration(seconds: 3),
                             ),
@@ -256,7 +256,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                         } else {
                           scaffoldContext.showSnackBar(
                             const SnackBar(
-                              content: Text('Failed to add student to course'),
+                              content: Text('فشل إضافة المستخدم إلى المهمة. يرجى المحاولة مرة أخرى.'),
                               backgroundColor: Colors.red,
                               duration: Duration(seconds: 3),
                             ),
@@ -537,7 +537,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text('Task successfully updated!'),
+                                        content: Text('تم تعديل المهمة بنجاح.'),
                                         backgroundColor: Color(0xFF1F2937),
                                       ),
                                     );
@@ -546,7 +546,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Failed to update task. Please try again.'),
+                                    content: Text('تعذر تعديل المهمة. يرجى المحاولة لاحقا.'),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -555,7 +555,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                               print("Error in form submission: $e");
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error: $e'),
+                                  content: Text('خطأ: $e'),
                                   backgroundColor: Colors.red,
                                 ),
                               );
@@ -717,8 +717,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                                     SnackBar(
                                       content: Text(
                                         result == true
-                                            ? 'Student removed successfully!'
-                                            : 'Failed to remove student.',
+                                            ? 'تمت إزالة الطالب من المهمة بنجاح.'
+                                            : 'حدث خطأ أثناء إزالة الطالب من المهمة. يرجى المحاولة لاحقا.',
                                       ),
                                       backgroundColor: result == true ? Colors.green : Colors.red,
                                     ),
@@ -965,8 +965,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                             decoration: BoxDecoration(
                               color: isCompleted
                                   ? Color(0xFF10B981):
-                               courseColor
-                        ,
+                              courseColor
+                              ,
                               shape: BoxShape.circle,
                             ),
                           ),
