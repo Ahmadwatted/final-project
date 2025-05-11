@@ -469,10 +469,13 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
+                            // Capture the scaffold context before showing bottom sheet
+                            final scaffoldContext = ScaffoldMessenger.of(context);
+
                             // Show loading indicator
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            scaffoldContext.showSnackBar(
                               const SnackBar(
-                                content: Text('Updating course...'),
+                                content: Text('Updating task...'),
                                 duration: Duration(seconds: 1),
                                 backgroundColor: Color(0xFF1F2937),
                               ),
@@ -491,34 +494,34 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
 
                               print("Task updated: $success");
 
+                              // Clear any existing snackbars
+                              scaffoldContext.clearSnackBars();
+
+                              // Close the bottom sheet
+                              Navigator.pop(context);
+
+                              // Update the UI
+                              widget.onTaskDeleted();
+
+                              // Show success/failure message using the cached context
                               if (success) {
-                                ScaffoldMessenger.of(context).clearSnackBars();
-
-                                Navigator.pop(context);
-
-                                widget.onTaskDeleted();
-
-                                Future.delayed(const Duration(milliseconds: 300), () {
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Task successfully updated!'),
-                                        backgroundColor: Color(0xFF1F2937),
-                                      ),
-                                    );
-                                  }
-                                });
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                scaffoldContext.showSnackBar(
                                   const SnackBar(
-                                    content: Text('Failed to update task. Please try again.'),
+                                    content: Text('تم تعديل المهمة بنجاح.'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              } else {
+                                scaffoldContext.showSnackBar(
+                                  const SnackBar(
+                                    content: Text('تعذر تعديل المهمة. يرجى المحاولة لاحقا.'),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
                               }
                             } catch (e) {
                               print("Error in form submission: $e");
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              scaffoldContext.showSnackBar(
                                 SnackBar(
                                   content: Text('Error: $e'),
                                   backgroundColor: Colors.red,

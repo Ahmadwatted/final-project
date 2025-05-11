@@ -99,10 +99,9 @@ class _MyTasksScreen extends State<MyTasksScreen> {
 
       if (_filterStatus == 'completed') return taskCompletionStatus;
       if (_filterStatus == 'pending') return !taskCompletionStatus;
-      return true; // 'all' filter
+      return true;
     }).toList();
 
-    // Then apply the search filter if needed
     if (_searchTerm.isNotEmpty) {
       filteredTasks = filteredTasks.where((task) {
         return task.course.toLowerCase().contains(_searchTerm.toLowerCase()) ||
