@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
 import '../../utils/Widgets/Courses_Screen_Design.dart';
@@ -9,55 +8,41 @@ import '../../utils/Widgets/Courses_Screen_Design.dart';
 class MyCoursesScreen extends StatefulWidget {
   final String title;
   final String userID;
-
   const MyCoursesScreen({Key? key, required this.title, required this.userID}) : super(key: key);
-
   @override
   State<MyCoursesScreen> createState() => _MyCoursesScreenState();
 }
 
 class _MyCoursesScreenState extends State<MyCoursesScreen> {
-  late Future<List<Course>> _CoursesFuture;
+  late Future<List<Course>> CoursesFuture;
   bool isStudent = true;
   String searchTerm = '';
-
   @override
   void initState() {
     super.initState();
-    _refreshCourses();
+    refreshCourses();
   }
-
-  void _refreshCourses() {
+  void refreshCourses() {
     setState(() {
-      _CoursesFuture = getUserCourses();
+      CoursesFuture = getUserCourses();
     });
   }
-
-
-
-
-
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
-
     try {
       var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
-
       print("Response Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
       print(widget.userID);
-
       if (response.statusCode == 200) {
         var jsonData = json.decode(response.body);
-
         if (jsonData == null) {
           throw Exception("Response body is null");
         }
         if (jsonData is! List) {
           throw Exception("Response is not a List. Received: $jsonData");
         }
-
         for (var i in jsonData) {
           arr.add(Course.fromJson(i));
         }
@@ -67,7 +52,6 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
     }
     return arr;
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +63,6 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
       ),
       body: Column(
         children: [
-          // Search Row
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
             child: TextField(
@@ -99,11 +82,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
               },
             ),
           ),
-
-          // Course list
           Expanded(
             child: FutureBuilder<List<Course>>(
-              future: _CoursesFuture,
+              future: CoursesFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -121,14 +102,14 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         TextButton(
-                          onPressed: _refreshCourses,
+                          onPressed: refreshCourses,
                           child: const Text('Try Again'),
                         ),
                       ],
                     ),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return _buildEmptyState();
+                  return buildEmptyState();
                 } else {
                   final filteredCourses = snapshot.data!
                       .where((course) {
@@ -136,11 +117,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                         course.course.toLowerCase().contains(searchTerm.toLowerCase()) ||
                         course.tutor.toLowerCase().contains(searchTerm.toLowerCase());
                   }).toList();
-
                   if (filteredCourses.isEmpty) {
-                    return _buildEmptyState();
+                    return buildEmptyState();
                   }
-
                   return ListView.builder(
                     itemCount: filteredCourses.length,
                     padding: const EdgeInsets.all(16),
@@ -149,7 +128,7 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                       return CoursesScreenDesign(
                         courses: course,
                         isStudent: isStudent,
-                        onTaskDeleted: _refreshCourses,
+                        onTaskDeleted: refreshCourses,
                         isGridView: false,
                       );
                     },
@@ -162,13 +141,10 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
       ),
     );
   }
-
-  Widget _buildEmptyState() {
-
+  Widget buildEmptyState() {
     String message = searchTerm.isNotEmpty
         ? 'No courses matching "$searchTerm"'
         : 'You haven\'t enrolled in any courses yet.';
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -183,8 +159,6 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
             const SizedBox(height: 16),
             const Text(
               'No courses found',
-
-
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,

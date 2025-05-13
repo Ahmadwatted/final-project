@@ -9,121 +9,84 @@ import '../../utils/Widgets/Tasks_Screen_design.dart';
 class MyTasksScreen extends StatefulWidget {
   final String title;
   final String userID;
-
   const MyTasksScreen({
     Key? key,
     required this.title,
     required this.userID,
   }) : super(key: key);
-
   @override
-  State<MyTasksScreen> createState() => _MyTasksScreen();
+  State<MyTasksScreen> createState() => MyTasksScreenState();
 }
 
-class _MyTasksScreen extends State<MyTasksScreen> {
-  late Future<List<Task>> _tasksFuture;
-  String _searchTerm = '';
-  String _filterStatus = 'all';
-  String _sortBy = 'dueDate';
-  bool _isAscending = true;
-  bool _isFilterMenuOpen = false;
-
-  // Map to store the completion status of tasks
-  Map<int, bool> _taskCompletionStatus = {};
-
+class MyTasksScreenState extends State<MyTasksScreen> {
+  late Future<List<Task>> tasksFuture;
+  String searchTerm = '';
+  String filterStatus = 'all';
+  String sortBy = 'dueDate';
+  bool isAscending = true;
+  bool isFilterMenuOpen = false;
+  Map<int, bool> taskCompletionStatus = {};
   @override
   void initState() {
     super.initState();
-    _refreshTasks();
+    refreshTasks();
   }
-
-  void _refreshTasks() {
+  void refreshTasks() {
     setState(() {
-      _tasksFuture = getUserTasks();
+      tasksFuture = getUserTasks();
     });
   }
-
-  void _toggleTaskCompletion(int taskId) async {
+  void toggleTaskCompletion(int taskId) async {
     try {
-      // Toggle the status in the local map
-      _taskCompletionStatus[taskId] = !(_taskCompletionStatus[taskId] ?? false);
-
-      // Save to SharedPreferences
+      taskCompletionStatus[taskId] = !(taskCompletionStatus[taskId] ?? false);
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('task_${taskId}_completed', _taskCompletionStatus[taskId]!);
-
-      // Update the UI by forcing a rebuild
+      await prefs.setBool('task_${taskId}_completed', taskCompletionStatus[taskId]!);
       setState(() {});
     } catch (e) {
       print("Error toggling task completion: $e");
     }
   }
-
-  List<Task> _filterAndSortTasks(List<Task> tasks) {
-    // Apply status filter using the _taskCompletionStatus map
+  List<Task> filterAndSortTasks(List<Task> tasks) {
     var filteredTasks = tasks.where((task) {
-      // Get completion status from our map, or fall back to task.isCompleted
-      bool isCompleted = _taskCompletionStatus.containsKey(task.taskID)
-          ? _taskCompletionStatus[task.taskID]!
+      bool isCompleted = taskCompletionStatus.containsKey(task.taskID)
+          ? taskCompletionStatus[task.taskID]!
           : task.isCompleted;
-
-      if (_filterStatus == 'completed') return isCompleted;
-      if (_filterStatus == 'pending') return !isCompleted;
+      if (filterStatus == 'completed') return isCompleted;
+      if (filterStatus == 'pending') return !isCompleted;
       return true;
     }).toList();
-
-    // Apply search filter
-    if (_searchTerm.isNotEmpty) {
+    if (searchTerm.isNotEmpty) {
       filteredTasks = filteredTasks.where((task) {
-        return task.course.toLowerCase().contains(_searchTerm.toLowerCase()) ||
-            task.tutor.toLowerCase().contains(_searchTerm.toLowerCase());
+        return task.course.toLowerCase().contains(searchTerm.toLowerCase()) ||
+            task.tutor.toLowerCase().contains(searchTerm.toLowerCase());
       }).toList();
     }
-
-    // Apply sorting
     filteredTasks.sort((a, b) {
-      // Implementation of sorting logic would go here
-      return 0; // Placeholder
+      return 0;
     });
-
     return filteredTasks;
   }
-
   Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
-    // Clear and rebuild the completion status map
-    _taskCompletionStatus.clear();
-
+    taskCompletionStatus.clear();
     try {
-      // Get SharedPreferences first
       final prefs = await SharedPreferences.getInstance();
-
-      // Fetch tasks from API
       var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
-
       if (response.statusCode == 200) {
         var jsonData = json.decode(response.body);
         if (jsonData == null || jsonData is! List) {
           throw Exception("Invalid response format");
         }
-
         for (var i in jsonData) {
-          // Create task from API
           Task task = Task.fromJson(i);
-
-          // Check for locally stored completion status
           final savedStatus = prefs.getBool('task_${task.taskID}_completed');
-
-          // Update our completion status map
           if (savedStatus != null) {
-            _taskCompletionStatus[task.taskID] = savedStatus;
+            taskCompletionStatus[task.taskID] = savedStatus;
           } else {
-            _taskCompletionStatus[task.taskID] = task.isCompleted;
-            // Also save this initial value to SharedPreferences
+            taskCompletionStatus[task.taskID] = task.isCompleted;
             await prefs.setBool('task_${task.taskID}_completed', task.isCompleted);
           }
-
           arr.add(task);
         }
       }
@@ -132,18 +95,16 @@ class _MyTasksScreen extends State<MyTasksScreen> {
     }
     return arr;
   }
-
   void toggleSort(String field) {
     setState(() {
-      if (_sortBy == field) {
-        _isAscending = !_isAscending;
+      if (sortBy == field) {
+        isAscending = !isAscending;
       } else {
-        _sortBy = field;
-        _isAscending = true;
+        sortBy = field;
+        isAscending = true;
       }
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,7 +116,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -170,12 +130,11 @@ class _MyTasksScreen extends State<MyTasksScreen> {
               ),
               onChanged: (value) {
                 setState(() {
-                  _searchTerm = value;
+                  searchTerm = value;
                 });
               },
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -199,8 +158,7 @@ class _MyTasksScreen extends State<MyTasksScreen> {
               ),
             ),
           ),
-
-          if (_isFilterMenuOpen)
+          if (isFilterMenuOpen)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
@@ -218,12 +176,10 @@ class _MyTasksScreen extends State<MyTasksScreen> {
                 ),
               ),
             ),
-
           const SizedBox(height: 8),
-
           Expanded(
             child: FutureBuilder<List<Task>>(
-              future: _tasksFuture,
+              future: tasksFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -251,7 +207,7 @@ class _MyTasksScreen extends State<MyTasksScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          _searchTerm.isNotEmpty
+                          searchTerm.isNotEmpty
                               ? 'No tasks found for this search'
                               : 'No tasks available',
                           style: const TextStyle(
@@ -263,7 +219,7 @@ class _MyTasksScreen extends State<MyTasksScreen> {
                     ),
                   );
                 } else {
-                  final filteredTasks = _filterAndSortTasks(snapshot.data!);
+                  final filteredTasks = filterAndSortTasks(snapshot.data!);
                   if (filteredTasks.isEmpty) {
                     return Center(
                       child: Column(
@@ -286,15 +242,11 @@ class _MyTasksScreen extends State<MyTasksScreen> {
                       ),
                     );
                   }
-
                   return ListView.builder(
                     itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
                       final task = filteredTasks[index];
-                      // Use the completion status from our map
-                      final isCompleted = _taskCompletionStatus[task.taskID] ?? task.isCompleted;
-
-                      // Create a modified task with the correct completion status
+                      final isCompleted = taskCompletionStatus[task.taskID] ?? task.isCompleted;
                       final updatedTask = Task(
                         taskID: task.taskID,
                         tutor: task.tutor,
@@ -305,12 +257,11 @@ class _MyTasksScreen extends State<MyTasksScreen> {
                         dueDate: task.dueDate,
                         description: task.description,
                       );
-
                       return TasksScreenDesign(
                         task: updatedTask,
                         isStudent: true,
-                        onTaskDeleted: _refreshTasks,
-                        onToggleCompletion: _toggleTaskCompletion,
+                        onTaskDeleted: refreshTasks,
+                        onToggleCompletion: toggleTaskCompletion,
                       );
                     },
                   );
@@ -322,15 +273,13 @@ class _MyTasksScreen extends State<MyTasksScreen> {
       ),
     );
   }
-
   Widget buildFilterTab(String title, String value, Color activeColor) {
-    bool isActive = _filterStatus == value;
-
+    bool isActive = filterStatus == value;
     return Expanded(
       child: GestureDetector(
         onTap: () {
           setState(() {
-            _filterStatus = value;
+            filterStatus = value;
           });
         },
         child: Container(
@@ -352,7 +301,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
       ),
     );
   }
-
   Widget buildSortOption(String title, String value) {
     return InkWell(
       onTap: () => toggleSort(value),
@@ -365,9 +313,9 @@ class _MyTasksScreen extends State<MyTasksScreen> {
               title,
               style: const TextStyle(fontSize: 14),
             ),
-            if (_sortBy == value)
+            if (sortBy == value)
               Icon(
-                _isAscending ? Icons.arrow_upward : Icons.arrow_downward,
+                isAscending ? Icons.arrow_upward : Icons.arrow_downward,
                 size: 16,
                 color: const Color(0xFF3B82F6),
               ),

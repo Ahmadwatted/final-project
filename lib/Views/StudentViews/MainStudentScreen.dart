@@ -4,7 +4,6 @@ import 'package:final_project/utils/Widgets/Schedule_Card.dart';
 import 'package:final_project/utils/Widgets/Task_Card.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
 import '../../Models/schedule.dart';
@@ -16,67 +15,57 @@ import 'MyTasksScreen.dart';
 class MainStudentScreen extends StatefulWidget {
   final String title;
   final String userID;
-
   const MainStudentScreen({
     super.key,
     required this.title,
     required this.userID,
   });
-
   @override
   State<MainStudentScreen> createState() => _MainStudentScreenState();
 }
 
 class _MainStudentScreenState extends State<MainStudentScreen> {
-  late Future<List<Task>> _tasksFuture;
-  late Future<List<Course>> _coursesFuture;
-  late Future<List<Schedule>> _scheduleFuture;
-
+  late Future<List<Task>> tasksFuture;
+  late Future<List<Course>> coursesFuture;
+  late Future<List<Schedule>> scheduleFuture;
   @override
   void initState() {
     super.initState();
-    _refreshTasks();
-    _refreshCourses();
-    _refreshSchedule();
+    refreshTasks();
+    refreshCourses();
+    refreshSchedule();
   }
-
-  void _refreshCourses() {
+  void refreshCourses() {
     setState(() {
-      _coursesFuture = getUserCourses();
+      coursesFuture = getUserCourses();
     });
   }
-
-  void _refreshTasks() {
+  void refreshTasks() {
     setState(() {
-      _tasksFuture = getUserTasks();
+      tasksFuture = getUserTasks();
     });
   }
-
-  void _refreshSchedule() {
+  void refreshSchedule() {
     setState(() {
-      _scheduleFuture = getUserSchedule();
+      scheduleFuture = getUserSchedule();
     });
   }
 
   Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
-
     try {
       var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
       print("Fetching tasks with URL: ${serverPath + url}");
       final response = await http.get(Uri.parse(serverPath + url));
-
       if (response.statusCode == 200) {
         print("Task response body: ${response.body}");
         var jsonData = json.decode(response.body);
-
         if (jsonData == null) {
           throw Exception("Response body is null");
         }
         if (jsonData is! List) {
           throw Exception("Response is not a List. Received: $jsonData");
         }
-
         for (var i in jsonData) {
           arr.add(Task.fromJson(i));
         }
@@ -89,26 +78,21 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
     print("Returning ${arr.length} tasks");
     return arr;
   }
-
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
-
     try {
       var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
       print("Fetching courses with URL: ${serverPath + url}");
       final response = await http.get(Uri.parse(serverPath + url));
-
       if (response.statusCode == 200) {
         print("Course response body: ${response.body}");
         var jsonData = json.decode(response.body);
-
         if (jsonData == null) {
           throw Exception("Response body is null");
         }
         if (jsonData is! List) {
           throw Exception("Response is not a List. Received: $jsonData");
         }
-
         for (var i in jsonData) {
           print("Adding course: $i");
           arr.add(Course.fromJson(i));
@@ -122,26 +106,21 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
     print("Returning ${arr.length} courses");
     return arr;
   }
-
   Future<List<Schedule>> getUserSchedule() async {
     List<Schedule> arr = [];
-
     try {
       var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
       print("Fetching schedule with URL: ${serverPath + url}");
       final response = await http.get(Uri.parse(serverPath + url));
-
       if (response.statusCode == 200) {
         print("Schedule response body: ${response.body}");
         var jsonData = json.decode(response.body);
-
         if (jsonData == null) {
           throw Exception("Response body is null");
         }
         if (jsonData is! List) {
           throw Exception("Response is not a List. Received: $jsonData");
         }
-
         for (var i in jsonData) {
           arr.add(Schedule.fromJson(i));
         }
@@ -154,14 +133,6 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
     print("Returning ${arr.length} schedule items");
     return arr;
   }
-
-
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +156,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSectionHeader(
+                buildSectionHeader(
                   'My Courses',
                   Icons.book_outlined,
                       () => Navigator.push(
@@ -198,11 +169,9 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                     ),
                   ),
                 ),
-                _buildCoursesList(),
-
+                buildCoursesList(),
                 const SizedBox(height: 24),
-
-                _buildSectionHeader(
+                buildSectionHeader(
                   'My Schedule',
                   Icons.schedule_outlined,
                       () => Navigator.push(
@@ -215,11 +184,9 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                     ),
                   ),
                 ),
-                _buildScheduleList(),
-
+                buildScheduleList(),
                 const SizedBox(height: 24),
-
-                _buildSectionHeader(
+                buildSectionHeader(
                   'My Tasks',
                   Icons.check_box_outlined,
                       () => Navigator.push(
@@ -232,17 +199,16 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
                     ),
                   ),
                 ),
-                _buildTasksList(),
+                buildTasksList(),
               ],
             ),
           ),
         ),
       ),
-
     );
   }
 
-  Widget _buildSectionHeader(String title, IconData icon, VoidCallback onViewAll) {
+  Widget buildSectionHeader(String title, IconData icon, VoidCallback onViewAll) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -290,19 +256,18 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
       ),
     );
   }
-
-  Widget _buildCoursesList() {
+  Widget buildCoursesList() {
     return SizedBox(
       height: 160,
       child: FutureBuilder<List<Course>>(
-        future: _coursesFuture,
+        future: coursesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildLoadingIndicator();
+            return buildLoadingIndicator();
           } else if (snapshot.hasError) {
-            return _buildErrorState('Error loading courses: ${snapshot.error}');
+            return buildErrorState('Error loading courses: ${snapshot.error}');
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return _buildEmptyState('You have not participated in any courses yet');
+            return buildEmptyState('You have not participated in any courses yet');
           } else {
             return ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -310,7 +275,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final Course course = snapshot.data![index];
-                return CourseCard(courses: course, isStudent: true,onTaskDeleted: _refreshCourses,);
+                return CourseCard(courses: course, isStudent: true, onTaskDeleted: refreshCourses);
               },
             );
           }
@@ -318,21 +283,18 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
       ),
     );
   }
-
-
-
-  Widget _buildScheduleList() {
+  Widget buildScheduleList() {
     return SizedBox(
       height: 160,
       child: FutureBuilder<List<Course>>(
-        future: _coursesFuture,
+        future: coursesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildLoadingIndicator();
+            return buildLoadingIndicator();
           } else if (snapshot.hasError) {
-            return _buildErrorState('Error loading schedule: ${snapshot.error}');
+            return buildErrorState('Error loading schedule: ${snapshot.error}');
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return _buildEmptyState('No scheduled classes');
+            return buildEmptyState('No scheduled classes');
           } else {
             return ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -340,7 +302,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final course = snapshot.data![index];
-                return ScheduleCard(course:course, isStudent: true,onTaskDeleted: _refreshSchedule,);
+                return ScheduleCard(course: course, isStudent: true, onTaskDeleted: refreshSchedule);
               },
             );
           }
@@ -348,21 +310,18 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
       ),
     );
   }
-
-
-
-  Widget _buildTasksList() {
+  Widget buildTasksList() {
     return SizedBox(
       height: 160,
       child: FutureBuilder<List<Task>>(
-        future: _tasksFuture,
+        future: tasksFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildLoadingIndicator();
+            return buildLoadingIndicator();
           } else if (snapshot.hasError) {
-            return _buildErrorState('Error loading tasks: ${snapshot.error}');
+            return buildErrorState('Error loading tasks: ${snapshot.error}');
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return _buildEmptyState('No tasks yet');
+            return buildEmptyState('No tasks yet');
           } else {
             return ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -370,7 +329,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final task = snapshot.data![index];
-                return TaskCard(tasks:task, isStudent: true, onTaskDeleted: _refreshTasks,);
+                return TaskCard(tasks: task, isStudent: true, onTaskDeleted: refreshTasks);
               },
             );
           }
@@ -378,10 +337,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
       ),
     );
   }
-
-
-
-  Widget _buildLoadingIndicator() {
+  Widget buildLoadingIndicator() {
     return const Center(
       child: CircularProgressIndicator(
         color: Colors.blue,
@@ -389,8 +345,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
       ),
     );
   }
-
-  Widget _buildErrorState(String message) {
+  Widget buildErrorState(String message) {
     return Center(
       child: Text(
         message,
@@ -402,8 +357,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
       ),
     );
   }
-
-  Widget _buildEmptyState(String message) {
+  Widget buildEmptyState(String message) {
     return Center(
       child: Text(
         message,
