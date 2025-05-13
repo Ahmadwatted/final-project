@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-
 import '../../Models/course.dart';
-import 'Confirm_Del_Task.dart';
 
 class CourseCard extends StatelessWidget {
   final Course courses;
   final bool isStudent;
   final Function onTaskDeleted;
 
-   CourseCard({
+  CourseCard({
     Key? key,
     required this.courses,
     this.isStudent = true,
-     required this.onTaskDeleted,
+    required this.onTaskDeleted,
   }) : super(key: key);
   Color getCourseColor(Course course) {
     final colors = [
@@ -30,6 +28,7 @@ class CourseCard extends StatelessWidget {
 
     return colors[colorIndex.abs() % colors.length];
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -78,14 +77,13 @@ class CourseCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-
                   ],
-
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.person_2_sharp, size: 16, color: Colors.grey.shade600),
+                    Icon(Icons.person_2_sharp,
+                        size: 16, color: Colors.grey.shade600),
                     const SizedBox(width: 6),
                     Text(
                       courses.tutor,
@@ -96,12 +94,10 @@ class CourseCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
-
-
                 Row(
                   children: [
-                    Icon(Icons.location_on, size: 16, color: Colors.grey.shade600),
+                    Icon(Icons.location_on,
+                        size: 16, color: Colors.grey.shade600),
                     const SizedBox(width: 6),
                     Text(
                       courses.location,
@@ -112,7 +108,6 @@ class CourseCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
               ],
             ),
           ),

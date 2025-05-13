@@ -42,9 +42,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
   List<User> _taskStudents = [];
   int? studentCount;
 
-
-
-
   final TextEditingController _tutorController = TextEditingController();
   final TextEditingController _courseController = TextEditingController();
   final TextEditingController _dueDateController = TextEditingController();
@@ -56,34 +53,33 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
   @override
   void initState() {
     super.initState();
-    // Initialize the completion status from the task prop directly
     _isCompleted = widget.task.isCompleted;
     if (!widget.isStudent) {
       _loadStudentCount();
     }
   }
+
   void _toggleCompletion() async {
-    // Update local state immediately for UI responsiveness
     setState(() {
       _isCompleted = !_isCompleted;
     });
 
-    // Notify parent about the change
     if (widget.onToggleCompletion != null) {
       widget.onToggleCompletion!(widget.task.taskID);
     }
   }
+
   @override
   void didUpdateWidget(TasksScreenDesign oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Update local state when props change
     if (oldWidget.task.isCompleted != widget.task.isCompleted) {
       setState(() {
         _isCompleted = widget.task.isCompleted;
       });
     }
   }
+
   Future<void> _loadStudentCount() async {
     setState(() {
       isLoading = true;
@@ -107,6 +103,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       }
     }
   }
+
   Future<void> showTaskStudents() async {
     setState(() {
       _isLoadingStudents = true;
@@ -140,6 +137,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       }
     }
   }
+
   void showAddStudentForm(BuildContext context) {
     final scaffoldContext = ScaffoldMessenger.of(context);
 
@@ -150,120 +148,126 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
         _phoneNumberController.clear();
         bool isLoading = false;
 
-        return StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                title: Text('Add New Student'),
-                content: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      buildFormField(
-                        label: 'Student e-Mail',
-                        controller: _emailController,
-                        hint: 'Enter Student e-Mail',
-                        icon: Icons.person_outline,
-                        isRequired: true,
-                      ),
-                      buildFormField(
-                        label: 'Student PhoneNumber',
-                        controller: _phoneNumberController,
-                        hint: 'Enter Student PhoneNumber',
-                        icon: Icons.school_outlined,
-                        isRequired: true,
-                      ),
-                      if (isLoading)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                              SizedBox(width: 12),
-                              Text('Processing...'),
-                            ],
-                          ),
-                        ),
-                    ],
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Add New Student'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  buildFormField(
+                    label: 'Student e-Mail',
+                    controller: _emailController,
+                    hint: 'Enter Student e-Mail',
+                    icon: Icons.person_outline,
+                    isRequired: true,
                   ),
-                ),
-                actions: [
-                  TextButton(
-                    child: Text('Cancel'),
-                    onPressed: isLoading ? null : () {
-                      Navigator.of(dialogContext).pop();
-                    },
+                  buildFormField(
+                    label: 'Student PhoneNumber',
+                    controller: _phoneNumberController,
+                    hint: 'Enter Student PhoneNumber',
+                    icon: Icons.school_outlined,
+                    isRequired: true,
                   ),
-                  TextButton(
-                    child: Text('Add'),
-                    onPressed: isLoading ? null : () async {
-                      setState(() {
-                        isLoading = true;
-                      });
-
-                      int uID = await getUserID(_emailController.text, _phoneNumberController.text);
-
-                      if(uID == 0) {
-                        Navigator.of(dialogContext).pop();
-                        Navigator.pop(context);
-
-                        scaffoldContext.showSnackBar(
-                          const SnackBar(
-                            content: Text('لم يتم العثور على طالب لديه معلومات مطابقة.'),
-                            backgroundColor: Colors.red,
-                            duration: Duration(seconds: 3),
+                  if (isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                        );
-                      } else {
-                        bool success = await InsertUserTask(uID, widget.task.taskID);
-
+                          SizedBox(width: 12),
+                          Text('Processing...'),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: isLoading
+                    ? null
+                    : () {
                         Navigator.of(dialogContext).pop();
-                        Navigator.pop(context);
+                      },
+              ),
+              TextButton(
+                child: Text('Add'),
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          isLoading = true;
+                        });
 
-                        if (success) {
+                        int uID = await getUserID(
+                            _emailController.text, _phoneNumberController.text);
+
+                        if (uID == 0) {
+                          Navigator.of(dialogContext).pop();
+                          Navigator.pop(context);
+
                           scaffoldContext.showSnackBar(
                             const SnackBar(
-                              content: Text('تم إضافة الطالب إلى المهمة بنجاح.'),
-                              backgroundColor: Colors.green,
-                              duration: Duration(seconds: 3),
-                            ),
-                          );
-
-                          Future.delayed(Duration(milliseconds: 300), () {
-                            if (mounted) {
-                              showTaskStudents();
-                              _loadStudentCount();
-                            }
-                          });
-                        } else {
-                          scaffoldContext.showSnackBar(
-                            const SnackBar(
-                              content: Text('فشل إضافة المستخدم إلى المهمة. يرجى المحاولة مرة أخرى.'),
+                              content: Text(
+                                  'لم يتم العثور على طالب لديه معلومات مطابقة.'),
                               backgroundColor: Colors.red,
                               duration: Duration(seconds: 3),
                             ),
                           );
+                        } else {
+                          bool success =
+                              await InsertUserTask(uID, widget.task.taskID);
+
+                          Navigator.of(dialogContext).pop();
+                          Navigator.pop(context);
+
+                          if (success) {
+                            scaffoldContext.showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('تم إضافة الطالب إلى المهمة بنجاح.'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+
+                            Future.delayed(Duration(milliseconds: 300), () {
+                              if (mounted) {
+                                showTaskStudents();
+                                _loadStudentCount();
+                              }
+                            });
+                          } else {
+                            scaffoldContext.showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'فشل إضافة المستخدم إلى المهمة. يرجى المحاولة مرة أخرى.'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
                         }
-                      }
-                    },
-                  ),
-                ],
-              );
-            }
-        );
+                      },
+              ),
+            ],
+          );
+        });
       },
     );
   }
 
-
   Future<bool> InsertUserTask(int userID, int taskID) async {
     try {
-
-      var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/userTasks/insertUserTask.php?"
+      var url =
+          "https://darkgray-hummingbird-925566.hostingersite.com/watad/userTasks/insertUserTask.php?"
           "taskID=$taskID"
           "&userID=$userID";
 
@@ -297,6 +301,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       return false;
     }
   }
+
   Future<int> getTaskStunum(int taskID) async {
     try {
       var url = "getTaskDetails/getTaskStunum.php?taskID=$taskID";
@@ -311,7 +316,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
           return 0;
         }
 
-        if (jsonData is Map<String, dynamic> && jsonData.containsKey('studentCount')) {
+        if (jsonData is Map<String, dynamic> &&
+            jsonData.containsKey('studentCount')) {
           var count = jsonData['studentCount'];
           if (count is int) {
             return count;
@@ -329,6 +335,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       return 0;
     }
   }
+
   Future<List<User>> getTaskStudents(int taskID) async {
     List<User> arr = [];
 
@@ -355,10 +362,12 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
             throw Exception("'users' is not a List. Received: $users");
           }
         } else {
-          throw Exception("Response does not contain 'users' array. Received: $jsonData");
+          throw Exception(
+              "Response does not contain 'users' array. Received: $jsonData");
         }
       } else {
-        print('Failed to load Task Students: ${response.statusCode}, ${response.body}');
+        print(
+            'Failed to load Task Students: ${response.statusCode}, ${response.body}');
       }
     } catch (e) {
       print('Error in get TaskStudents: $e');
@@ -403,7 +412,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -416,13 +424,13 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Color(0xFF6B7280)),
+                          icon:
+                              const Icon(Icons.close, color: Color(0xFF6B7280)),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
@@ -475,7 +483,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                         ),
                       ),
                     ),
-
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 16),
                       width: double.infinity,
@@ -507,8 +514,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                                   _dayController.text,
                                   _dueDateController.text,
                                   _descriptionController.text,
-                                  isCompleted
-                              );
+                                  isCompleted);
 
                               print("Task updated: $success");
 
@@ -519,7 +525,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
 
                                 widget.onTaskDeleted();
 
-                                Future.delayed(const Duration(milliseconds: 300), () {
+                                Future.delayed(
+                                    const Duration(milliseconds: 300), () {
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
@@ -532,7 +539,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('تعذر تعديل المهمة. يرجى المحاولة لاحقا.'),
+                                    content: Text(
+                                        'تعذر تعديل المهمة. يرجى المحاولة لاحقا.'),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -588,7 +596,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -607,8 +614,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                     ],
                   ),
                   const SizedBox(height: 16),
-
-                  // Student count
                   Text(
                     "${_taskStudents.length} Students Enrolled",
                     style: TextStyle(
@@ -618,110 +623,114 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Student list
                   Expanded(
                     child: _taskStudents.isEmpty
                         ? Center(
-                      child: Text(
-                        "No students enrolled in this course yet",
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                        : ListView.separated(
-                      itemCount: _taskStudents.length,
-                      separatorBuilder: (context, index) => Divider(height: 1, color: Colors.grey.shade200),
-                      itemBuilder: (context, index) {
-                        final student = _taskStudents[index];
-                        final fullName = "${student.firstName ?? ''} ${student.secondName ?? ''}".trim();
-                        print(student.userID);
-
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: getCourseColor(widget.task.taskID),
                             child: Text(
-                              fullName.isNotEmpty
-                                  ? fullName.substring(0, 1).toUpperCase()
-                                  : "?",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                              "No students enrolled in this course yet",
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 16,
                               ),
                             ),
-                          ),
-                          title: Text(
-                            fullName.isNotEmpty ? fullName : "Unknown",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 4),
-                              if (student.email.isNotEmpty)
-                                Text(
-                                  "Email: ${student.email}",
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              if (student.phoneNumber.isNotEmpty)
-                                Text(
-                                  "Phone: ${student.phoneNumber}",
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                            ],
-                          ),
+                          )
+                        : ListView.separated(
+                            itemCount: _taskStudents.length,
+                            separatorBuilder: (context, index) =>
+                                Divider(height: 1, color: Colors.grey.shade200),
+                            itemBuilder: (context, index) {
+                              final student = _taskStudents[index];
+                              final fullName =
+                                  "${student.firstName ?? ''} ${student.secondName ?? ''}"
+                                      .trim();
+                              print(student.userID);
 
-                          trailing: GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (dialogContext) => UserTaskDeleteAlert(
-                                  userID: student.userID,
-                                  taskID: widget.task.taskID,
-                                  onTaskDeleted: () {
-
-                                    Navigator.pop(context);
-                                    showTaskStudents();
-                                    _loadStudentCount();
-
-                                  },
-                                ),
-                              ).then((result) {
-                                if (result != null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        result == true
-                                            ? 'تمت إزالة الطالب من المهمة بنجاح.'
-                                            : 'حدث خطأ أثناء إزالة الطالب من المهمة. يرجى المحاولة لاحقا.',
-                                      ),
-                                      backgroundColor: result == true ? Colors.green : Colors.red,
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor:
+                                      getCourseColor(widget.task.taskID),
+                                  child: Text(
+                                    fullName.isNotEmpty
+                                        ? fullName.substring(0, 1).toUpperCase()
+                                        : "?",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  );
-                                }
-                              });
+                                  ),
+                                ),
+                                title: Text(
+                                  fullName.isNotEmpty ? fullName : "Unknown",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 4),
+                                    if (student.email.isNotEmpty)
+                                      Text(
+                                        "Email: ${student.email}",
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    if (student.phoneNumber.isNotEmpty)
+                                      Text(
+                                        "Phone: ${student.phoneNumber}",
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                trailing: GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (dialogContext) =>
+                                          UserTaskDeleteAlert(
+                                        userID: student.userID,
+                                        taskID: widget.task.taskID,
+                                        onTaskDeleted: () {
+                                          Navigator.pop(context);
+                                          showTaskStudents();
+                                          _loadStudentCount();
+                                        },
+                                      ),
+                                    ).then((result) {
+                                      if (result != null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              result == true
+                                                  ? 'تمت إزالة الطالب من المهمة بنجاح.'
+                                                  : 'حدث خطأ أثناء إزالة الطالب من المهمة. يرجى المحاولة لاحقا.',
+                                            ),
+                                            backgroundColor: result == true
+                                                ? Colors.green
+                                                : Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    });
+                                  },
+                                  child: const Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                              );
                             },
-                            child: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.red,
-                              size: 20,
-                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -744,8 +753,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     );
   }
 
-  Future<bool> EditTask(int taskID, String tutor, String course, String time, String day,
-      String dueDate, String description, bool isCompleted) async {
+  Future<bool> EditTask(int taskID, String tutor, String course, String time,
+      String day, String dueDate, String description, bool isCompleted) async {
     try {
       String descriptionValue = description.isNotEmpty ? description : "";
 
@@ -757,7 +766,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
           "&day=${Uri.encodeComponent(day)}"
           "&dueDate=${Uri.encodeComponent(dueDate)}"
           "&description=${Uri.encodeComponent(descriptionValue)}"
-          "&isCompleted=0"; // Always send 0 to the database
+          "&isCompleted=0";
 
       final response = await http.get(Uri.parse(url));
 
@@ -817,15 +826,16 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Color(0xFF9CA3AF)),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             validator: isRequired
                 ? (value) {
-              if (value == null || value.isEmpty) {
-                return 'This field is required';
-              }
-              return null;
-            }
+                    if (value == null || value.isEmpty) {
+                      return 'This field is required';
+                    }
+                    return null;
+                  }
                 : null,
           ),
         ],
@@ -833,16 +843,14 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
     );
   }
 
-
-
   Color getCourseColor(int courseId) {
     final colors = [
-      const Color(0xFF3B82F6), // blue
-      const Color(0xFF10B981), // green
-      const Color(0xFFF59E0B), // orange
-      const Color(0xFF8B5CF6), // purple
-      const Color(0xFFEC4899), // pink
-      const Color(0xFF14B8A6), // teal
+      const Color(0xFF3B82F6),
+      const Color(0xFF10B981),
+      const Color(0xFFF59E0B),
+      const Color(0xFF8B5CF6),
+      const Color(0xFFEC4899),
+      const Color(0xFF14B8A6),
     ];
     return colors[courseId % colors.length];
   }
@@ -866,8 +874,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
       return 'Invalid date';
     }
   }
-
-
 
   void _showDeleteConfirmation() async {
     final result = await showDialog<bool>(
@@ -949,10 +955,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                             width: 8,
                             height: 8,
                             decoration: BoxDecoration(
-                              color: isCompleted
-                                  ? Color(0xFF10B981):
-                              courseColor
-                              ,
+                              color:
+                                  isCompleted ? Color(0xFF10B981) : courseColor,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -976,7 +980,7 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                     ),
                     Row(
                       children: [
-                        if(widget.isStudent)
+                        if (widget.isStudent)
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
@@ -996,7 +1000,6 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                               ),
                             ),
                           ),
-
                         if (!widget.isStudent) ...[
                           Material(
                             color: Colors.transparent,
@@ -1105,7 +1108,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                   const SizedBox(height: 12),
                   const Divider(height: 1, color: Colors.black12),
                   const SizedBox(height: 12),
-                  if (widget.task.description != null && widget.task.description.isNotEmpty)
+                  if (widget.task.description != null &&
+                      widget.task.description.isNotEmpty)
                     Text(
                       widget.task.description,
                       style: const TextStyle(
@@ -1142,8 +1146,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                           color: isOverdue
                               ? const Color(0xFFFEE2E2)
                               : isDueToday
-                              ? const Color(0xFFFEF3C7)
-                              : courseColor,
+                                  ? const Color(0xFFFEF3C7)
+                                  : courseColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -1154,8 +1158,8 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
                             color: isOverdue
                                 ? const Color(0xFFB91C1C)
                                 : isDueToday
-                                ? const Color(0xFF92400E)
-                                : Colors.white,
+                                    ? const Color(0xFF92400E)
+                                    : Colors.white,
                           ),
                         ),
                       ),
@@ -1168,6 +1172,5 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
         ),
       ),
     );
-
   }
 }

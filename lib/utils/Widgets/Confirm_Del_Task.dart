@@ -14,35 +14,33 @@ class TaskDeleteAlert extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TaskDeleteAlertState createState() => _TaskDeleteAlertState();
+  TaskDeleteAlertState createState() => TaskDeleteAlertState();
 }
 
-class _TaskDeleteAlertState extends State<TaskDeleteAlert> {
-  bool _isDeleting = false;
+class TaskDeleteAlertState extends State<TaskDeleteAlert> {
+  bool isDeleting = false;
 
-  // Arabic messages
-  final String _successMessage = 'تم حذف المهمة بنجاح';
-  final String _errorMessage = 'فشل في حذف المهمة، يرجى المحاولة مرة أخرى';
-  final String _networkErrorMessage = 'حدث خطأ في الاتصال، يرجى التحقق من اتصالك بالإنترنت';
-
-  Future<bool> _deleteTask(BuildContext context) async {
-    setState(() => _isDeleting = true);
-
+  final String successMessage = 'تم حذف المهمة بنجاح';
+  final String errorMessage = 'فشل في حذف المهمة، يرجى المحاولة مرة أخرى';
+  final String networkErrorMessage =
+      'حدث خطأ في الاتصال، يرجى التحقق من اتصالك بالإنترنت';
+  Future<bool> deleteTask(BuildContext context) async {
+    setState(() => isDeleting = true);
     try {
       var url = "tasks/deleteTask.php?taskID=${widget.taskID}";
       final response = await http.get(Uri.parse(serverPath + url));
-
       print("Full Delete Response:");
       print("Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
       print("Attempting to delete Task ID: ${widget.taskID}");
 
-      setState(() => _isDeleting = false);
+      setState(() => isDeleting = false);
 
       if (response.statusCode == 200) {
         if (response.body.trim().startsWith('[')) {
-          print("Server returned a list of tasks instead of a deletion confirmation");
-          _showMessage(context, _errorMessage, isSuccess: false);
+          print(
+              "Server returned a list of tasks instead of a deletion confirmation");
+          showMessage(context, errorMessage, isSuccess: false);
           return false;
         }
 
@@ -54,38 +52,38 @@ class _TaskDeleteAlertState extends State<TaskDeleteAlert> {
           if (jsonResponse is Map && jsonResponse.containsKey('result')) {
             if (jsonResponse['result'] == '1' || jsonResponse['result'] == 1) {
               widget.onTaskDeleted?.call();
-              _showMessage(context, _successMessage, isSuccess: true);
+              showMessage(context, successMessage, isSuccess: true);
               return true;
             } else {
               String serverMessage = jsonResponse['message'] ?? 'Unknown error';
               print("Deletion failed: $serverMessage");
-              _showMessage(context, _errorMessage, isSuccess: false);
+              showMessage(context, errorMessage, isSuccess: false);
               return false;
             }
           } else {
             print("Unexpected response format");
-            _showMessage(context, _errorMessage, isSuccess: false);
+            showMessage(context, errorMessage, isSuccess: false);
             return false;
           }
         } catch (e) {
           print("JSON parsing error: $e");
-          _showMessage(context, _errorMessage, isSuccess: false);
+          showMessage(context, errorMessage, isSuccess: false);
           return false;
         }
       } else {
-        _showMessage(context, _errorMessage, isSuccess: false);
+        showMessage(context, errorMessage, isSuccess: false);
         return false;
       }
     } catch (e) {
       print('Deletion Error: $e');
-      setState(() => _isDeleting = false);
-      _showMessage(context, _networkErrorMessage, isSuccess: false);
+      setState(() => isDeleting = false);
+      showMessage(context, networkErrorMessage, isSuccess: false);
       return false;
     }
   }
 
-  void _showMessage(BuildContext context, String message, {required bool isSuccess}) {
-    // This will be shown after dialog is closed
+  void showMessage(BuildContext context, String message,
+      {required bool isSuccess}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -94,9 +92,9 @@ class _TaskDeleteAlertState extends State<TaskDeleteAlert> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Cairo', // Arabic-friendly font if available
+              fontFamily: 'Cairo',
             ),
-            textAlign: TextAlign.right, // Right alignment for Arabic
+            textAlign: TextAlign.right,
           ),
           backgroundColor: isSuccess ? Colors.green : Colors.red,
           duration: Duration(seconds: 3),
@@ -119,35 +117,40 @@ class _TaskDeleteAlertState extends State<TaskDeleteAlert> {
         children: [
           Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
           SizedBox(width: 8),
-          Text('حذف المهمة', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          Text('حذف المهمة',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         ],
       ),
-      content: Text('هل أنت متأكد أنك تريد حذف هذه المهمة؟', style: TextStyle(fontSize: 16)),
+      content: Text('هل أنت متأكد أنك تريد حذف هذه المهمة؟',
+          style: TextStyle(fontSize: 16)),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: [
         ElevatedButton(
-          onPressed: _isDeleting ? null : () => Navigator.of(context).pop(),
+          onPressed: isDeleting ? null : () => Navigator.of(context).pop(),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.grey[300],
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           child: Text('إلغاء', style: TextStyle(color: Colors.black)),
         ),
         ElevatedButton(
-          onPressed: _isDeleting ? null : () async {
-            final result = await _deleteTask(context);
-            Navigator.of(context).pop(result);
-          },
+          onPressed: isDeleting
+              ? null
+              : () async {
+                  final result = await deleteTask(context);
+                  Navigator.of(context).pop(result);
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          child: _isDeleting
+          child: isDeleting
               ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2)
-          )
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2))
               : Text('حذف', style: TextStyle(color: Colors.white)),
         ),
       ],

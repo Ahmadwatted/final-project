@@ -8,11 +8,10 @@ class UserTaskDeleteAlert extends StatefulWidget {
   final Function onTaskDeleted;
   final int userID;
 
-
   const UserTaskDeleteAlert({
     Key? key,
     required this.taskID,
-    required  this.userID,
+    required this.userID,
     required this.onTaskDeleted,
   }) : super(key: key);
 
@@ -21,13 +20,14 @@ class UserTaskDeleteAlert extends StatefulWidget {
 }
 
 class _UserTaskDeleteAlert extends State<UserTaskDeleteAlert> {
-  bool _isDeleting = false;
+  bool isDeleting = false;
 
   Future<bool> deleteUserTask(BuildContext context) async {
-    setState(() => _isDeleting = true);
+    setState(() => isDeleting = true);
 
     try {
-      var url = "userTasks/deleteUserTask.php?taskID=${widget.taskID}&userID=${widget.userID}";
+      var url =
+          "userTasks/deleteUserTask.php?taskID=${widget.taskID}&userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Full Delete Response:");
@@ -36,9 +36,7 @@ class _UserTaskDeleteAlert extends State<UserTaskDeleteAlert> {
       print("Attempting to delete task ID: ${widget.taskID}");
       print("Attempting to delete userID: ${widget.userID}");
 
-
-
-      setState(() => _isDeleting = false);
+      setState(() => isDeleting = false);
 
       if (response.statusCode == 200) {
         if (response.body.trim().startsWith('[')) {
@@ -54,7 +52,8 @@ class _UserTaskDeleteAlert extends State<UserTaskDeleteAlert> {
               widget.onTaskDeleted();
               return true;
             } else {
-              showErrorDialog(context, jsonResponse['message'] ?? 'Unknown error');
+              showErrorDialog(
+                  context, jsonResponse['message'] ?? 'Unknown error');
               return false;
             }
           } else {
@@ -73,7 +72,7 @@ class _UserTaskDeleteAlert extends State<UserTaskDeleteAlert> {
       }
     } catch (e) {
       print('Deletion Error: $e');
-      setState(() => _isDeleting = false);
+      setState(() => isDeleting = false);
       showErrorDialog(context, 'An error occurred while deleting the course');
       return false;
     }
@@ -109,35 +108,42 @@ class _UserTaskDeleteAlert extends State<UserTaskDeleteAlert> {
         children: [
           const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
           const SizedBox(width: 8),
-          const Text('Delete Student From Task', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          const Text('Delete Student From Task',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         ],
       ),
-      content: const Text('Are you sure you want to delete this student from your task?', style: TextStyle(fontSize: 16)),
+      content: const Text(
+          'Are you sure you want to delete this student from your task?',
+          style: TextStyle(fontSize: 16)),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: [
         ElevatedButton(
-          onPressed: _isDeleting ? null : () => Navigator.of(context).pop(),
+          onPressed: isDeleting ? null : () => Navigator.of(context).pop(),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.grey[300],
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           child: const Text('Cancel', style: TextStyle(color: Colors.black)),
         ),
         ElevatedButton(
-          onPressed: _isDeleting ? null : () async {
-            final result = await deleteUserTask(context);
-            Navigator.of(context).pop(result);
-          },
+          onPressed: isDeleting
+              ? null
+              : () async {
+                  final result = await deleteUserTask(context);
+                  Navigator.of(context).pop(result);
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          child: _isDeleting
+          child: isDeleting
               ? const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          )
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Text('Delete', style: TextStyle(color: Colors.white)),
         ),
       ],

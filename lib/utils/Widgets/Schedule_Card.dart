@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../Models/course.dart';
 
-
 class ScheduleCard extends StatelessWidget {
   final Course course;
   final bool isStudent;
@@ -49,7 +48,6 @@ class ScheduleCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            // لون الكرت من فوق
             height: 8,
             width: double.infinity,
             decoration: BoxDecoration(
@@ -67,7 +65,8 @@ class ScheduleCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.blue.shade50,
                     borderRadius: BorderRadius.circular(6),
@@ -75,7 +74,8 @@ class ScheduleCard extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.calendar_today, size: 10, color: Colors.blue.shade800),
+                      Icon(Icons.calendar_today,
+                          size: 10, color: Colors.blue.shade800),
                       const SizedBox(width: 4),
                       Text(
                         course.day,

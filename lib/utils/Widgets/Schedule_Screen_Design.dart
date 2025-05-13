@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:final_project/Models/course.dart';
 
-
 class ScheduleScreenDesign extends StatelessWidget {
   final Course courses;
   final bool isStudent;
   final Function onTaskDeleted;
-
 
   const ScheduleScreenDesign({
     Key? key,
@@ -58,7 +56,6 @@ class ScheduleScreenDesign extends StatelessWidget {
               ),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -79,13 +76,13 @@ class ScheduleScreenDesign extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-
                   ],
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    const Icon(Icons.person_outline, size: 16, color: Color(0xFF6B7280)),
+                    const Icon(Icons.person_outline,
+                        size: 16, color: Color(0xFF6B7280)),
                     const SizedBox(width: 8),
                     Text(
                       courses.tutor,
@@ -97,10 +94,10 @@ class ScheduleScreenDesign extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today, size: 16, color: Color(0xFF6B7280)),
+                    const Icon(Icons.calendar_today,
+                        size: 16, color: Color(0xFF6B7280)),
                     const SizedBox(width: 8),
                     Text(
                       "${courses.day},",
@@ -112,10 +109,10 @@ class ScheduleScreenDesign extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF6B7280)),
+                    const Icon(Icons.location_on_outlined,
+                        size: 16, color: Color(0xFF6B7280)),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -130,10 +127,10 @@ class ScheduleScreenDesign extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-
                 Row(
                   children: [
-                    const Icon(Icons.access_time_outlined, size: 16, color: Color(0xFF6B7280)),
+                    const Icon(Icons.access_time_outlined,
+                        size: 16, color: Color(0xFF6B7280)),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -147,8 +144,6 @@ class ScheduleScreenDesign extends StatelessWidget {
                     ),
                   ],
                 ),
-
-
               ],
             ),
           ),

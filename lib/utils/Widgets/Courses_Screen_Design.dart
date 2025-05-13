@@ -6,7 +6,6 @@ import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../Widgets/Confirm_Del_Task.dart';
 import 'Confirm_Del_Course.dart';
 
 Future<int> getCourseStunum(int courseID) async {
@@ -23,7 +22,8 @@ Future<int> getCourseStunum(int courseID) async {
         return 0;
       }
 
-      if (jsonData is Map<String, dynamic> && jsonData.containsKey('studentCount')) {
+      if (jsonData is Map<String, dynamic> &&
+          jsonData.containsKey('studentCount')) {
         var count = jsonData['studentCount'];
         if (count is int) {
           return count;
@@ -46,7 +46,7 @@ Future<int> getUserID(String email, String phoneNumber) async {
   try {
     var url = "users/getUserID.php?email=$email&phoneNumber=$phoneNumber";
 
-    final response = await http.get(Uri.parse(serverPath+url));
+    final response = await http.get(Uri.parse(serverPath + url));
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -75,7 +75,6 @@ Future<int> getUserID(String email, String phoneNumber) async {
   }
 }
 
-
 Future<List<User>> getCourseStudents(int courseID) async {
   List<User> arr = [];
 
@@ -102,10 +101,12 @@ Future<List<User>> getCourseStudents(int courseID) async {
           throw Exception("'users' is not a List. Received: $users");
         }
       } else {
-        throw Exception("Response does not contain 'users' array. Received: $jsonData");
+        throw Exception(
+            "Response does not contain 'users' array. Received: $jsonData");
       }
     } else {
-      print('Failed to load Course Students: ${response.statusCode}, ${response.body}');
+      print(
+          'Failed to load Course Students: ${response.statusCode}, ${response.body}');
     }
   } catch (e) {
     print('Error in get CourseStudents: $e');
@@ -116,8 +117,8 @@ Future<List<User>> getCourseStudents(int courseID) async {
 
 Future<bool> InsertUserCourse(int userID, int courseID) async {
   try {
-
-    var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/userCourses/insertUserCourse.php?"
+    var url =
+        "https://darkgray-hummingbird-925566.hostingersite.com/watad/userCourses/insertUserCourse.php?"
         "courseID=$courseID"
         "&userID=$userID";
 
@@ -152,7 +153,6 @@ Future<bool> InsertUserCourse(int userID, int courseID) async {
   }
 }
 
-
 class CoursesScreenDesign extends StatefulWidget {
   final Course courses;
   final bool isStudent;
@@ -168,10 +168,10 @@ class CoursesScreenDesign extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<CoursesScreenDesign> createState() => _CoursesScreenDesignState();
+  State<CoursesScreenDesign> createState() => CoursesScreenDesignState();
 }
 
-class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
+class CoursesScreenDesignState extends State<CoursesScreenDesign> {
   bool showNotes = false;
   late String notes;
   int? studentCount;
@@ -182,8 +182,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
   TextEditingController _notesController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneNumberController = TextEditingController();
-
-
   TextEditingController _tutorController = TextEditingController();
   TextEditingController _courseController = TextEditingController();
   TextEditingController _locationController = TextEditingController();
@@ -194,21 +192,19 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
   final _formKey = GlobalKey<FormState>();
   Future<void> _loadCourseNotes() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedNotes = prefs.getString('course_${widget.courses.courseID}_notes');
+    final savedNotes =
+        prefs.getString('course_${widget.courses.courseID}_notes');
 
     setState(() {
       _notesController.text = savedNotes ?? widget.courses.notes;
     });
   }
 
-
-
-
   @override
   void initState() {
     super.initState();
     if (!widget.isStudent) {
-      _loadStudentCount();
+      loadStudentCount();
     }
     _loadCourseNotes();
   }
@@ -225,9 +221,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     super.dispose();
   }
 
-
-
-  Future<void> _loadStudentCount() async {
+  Future<void> loadStudentCount() async {
     setState(() {
       isLoading = true;
     });
@@ -250,7 +244,8 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
       }
     }
   }
-  Future<void> _showCourseStudents() async {
+
+  Future<void> showCourseStudents() async {
     setState(() {
       _isLoadingStudents = true;
     });
@@ -265,7 +260,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
         });
 
         if (mounted) {
-          _showStudentsBottomSheet();
+          showStudentsBottomSheet();
         }
       }
     } catch (e) {
@@ -284,7 +279,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     }
   }
 
-  void _showStudentsBottomSheet() {
+  void showStudentsBottomSheet() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -340,105 +335,111 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                   Expanded(
                     child: _courseStudents.isEmpty
                         ? Center(
-                      child: Text(
-                        "No students enrolled in this course yet",
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                        : ListView.separated(
-                      itemCount: _courseStudents.length,
-                      separatorBuilder: (context, index) => Divider(height: 1, color: Colors.grey.shade200),
-                      itemBuilder: (context, index) {
-                        final student = _courseStudents[index];
-                        final fullName = "${student.firstName ?? ''} ${student.secondName ?? ''}".trim();
-                        print(student.userID);
-
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: getCourseColor(widget.courses.courseID),
                             child: Text(
-                              fullName.isNotEmpty
-                                  ? fullName.substring(0, 1).toUpperCase()
-                                  : "?",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                              "No students enrolled in this course yet",
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 16,
                               ),
                             ),
-                          ),
-                          title: Text(
-                            fullName.isNotEmpty ? fullName : "Unknown",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 4),
-                              if (student.email.isNotEmpty)
-                                Text(
-                                  "Email: ${student.email}",
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              if (student.phoneNumber.isNotEmpty)
-                                Text(
-                                  "Phone: ${student.phoneNumber}",
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                            ],
-                          ),
+                          )
+                        : ListView.separated(
+                            itemCount: _courseStudents.length,
+                            separatorBuilder: (context, index) =>
+                                Divider(height: 1, color: Colors.grey.shade200),
+                            itemBuilder: (context, index) {
+                              final student = _courseStudents[index];
+                              final fullName =
+                                  "${student.firstName ?? ''} ${student.secondName ?? ''}"
+                                      .trim();
+                              print(student.userID);
 
-                          trailing: GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (dialogContext) => UserCourseDeleteAlert(
-                                  userID: student.userID,
-                                  courseID: widget.courses.courseID,
-                                  onTaskDeleted: () {
-
-                                    Navigator.pop(context);
-                                    _showCourseStudents();
-                                    _loadStudentCount();
-
-                                  },
-                                ),
-                              ).then((result) {
-                                if (result != null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        result == true
-                                            ? 'Student removed successfully!'
-                                            : 'Failed to remove student.',
-                                      ),
-                                      backgroundColor: result == true ? Colors.green : Colors.red,
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor:
+                                      getCourseColor(widget.courses.courseID),
+                                  child: Text(
+                                    fullName.isNotEmpty
+                                        ? fullName.substring(0, 1).toUpperCase()
+                                        : "?",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  );
-                                }
-                              });
+                                  ),
+                                ),
+                                title: Text(
+                                  fullName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 4),
+                                    if (student.email.isNotEmpty)
+                                      Text(
+                                        "Email: ${student.email}",
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    if (student.phoneNumber.isNotEmpty)
+                                      Text(
+                                        "Phone: ${student.phoneNumber}",
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                trailing: GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (dialogContext) =>
+                                          UserCourseDeleteAlert(
+                                        userID: student.userID,
+                                        courseID: widget.courses.courseID,
+                                        onTaskDeleted: () {
+                                          Navigator.pop(context);
+                                          showCourseStudents();
+                                          loadStudentCount();
+                                        },
+                                      ),
+                                    ).then((result) {
+                                      if (result != null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              result == true
+                                                  ? 'Student removed successfully!'
+                                                  : 'Failed to remove student.',
+                                            ),
+                                            backgroundColor: result == true
+                                                ? Colors.green
+                                                : Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    });
+                                  },
+                                  child: const Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                              );
                             },
-                            child: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.red,
-                              size: 20,
-                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -451,7 +452,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                 elevation: 2,
                 child: const Icon(Icons.add, color: Color(0xFF1F2937)),
                 onPressed: () {
-                  _showAddStudentForm(context);
+                  showAddStudentForm(context);
                 },
               ),
             ),
@@ -461,8 +462,8 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     );
   }
 
-
-  Future<bool> EditCourse(int courseID, String tutor, String course, String location, String day, String time, String description) async {
+  Future<bool> EditCourse(int courseID, String tutor, String course,
+      String location, String day, String time, String description) async {
     try {
       var url = "${serverPath}courses/updateCourse.php?"
           "courseID=$courseID"
@@ -513,7 +514,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
 
   @override
   Widget build(BuildContext context) {
-    // IMPORTANT: Remove the Scaffold here and return just the content
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(
@@ -521,13 +521,11 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
         side: BorderSide(color: Colors.grey.shade200),
       ),
       elevation: 1,
-      child: widget.isGridView
-          ? _buildGridLayout()
-          : _buildListLayout(),
+      child: widget.isGridView ? buildGridLayout() : buildListLayout(),
     );
   }
 
-  Widget _buildGridLayout() {
+  Widget buildGridLayout() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -543,12 +541,12 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
             ),
           ),
         ),
-        _buildCardContent(),
+        buildCardContent(),
       ],
     );
   }
 
-  Widget _buildListLayout() {
+  Widget buildListLayout() {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -563,13 +561,13 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
               ),
             ),
           ),
-          Expanded(child: _buildCardContent()),
+          Expanded(child: buildCardContent()),
         ],
       ),
     );
   }
 
-  Widget _buildCardContent() {
+  Widget buildCardContent() {
     final courseColor = getCourseColor(widget.courses.courseID);
 
     return Padding(
@@ -592,7 +590,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                   ),
                 ),
               ),
-              if(!widget.isStudent)...{
+              if (!widget.isStudent) ...{
                 GestureDetector(
                   onTap: () {
                     showDialog(
@@ -640,25 +638,21 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
             ),
           ),
           const SizedBox(height: 12),
-          _buildInfoRow(Icons.person_outline, widget.courses.tutor),
+          buildInfoRow(Icons.person_outline, widget.courses.tutor),
           const SizedBox(height: 6),
-          _buildInfoRow(Icons.location_on_outlined, widget.courses.location),
+          buildInfoRow(Icons.location_on_outlined, widget.courses.location),
           const SizedBox(height: 6),
-          _buildInfoRow(Icons.calendar_today_outlined, "${widget.courses.day}, ${widget.courses.time}"),
-
+          buildInfoRow(Icons.calendar_today_outlined,
+              "${widget.courses.day}, ${widget.courses.time}"),
           if (!widget.isStudent)
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: _buildStudentCountRow(),
+              child: buildStudentCountRow(),
             ),
-
           const SizedBox(height: 16),
           Row(
-
             children: [
               Expanded(
-
-
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -674,21 +668,21 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-
                   child: Text(showNotes ? "Hide Notes" : "Show Notes"),
                 ),
               ),
               const SizedBox(width: 8),
-              if(!widget.isStudent)
+              if (!widget.isStudent)
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _isLoadingStudents
                         ? null
                         : () {
-                      _showCourseStudents();
-                    },
+                            showCourseStudents();
+                          },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.lerp(Colors.grey.shade100, getCourseColor(widget.courses.courseID), 0.5),
+                      backgroundColor: Color.lerp(Colors.grey.shade100,
+                          getCourseColor(widget.courses.courseID), 0.5),
                       foregroundColor: Colors.black87,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -700,23 +694,22 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                     ),
                     child: _isLoadingStudents
                         ? SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.grey.shade400,
-                      ),
-                    )
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.grey.shade400,
+                            ),
+                          )
                         : const Text("Participants"),
                   ),
                 ),
-              if(!widget.isStudent)
-                const SizedBox(width: 8),
-              if(!widget.isStudent)
+              if (!widget.isStudent) const SizedBox(width: 8),
+              if (!widget.isStudent)
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      _showEditCourseForm();
+                      showEditCourseForm();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: getCourseColor(widget.courses.courseID),
@@ -732,7 +725,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                 ),
             ],
           ),
-
           if (showNotes)
             Padding(
               padding: const EdgeInsets.only(top: 16),
@@ -759,7 +751,9 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                         final prefs = await SharedPreferences.getInstance();
                         final userNote = _notesController.text.trim();
 
-                        await prefs.setString('course_${widget.courses.courseID}_notes', userNote);
+                        await prefs.setString(
+                            'course_${widget.courses.courseID}_notes',
+                            userNote);
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Notes saved successfully!')),
@@ -787,7 +781,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String text) {
+  Widget buildInfoRow(IconData icon, String text) {
     return Row(
       children: [
         Icon(
@@ -807,12 +801,11 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     );
   }
 
-  Widget _buildStudentCountRow() {
+  Widget buildStudentCountRow() {
     if (isLoading) {
-      _loadStudentCount();
+      loadStudentCount();
 
       return Row(
-
         children: [
           Icon(
             Icons.group_outlined,
@@ -839,10 +832,8 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
             size: 16,
             color: Colors.grey.shade600,
           ),
-
-
           const SizedBox(width: 8),
-          if(studentCount!=0)...{
+          if (studentCount != 0) ...{
             Text(
               "${studentCount} Students",
               style: TextStyle(
@@ -850,8 +841,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                 color: Colors.grey.shade600,
               ),
             ),
-          }
-          else...{
+          } else ...{
             Text(
               "${studentCount ?? 0} Students",
               style: TextStyle(
@@ -865,7 +855,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     }
   }
 
-  void _showEditCourseForm() {
+  void showEditCourseForm() {
     _tutorController.text = widget.courses.tutor;
     _courseController.text = widget.courses.course;
     _locationController.text = widget.courses.location;
@@ -913,55 +903,55 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Color(0xFF6B7280)),
+                          icon:
+                              const Icon(Icons.close, color: Color(0xFF6B7280)),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
 
-                    // Form fields
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormField(
+                            buildFormField(
                               label: 'Tutor',
                               controller: _tutorController,
                               hint: 'Enter tutor name',
                               icon: Icons.person_outline,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Course',
                               controller: _courseController,
                               hint: 'Enter course name',
                               icon: Icons.school_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Location',
                               controller: _locationController,
                               hint: 'Enter location',
                               icon: Icons.location_on_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Day',
                               controller: _dayController,
                               hint: 'Enter a day',
                               icon: Icons.calendar_today_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Time',
                               controller: _timeController,
                               hint: 'Enter time',
                               icon: Icons.access_time_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Description (optional)',
                               controller: _descriptionController,
                               hint: 'Enter course description',
@@ -974,7 +964,6 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                       ),
                     ),
 
-                    // Submit button
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 16),
                       width: double.infinity,
@@ -1017,11 +1006,13 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
 
                                 widget.onTaskDeleted();
 
-                                Future.delayed(const Duration(milliseconds: 300), () {
+                                Future.delayed(
+                                    const Duration(milliseconds: 300), () {
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text('Course successfully updated!'),
+                                        content: Text(
+                                            'Course successfully updated!'),
                                         backgroundColor: Color(0xFF1F2937),
                                       ),
                                     );
@@ -1030,7 +1021,8 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Failed to update course. Please try again.'),
+                                    content: Text(
+                                        'Failed to update course. Please try again.'),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -1065,7 +1057,7 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
     );
   }
 
-  Widget _buildFormField({
+  Widget buildFormField({
     required String label,
     required TextEditingController controller,
     required String hint,
@@ -1108,22 +1100,24 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Color(0xFF9CA3AF)),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             validator: isRequired
                 ? (value) {
-              if (value == null || value.isEmpty) {
-                return 'This field is required';
-              }
-              return null;
-            }
+                    if (value == null || value.isEmpty) {
+                      return 'This field is required';
+                    }
+                    return null;
+                  }
                 : null,
           ),
         ],
       ),
     );
   }
-  void _showAddStudentForm(BuildContext context) {
+
+  void showAddStudentForm(BuildContext context) {
     final scaffoldContext = ScaffoldMessenger.of(context);
 
     showDialog(
@@ -1133,118 +1127,116 @@ class _CoursesScreenDesignState extends State<CoursesScreenDesign> {
         _phoneNumberController.clear();
         bool isLoading = false;
 
-        return StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                title: Text('Add New Student'),
-                content: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildFormField(
-                        label: 'Student e-Mail',
-                        controller: _emailController,
-                        hint: 'Enter Student e-Mail',
-                        icon: Icons.person_outline,
-                        isRequired: true,
-                      ),
-                      _buildFormField(
-                        label: 'Student PhoneNumber',
-                        controller: _phoneNumberController,
-                        hint: 'Enter Student PhoneNumber',
-                        icon: Icons.school_outlined,
-                        isRequired: true,
-                      ),
-                      if (isLoading)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                              SizedBox(width: 12),
-                              Text('Processing...'),
-                            ],
-                          ),
-                        ),
-                    ],
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Add New Student'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  buildFormField(
+                    label: 'Student e-Mail',
+                    controller: _emailController,
+                    hint: 'Enter Student e-Mail',
+                    icon: Icons.person_outline,
+                    isRequired: true,
                   ),
-                ),
-                actions: [
-                  TextButton(
-                    child: Text('Cancel'),
-                    onPressed: isLoading ? null : () {
-                      Navigator.of(dialogContext).pop();
-                    },
+                  buildFormField(
+                    label: 'Student PhoneNumber',
+                    controller: _phoneNumberController,
+                    hint: 'Enter Student PhoneNumber',
+                    icon: Icons.school_outlined,
+                    isRequired: true,
                   ),
-                  TextButton(
-                    child: Text('Add'),
-                    onPressed: isLoading ? null : () async {
-                      // Show loading indicator
-                      setState(() {
-                        isLoading = true;
-                      });
-
-                      int uID = await getUserID(_emailController.text, _phoneNumberController.text);
-
-                      if(uID == 0) {
-                        // Close the dialog
-                        Navigator.of(dialogContext).pop();
-                        // Close the bottom sheet
-                        Navigator.pop(context);
-
-                        // Display the error message
-                        scaffoldContext.showSnackBar(
-                          const SnackBar(
-                            content: Text('No student found with the matching credentials'),
-                            backgroundColor: Colors.red,
-                            duration: Duration(seconds: 3),
+                  if (isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                        );
-                      } else {
-                        bool success = await InsertUserCourse(uID, widget.courses.courseID);
-
-                        // Close the dialog
+                          SizedBox(width: 12),
+                          Text('Processing...'),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: isLoading
+                    ? null
+                    : () {
                         Navigator.of(dialogContext).pop();
-                        // Close the bottom sheet
-                        Navigator.pop(context);
+                      },
+              ),
+              TextButton(
+                child: Text('Add'),
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          isLoading = true;
+                        });
 
-                        if (success) {
+                        int uID = await getUserID(
+                            _emailController.text, _phoneNumberController.text);
+
+                        if (uID == 0) {
+                          Navigator.of(dialogContext).pop();
+                          Navigator.pop(context);
+
                           scaffoldContext.showSnackBar(
                             const SnackBar(
-                              content: Text('Added Student successfully'),
-                              backgroundColor: Colors.green,
-                              duration: Duration(seconds: 3),
-                            ),
-                          );
-
-                          // Refresh data with a slight delay
-                          Future.delayed(Duration(milliseconds: 300), () {
-                            if (mounted) {
-                              _showCourseStudents();
-                              _loadStudentCount();
-                            }
-                          });
-                        } else {
-                          scaffoldContext.showSnackBar(
-                            const SnackBar(
-                              content: Text('Failed to add student to course'),
+                              content: Text(
+                                  'No student found with the matching credentials'),
                               backgroundColor: Colors.red,
                               duration: Duration(seconds: 3),
                             ),
                           );
+                        } else {
+                          bool success = await InsertUserCourse(
+                              uID, widget.courses.courseID);
+
+                          Navigator.of(dialogContext).pop();
+                          Navigator.pop(context);
+
+                          if (success) {
+                            scaffoldContext.showSnackBar(
+                              const SnackBar(
+                                content: Text('Added Student successfully'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+
+                            if (mounted) {
+                              showCourseStudents();
+                              loadStudentCount();
+                            }
+                            ;
+                          } else {
+                            scaffoldContext.showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Failed to add student to course'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
                         }
-                      }
-                    },
-                  ),
-                ],
-              );
-            }
-        );
+                      },
+              ),
+            ],
+          );
+        });
       },
     );
   }

@@ -42,9 +42,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
   late Color badgeColor;
   late Color badgeTextColor;
 
-
-
-
   final TextEditingController _tutorController = TextEditingController();
   final TextEditingController _courseController = TextEditingController();
   final TextEditingController _dueDateController = TextEditingController();
@@ -54,13 +51,13 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _phoneNumberController = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();
-    _loadStudentCount();
+    loadStudentCount();
   }
-  Future<void> _loadStudentCount() async {
+
+  Future<void> loadStudentCount() async {
     setState(() {
       isLoading = true;
     });
@@ -83,6 +80,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
       }
     }
   }
+
   Future<void> showTaskStudents() async {
     setState(() {
       _isLoadingStudents = true;
@@ -98,7 +96,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
         });
 
         if (mounted) {
-          _showStudentsBottomSheet();
+          showStudentsBottomSheet();
         }
       }
     } catch (e) {
@@ -116,7 +114,8 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
       }
     }
   }
-  void _showAddStudentForm(BuildContext context) {
+
+  void showAddStudentForm(BuildContext context) {
     final scaffoldContext = ScaffoldMessenger.of(context);
 
     showDialog(
@@ -126,124 +125,125 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
         _phoneNumberController.clear();
         bool isLoading = false;
 
-        return StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                title: Text('Add New Student'),
-                content: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildFormField(
-                        label: 'Student e-Mail',
-                        controller: _emailController,
-                        hint: 'Enter Student e-Mail',
-                        icon: Icons.person_outline,
-                        isRequired: true,
-                      ),
-                      _buildFormField(
-                        label: 'Student PhoneNumber',
-                        controller: _phoneNumberController,
-                        hint: 'Enter Student PhoneNumber',
-                        icon: Icons.school_outlined,
-                        isRequired: true,
-                      ),
-                      if (isLoading)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                              SizedBox(width: 12),
-                              Text('Processing...'),
-                            ],
-                          ),
-                        ),
-                    ],
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Add New Student'),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  buildFormField(
+                    label: 'Student e-Mail',
+                    controller: _emailController,
+                    hint: 'Enter Student e-Mail',
+                    icon: Icons.person_outline,
+                    isRequired: true,
                   ),
-                ),
-                actions: [
-                  TextButton(
-                    child: Text('Cancel'),
-                    onPressed: isLoading ? null : () {
-                      Navigator.of(dialogContext).pop();
-                    },
+                  buildFormField(
+                    label: 'Student PhoneNumber',
+                    controller: _phoneNumberController,
+                    hint: 'Enter Student PhoneNumber',
+                    icon: Icons.school_outlined,
+                    isRequired: true,
                   ),
-                  TextButton(
-                    child: Text('Add'),
-                    onPressed: isLoading ? null : () async {
-                      // Show loading indicator
-                      setState(() {
-                        isLoading = true;
-                      });
-
-                      int uID = await getUserID(_emailController.text, _phoneNumberController.text);
-
-                      if(uID == 0) {
-                        Navigator.of(dialogContext).pop();
-                        Navigator.pop(context);
-
-                        scaffoldContext.showSnackBar(
-                          const SnackBar(
-                            content: Text('No student found with the matching credentials'),
-                            backgroundColor: Colors.red,
-                            duration: Duration(seconds: 3),
+                  if (isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                        );
-                      } else {
-                        bool success = await InsertUserTask(uID, widget.task.taskID);
-
-                        // Close the dialog
+                          SizedBox(width: 12),
+                          Text('Processing...'),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: isLoading
+                    ? null
+                    : () {
                         Navigator.of(dialogContext).pop();
-                        // Close the bottom sheet
-                        Navigator.pop(context);
+                      },
+              ),
+              TextButton(
+                child: Text('Add'),
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          isLoading = true;
+                        });
 
-                        if (success) {
+                        int uID = await getUserID(
+                            _emailController.text, _phoneNumberController.text);
+
+                        if (uID == 0) {
+                          Navigator.of(dialogContext).pop();
+                          Navigator.pop(context);
+
                           scaffoldContext.showSnackBar(
                             const SnackBar(
-                              content: Text('Added Student successfully'),
-                              backgroundColor: Colors.green,
-                              duration: Duration(seconds: 3),
-                            ),
-                          );
-
-                          Future.delayed(Duration(milliseconds: 300), () {
-                            if (mounted) {
-                              showTaskStudents();
-                              _loadStudentCount();
-                            }
-                          });
-                        } else {
-                          scaffoldContext.showSnackBar(
-                            const SnackBar(
-                              content: Text('Failed to add student to course'),
+                              content: Text(
+                                  'No student found with the matching credentials'),
                               backgroundColor: Colors.red,
                               duration: Duration(seconds: 3),
                             ),
                           );
+                        } else {
+                          bool success =
+                              await InsertUserTask(uID, widget.task.taskID);
+
+                          Navigator.of(dialogContext).pop();
+                          Navigator.pop(context);
+
+                          if (success) {
+                            scaffoldContext.showSnackBar(
+                              const SnackBar(
+                                content: Text('Added Student successfully'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+
+                            Future.delayed(Duration(milliseconds: 300), () {
+                              if (mounted) {
+                                showTaskStudents();
+                                loadStudentCount();
+                              }
+                            });
+                          } else {
+                            scaffoldContext.showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Failed to add student to course'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
                         }
-                      }
-                    },
-                  ),
-                ],
-              );
-            }
-        );
+                      },
+              ),
+            ],
+          );
+        });
       },
     );
   }
 
-
-
   Future<bool> InsertUserTask(int userID, int taskID) async {
     try {
-
-      var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/userTasks/insertUserTask.php?"
+      var url =
+          "https://darkgray-hummingbird-925566.hostingersite.com/watad/userTasks/insertUserTask.php?"
           "taskID=$taskID"
           "&userID=$userID";
 
@@ -260,7 +260,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
         if (data['result'] != null) {
           try {
             int resultValue = int.parse(data['result'].toString());
-            return resultValue > 0; // Consider any positive number a success
+            return resultValue > 0;
           } catch (e) {
             return data['result'] == '1';
           }
@@ -277,6 +277,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
       return false;
     }
   }
+
   Future<int> getTaskStunum(int taskID) async {
     try {
       var url = "getTaskDetails/getTaskStunum.php?taskID=$taskID";
@@ -291,7 +292,8 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
           return 0;
         }
 
-        if (jsonData is Map<String, dynamic> && jsonData.containsKey('studentCount')) {
+        if (jsonData is Map<String, dynamic> &&
+            jsonData.containsKey('studentCount')) {
           var count = jsonData['studentCount'];
           if (count is int) {
             return count;
@@ -309,6 +311,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
       return 0;
     }
   }
+
   Future<List<User>> getTaskStudents(int taskID) async {
     List<User> arr = [];
 
@@ -335,10 +338,12 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
             throw Exception("'users' is not a List. Received: $users");
           }
         } else {
-          throw Exception("Response does not contain 'users' array. Received: $jsonData");
+          throw Exception(
+              "Response does not contain 'users' array. Received: $jsonData");
         }
       } else {
-        print('Failed to load Task Students: ${response.statusCode}, ${response.body}');
+        print(
+            'Failed to load Task Students: ${response.statusCode}, ${response.body}');
       }
     } catch (e) {
       print('Error in get TaskStudents: $e');
@@ -395,7 +400,8 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Color(0xFF6B7280)),
+                          icon:
+                              const Icon(Icons.close, color: Color(0xFF6B7280)),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
@@ -407,42 +413,42 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormField(
+                            buildFormField(
                               label: 'Tutor',
                               controller: _tutorController,
                               hint: 'Enter tutor name',
                               icon: Icons.person_outline,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Task ',
                               controller: _courseController,
                               hint: 'Enter task subject name',
                               icon: Icons.school_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Time',
                               controller: _timeController,
                               hint: 'Enter for which time the task is up for',
                               icon: Icons.location_on_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Day',
                               controller: _dayController,
                               hint: 'Enter a day',
                               icon: Icons.calendar_today_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Due Date',
                               controller: _dueDateController,
                               hint: 'Enter time',
                               icon: Icons.access_time_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Description (optional)',
                               controller: _descriptionController,
                               hint: 'Enter course description',
@@ -469,10 +475,9 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // Capture the scaffold context before showing bottom sheet
-                            final scaffoldContext = ScaffoldMessenger.of(context);
+                            final scaffoldContext =
+                                ScaffoldMessenger.of(context);
 
-                            // Show loading indicator
                             scaffoldContext.showSnackBar(
                               const SnackBar(
                                 content: Text('Updating task...'),
@@ -489,21 +494,16 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                                   _timeController.text,
                                   _dayController.text,
                                   _dueDateController.text,
-                                  _descriptionController.text
-                              );
+                                  _descriptionController.text);
 
                               print("Task updated: $success");
 
-                              // Clear any existing snackbars
                               scaffoldContext.clearSnackBars();
 
-                              // Close the bottom sheet
                               Navigator.pop(context);
 
-                              // Update the UI
                               widget.onTaskDeleted();
 
-                              // Show success/failure message using the cached context
                               if (success) {
                                 scaffoldContext.showSnackBar(
                                   const SnackBar(
@@ -514,7 +514,8 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                               } else {
                                 scaffoldContext.showSnackBar(
                                   const SnackBar(
-                                    content: Text('تعذر تعديل المهمة. يرجى المحاولة لاحقا.'),
+                                    content: Text(
+                                        'تعذر تعديل المهمة. يرجى المحاولة لاحقا.'),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -549,7 +550,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     );
   }
 
-  void _showStudentsBottomSheet() {
+  void showStudentsBottomSheet() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -570,7 +571,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -589,8 +589,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                     ],
                   ),
                   const SizedBox(height: 16),
-
-                  // Student count
                   Text(
                     "${_taskStudents.length} Students Enrolled",
                     style: TextStyle(
@@ -600,111 +598,113 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Student list
                   Expanded(
                     child: _taskStudents.isEmpty
                         ? Center(
-                      child: Text(
-                        "No students enrolled in this course yet",
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                        : ListView.separated(
-                      itemCount: _taskStudents.length,
-                      separatorBuilder: (context, index) => Divider(height: 1, color: Colors.grey.shade200),
-                      itemBuilder: (context, index) {
-                        final student = _taskStudents[index];
-                        final fullName = "${student.firstName ?? ''} ${student.secondName ?? ''}".trim();
-                        print(student.userID);
-
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: getCourseColor(student.userID),
-
                             child: Text(
-                              fullName.isNotEmpty
-                                  ? fullName.substring(0, 1).toUpperCase()
-                                  : "?",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                              "No students enrolled in this course yet",
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 16,
                               ),
                             ),
-                          ),
-                          title: Text(
-                            fullName.isNotEmpty ? fullName : "Unknown",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 4),
-                              if (student.email.isNotEmpty)
-                                Text(
-                                  "Email: ${student.email}",
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              if (student.phoneNumber.isNotEmpty)
-                                Text(
-                                  "Phone: ${student.phoneNumber}",
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                            ],
-                          ),
+                          )
+                        : ListView.separated(
+                            itemCount: _taskStudents.length,
+                            separatorBuilder: (context, index) =>
+                                Divider(height: 1, color: Colors.grey.shade200),
+                            itemBuilder: (context, index) {
+                              final student = _taskStudents[index];
+                              final fullName =
+                                  "${student.firstName ?? ''} ${student.secondName ?? ''}"
+                                      .trim();
 
-                          trailing: GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (dialogContext) => UserTaskDeleteAlert(
-                                  userID: student.userID,
-                                  taskID: widget.task.taskID,
-                                  onTaskDeleted: () {
-
-                                    Navigator.pop(context);
-                                    showTaskStudents();
-                                    _loadStudentCount();
-
-                                  },
-                                ),
-                              ).then((result) {
-                                if (result != null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        result == true
-                                            ? 'Student removed successfully!'
-                                            : 'Failed to remove student.',
-                                      ),
-                                      backgroundColor: result == true ? Colors.green : Colors.red,
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor:
+                                      getCourseColor(student.userID),
+                                  child: Text(
+                                    fullName.isNotEmpty
+                                        ? fullName.substring(0, 1).toUpperCase()
+                                        : "?",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  );
-                                }
-                              });
+                                  ),
+                                ),
+                                title: Text(
+                                  fullName.isNotEmpty ? fullName : "Unknown",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 4),
+                                    if (student.email.isNotEmpty)
+                                      Text(
+                                        "Email: ${student.email}",
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    if (student.phoneNumber.isNotEmpty)
+                                      Text(
+                                        "Phone: ${student.phoneNumber}",
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                trailing: GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (dialogContext) =>
+                                          UserTaskDeleteAlert(
+                                        userID: student.userID,
+                                        taskID: widget.task.taskID,
+                                        onTaskDeleted: () {
+                                          Navigator.pop(context);
+                                          showTaskStudents();
+                                          loadStudentCount();
+                                        },
+                                      ),
+                                    ).then((result) {
+                                      if (result != null) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              result == true
+                                                  ? 'Student removed successfully!'
+                                                  : 'Failed to remove student.',
+                                            ),
+                                            backgroundColor: result == true
+                                                ? Colors.green
+                                                : Colors.red,
+                                          ),
+                                        );
+                                      }
+                                    });
+                                  },
+                                  child: const Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                              );
                             },
-                            child: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.red,
-                              size: 20,
-                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -717,7 +717,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                 elevation: 2,
                 child: const Icon(Icons.add, color: Color(0xFF1F2937)),
                 onPressed: () {
-                  _showAddStudentForm(context);
+                  showAddStudentForm(context);
                 },
               ),
             ),
@@ -727,7 +727,8 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     );
   }
 
-  Future<bool> EditTask(int taskID, String tutor, String course, String time, String day, String dueDate, String description) async {
+  Future<bool> EditTask(int taskID, String tutor, String course, String time,
+      String day, String dueDate, String description) async {
     try {
       String descriptionValue = description.isNotEmpty ? description : "";
 
@@ -765,7 +766,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     }
   }
 
-  Widget _buildFormField({
+  Widget buildFormField({
     required String label,
     required TextEditingController controller,
     required String hint,
@@ -808,15 +809,16 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Color(0xFF9CA3AF)),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             validator: isRequired
                 ? (value) {
-              if (value == null || value.isEmpty) {
-                return 'This field is required';
-              }
-              return null;
-            }
+                    if (value == null || value.isEmpty) {
+                      return 'This field is required';
+                    }
+                    return null;
+                  }
                 : null,
           ),
         ],
@@ -824,24 +826,22 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     );
   }
 
-  Future<void> _saveCompletionStatus(bool isCompleted) async {
+  Future<void> saveCompletionStatus(bool isCompleted) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('task_${widget.task.taskID}_completed', isCompleted);
   }
 
   Color getCourseColor(int taskID) {
     final colors = [
-      const Color(0xFF3B82F6), // blue
-      const Color(0xFF10B981), // green
-      const Color(0xFFF59E0B), // orange
-      const Color(0xFF8B5CF6), // purple
-      const Color(0xFFEC4899), // pink
-      const Color(0xFF14B8A6), // teal
+      const Color(0xFF3B82F6),
+      const Color(0xFF10B981),
+      const Color(0xFFF59E0B),
+      const Color(0xFF8B5CF6),
+      const Color(0xFFEC4899),
+      const Color(0xFF14B8A6),
     ];
     return colors[taskID % colors.length];
   }
-
-
 
   String getDaysRemaining(String dueDate) {
     if (dueDate.isEmpty) return 'No due date';
@@ -863,9 +863,7 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     }
   }
 
-
-
-  void _showDeleteConfirmation() async {
+  void showDeleteConfirmation() async {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => TaskDeleteAlert(
@@ -889,7 +887,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
     final isDueToday = daysRemaining == 'Due today';
     final isOverdue = daysRemaining == 'Overdue';
 
-
     Color borderColor;
     if (isOverdue) {
       borderColor = const Color(0xFFEF4444);
@@ -899,10 +896,8 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
       borderColor = courseColor;
     }
 
-    // Get vibrant color based on taskID
     priorityColor = getCourseColor(widget.task.taskID);
 
-    // Set status colors
     if (isOverdue) {
       badgeColor = const Color(0xFFFEE2E2);
       badgeTextColor = const Color(0xFFB91C1C);
@@ -947,11 +942,9 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header section
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Course name and indicator
                     Expanded(
                       child: Row(
                         children: [
@@ -977,7 +970,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                         ],
                       ),
                     ),
-                    // Action buttons
                     Row(
                       children: [
                         Material(
@@ -996,12 +988,11 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                           ),
                         ),
                         if (!widget.isStudent) ...[
-
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(50),
-                              onTap: _showDeleteConfirmation,
+                              onTap: showDeleteConfirmation,
                               child: Container(
                                 padding: const EdgeInsets.all(8),
                                 child: const Icon(
@@ -1038,7 +1029,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -1080,17 +1070,15 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                       FutureBuilder(
                         future: getTaskStunum(widget.task.taskID),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Text(
-                                "...",
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Text("...",
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Color(0xFF6B7280),
-                                )
-                            );
+                                ));
                           }
                           return Text(
-
                             "${snapshot.data ?? 0} students",
                             style: const TextStyle(
                               fontSize: 13,
@@ -1102,12 +1090,10 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                     ],
                   ],
                 ),
-
                 if (isExpanded) ...[
                   const SizedBox(height: 16),
                   const Divider(height: 1, color: Color(0xFFE5E7EB)),
                   const SizedBox(height: 16),
-
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -1130,7 +1116,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                       const SizedBox(height: 16),
                     ],
                   ),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -1141,7 +1126,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                           color: Color(0xFF6B7280),
                         ),
                       ),
-                      // Update this part in the build method
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,
@@ -1162,7 +1146,6 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
                       ),
                     ],
                   ),
-
                   if (!widget.isStudent) ...[
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -1198,6 +1181,5 @@ class _TeacherTasksScreenDesign extends State<TeacherTasksScreenDesign> {
         ),
       ),
     );
-
   }
 }

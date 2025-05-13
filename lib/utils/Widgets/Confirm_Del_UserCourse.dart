@@ -8,26 +8,26 @@ class UserCourseDeleteAlert extends StatefulWidget {
   final Function onTaskDeleted;
   final int userID;
 
-
   const UserCourseDeleteAlert({
     Key? key,
     required this.courseID,
-     required  this.userID,
+    required this.userID,
     required this.onTaskDeleted,
   }) : super(key: key);
 
   @override
-  _UserCourseDeleteAlertState createState() => _UserCourseDeleteAlertState();
+  UserCourseDeleteAlertState createState() => UserCourseDeleteAlertState();
 }
 
-class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
-  bool _isDeleting = false;
+class UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
+  bool isDeleting = false;
 
   Future<bool> deleteUserCourse(BuildContext context) async {
-    setState(() => _isDeleting = true);
+    setState(() => isDeleting = true);
 
     try {
-      var url = "userCourses/deleteUserCourse.php?courseID=${widget.courseID}&userID=${widget.userID}";
+      var url =
+          "userCourses/deleteUserCourse.php?courseID=${widget.courseID}&userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
 
       print("Full Delete Response:");
@@ -36,13 +36,12 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
       print("Attempting to delete Course ID: ${widget.courseID}");
       print("Attempting to delete userID: ${widget.userID}");
 
-
-
-      setState(() => _isDeleting = false);
+      setState(() => isDeleting = false);
 
       if (response.statusCode == 200) {
         if (response.body.trim().startsWith('[')) {
-          print("Server returned a list of courses instead of a deletion confirmation");
+          print(
+              "Server returned a list of courses instead of a deletion confirmation");
           return false;
         }
 
@@ -55,7 +54,8 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
               widget.onTaskDeleted();
               return true;
             } else {
-              showErrorDialog(context, jsonResponse['message'] ?? 'Unknown error');
+              showErrorDialog(
+                  context, jsonResponse['message'] ?? 'Unknown error');
               return false;
             }
           } else {
@@ -74,7 +74,7 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
       }
     } catch (e) {
       print('Deletion Error: $e');
-      setState(() => _isDeleting = false);
+      setState(() => isDeleting = false);
       showErrorDialog(context, 'An error occurred while deleting the course');
       return false;
     }
@@ -110,35 +110,42 @@ class _UserCourseDeleteAlertState extends State<UserCourseDeleteAlert> {
         children: [
           const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 18),
           const SizedBox(width: 8),
-          const Text('Delete Student', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+          const Text('Delete Student',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         ],
       ),
-      content: const Text('Are you sure you want to delete this student from your course?', style: TextStyle(fontSize: 16)),
+      content: const Text(
+          'Are you sure you want to delete this student from your course?',
+          style: TextStyle(fontSize: 16)),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: [
         ElevatedButton(
-          onPressed: _isDeleting ? null : () => Navigator.of(context).pop(),
+          onPressed: isDeleting ? null : () => Navigator.of(context).pop(),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.grey[300],
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           child: const Text('Cancel', style: TextStyle(color: Colors.black)),
         ),
         ElevatedButton(
-          onPressed: _isDeleting ? null : () async {
-            final result = await deleteUserCourse(context);
-            Navigator.of(context).pop(result);
-          },
+          onPressed: isDeleting
+              ? null
+              : () async {
+                  final result = await deleteUserCourse(context);
+                  Navigator.of(context).pop(result);
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          child: _isDeleting
+          child: isDeleting
               ? const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          )
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Text('Delete', style: TextStyle(color: Colors.white)),
         ),
       ],

@@ -33,7 +33,6 @@ class CustomTextField extends StatelessWidget {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-
           obscureText: isPassword,
           keyboardType: keyboardType,
           decoration: InputDecoration(
