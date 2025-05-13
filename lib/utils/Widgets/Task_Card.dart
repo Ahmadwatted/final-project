@@ -93,33 +93,6 @@ class TaskCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (!isStudent)
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (dialogContext) => TaskDeleteAlert(
-                              taskID: tasks.taskID,
-                              onTaskDeleted: onTaskDeleted,
-                            ),
-                          ).then((result) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  result == true
-                                      ? 'Task deleted successfully!'
-                                      : 'Failed to delete task.',
-                                ),
-                              ),
-                            );
-                          });
-                        },
-                        child: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
-                          size: 20,
-                        ),
-                      ),
                   ],
                 ),
                 const SizedBox(height: 8),

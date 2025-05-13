@@ -28,6 +28,9 @@ class _MyTasksScreen extends State<MyTasksScreen> {
   bool _isAscending = true;
   bool _isFilterMenuOpen = false;
 
+  // Map to store the completion status of tasks
+  Map<int, bool> _taskCompletionStatus = {};
+
   @override
   void initState() {
     super.initState();
@@ -39,69 +42,37 @@ class _MyTasksScreen extends State<MyTasksScreen> {
       _tasksFuture = getUserTasks();
     });
   }
-  // In MyTasksScreen class - replace this entire method
+
   void _toggleTaskCompletion(int taskId) async {
     try {
-      // Load the current tasks list
-      final currentTasks = await _tasksFuture;
+      // Toggle the status in the local map
+      _taskCompletionStatus[taskId] = !(_taskCompletionStatus[taskId] ?? false);
 
-      // Find the task and toggle its completion status in memory
-      final updatedTasks = currentTasks.map((task) {
-        if (task.taskID == taskId) {
-          return Task(
-            taskID: task.taskID,
-            tutor: task.tutor,
-            course: task.course,
-            day: task.day,
-            time: task.time,
-            isCompleted: !task.isCompleted,
-            dueDate: task.dueDate,
-            description: task.description,
-          );
-        }
-        return task;
-      }).toList();
-
-      // Update the SharedPreferences directly
+      // Save to SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      final taskToUpdate = updatedTasks.firstWhere((task) => task.taskID == taskId);
-      await prefs.setBool('task_${taskId}_completed', taskToUpdate.isCompleted);
+      await prefs.setBool('task_${taskId}_completed', _taskCompletionStatus[taskId]!);
 
-      // Update the state with the new task list
-      setState(() {
-        _tasksFuture = Future.value(updatedTasks);
-        // Force refresh by triggering a rebuild
-        _filterStatus = _filterStatus; // This forces the filter to be reapplied
-      });
+      // Update the UI by forcing a rebuild
+      setState(() {});
     } catch (e) {
       print("Error toggling task completion: $e");
     }
   }
 
-// And also fix the _filterAndSortTasks method to ensure proper filtering
   List<Task> _filterAndSortTasks(List<Task> tasks) {
-    // First apply the status filter
+    // Apply status filter using the _taskCompletionStatus map
     var filteredTasks = tasks.where((task) {
-      bool taskCompletionStatus = task.isCompleted;
+      // Get completion status from our map, or fall back to task.isCompleted
+      bool isCompleted = _taskCompletionStatus.containsKey(task.taskID)
+          ? _taskCompletionStatus[task.taskID]!
+          : task.isCompleted;
 
-      // Get the stored completion status if available
-      try {
-        final prefs = SharedPreferences.getInstance();
-        prefs.then((p) {
-          final savedStatus = p.getBool('task_${task.taskID}_completed');
-          if (savedStatus != null) {
-            taskCompletionStatus = savedStatus;
-          }
-        });
-      } catch (e) {
-        print("Error reading completion status: $e");
-      }
-
-      if (_filterStatus == 'completed') return taskCompletionStatus;
-      if (_filterStatus == 'pending') return !taskCompletionStatus;
+      if (_filterStatus == 'completed') return isCompleted;
+      if (_filterStatus == 'pending') return !isCompleted;
       return true;
     }).toList();
 
+    // Apply search filter
     if (_searchTerm.isNotEmpty) {
       filteredTasks = filteredTasks.where((task) {
         return task.course.toLowerCase().contains(_searchTerm.toLowerCase()) ||
@@ -109,11 +80,19 @@ class _MyTasksScreen extends State<MyTasksScreen> {
       }).toList();
     }
 
+    // Apply sorting
+    filteredTasks.sort((a, b) {
+      // Implementation of sorting logic would go here
+      return 0; // Placeholder
+    });
+
     return filteredTasks;
   }
 
   Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
+    // Clear and rebuild the completion status map
+    _taskCompletionStatus.clear();
 
     try {
       // Get SharedPreferences first
@@ -130,25 +109,21 @@ class _MyTasksScreen extends State<MyTasksScreen> {
         }
 
         for (var i in jsonData) {
-          // Create task from API (isCompleted will be false)
+          // Create task from API
           Task task = Task.fromJson(i);
 
           // Check for locally stored completion status
           final savedStatus = prefs.getBool('task_${task.taskID}_completed');
 
+          // Update our completion status map
           if (savedStatus != null) {
-            // We have a local status, use it
-            task = Task(
-              taskID: task.taskID,
-              tutor: task.tutor,
-              course: task.course,
-              day: task.day,
-              time: task.time,
-              isCompleted: savedStatus,
-              dueDate: task.dueDate,
-              description: task.description,
-            );
+            _taskCompletionStatus[task.taskID] = savedStatus;
+          } else {
+            _taskCompletionStatus[task.taskID] = task.isCompleted;
+            // Also save this initial value to SharedPreferences
+            await prefs.setBool('task_${task.taskID}_completed', task.isCompleted);
           }
+
           arr.add(task);
         }
       }
@@ -157,10 +132,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
     }
     return arr;
   }
-
-
-
-
 
   void toggleSort(String field) {
     setState(() {
@@ -245,7 +216,6 @@ class _MyTasksScreen extends State<MyTasksScreen> {
                     ),
                   ],
                 ),
-
               ),
             ),
 
@@ -321,8 +291,23 @@ class _MyTasksScreen extends State<MyTasksScreen> {
                     itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
                       final task = filteredTasks[index];
+                      // Use the completion status from our map
+                      final isCompleted = _taskCompletionStatus[task.taskID] ?? task.isCompleted;
+
+                      // Create a modified task with the correct completion status
+                      final updatedTask = Task(
+                        taskID: task.taskID,
+                        tutor: task.tutor,
+                        course: task.course,
+                        day: task.day,
+                        time: task.time,
+                        isCompleted: isCompleted,
+                        dueDate: task.dueDate,
+                        description: task.description,
+                      );
+
                       return TasksScreenDesign(
-                        task: task,
+                        task: updatedTask,
                         isStudent: true,
                         onTaskDeleted: _refreshTasks,
                         onToggleCompletion: _toggleTaskCompletion,
@@ -335,9 +320,9 @@ class _MyTasksScreen extends State<MyTasksScreen> {
           ),
         ],
       ),
-
     );
   }
+
   Widget buildFilterTab(String title, String value, Color activeColor) {
     bool isActive = _filterStatus == value;
 

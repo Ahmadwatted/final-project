@@ -56,47 +56,33 @@ class _TasksScreenDesignState extends State<TasksScreenDesign> {
   @override
   void initState() {
     super.initState();
-    _loadCompletionStatus();
+    // Initialize the completion status from the task prop directly
+    _isCompleted = widget.task.isCompleted;
     if (!widget.isStudent) {
       _loadStudentCount();
     }
   }
-  Future<void> _loadCompletionStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedStatus = prefs.getBool('task_${widget.task.taskID}_completed');
-
-    if (savedStatus != null) {
-      setState(() {
-        _isCompleted = savedStatus;
-      });
-    } else {
-      // Only use the default value from task object on first load
-      setState(() {
-        _isCompleted = widget.task.isCompleted;
-      });
-      // Save this initial value to SharedPreferences
-      await prefs.setBool('task_${widget.task.taskID}_completed', widget.task.isCompleted);
-    }
-  }
-
   void _toggleCompletion() async {
     // Update local state immediately for UI responsiveness
     setState(() {
       _isCompleted = !_isCompleted;
     });
 
-    // Save to SharedPreferences
-    await _saveCompletionStatus(_isCompleted);
-
     // Notify parent about the change
     if (widget.onToggleCompletion != null) {
       widget.onToggleCompletion!(widget.task.taskID);
     }
   }
+  @override
+  void didUpdateWidget(TasksScreenDesign oldWidget) {
+    super.didUpdateWidget(oldWidget);
 
-  Future<void> _saveCompletionStatus(bool isCompleted) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('task_${widget.task.taskID}_completed', isCompleted);
+    // Update local state when props change
+    if (oldWidget.task.isCompleted != widget.task.isCompleted) {
+      setState(() {
+        _isCompleted = widget.task.isCompleted;
+      });
+    }
   }
   Future<void> _loadStudentCount() async {
     setState(() {
