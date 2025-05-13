@@ -19,6 +19,7 @@ class TaskDeleteAlert extends StatefulWidget {
 
 class TaskDeleteAlertState extends State<TaskDeleteAlert> {
   bool isDeleting = false;
+  bool isddd= false;
 
   final String successMessage = 'تم حذف المهمة بنجاح';
   final String errorMessage = 'فشل في حذف المهمة، يرجى المحاولة مرة أخرى';
