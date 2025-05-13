@@ -1,0 +1,1265 @@
+<html>
+<head>
+<title>Courses_Screen_Design.dart</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #6aab73;}
+.s2 { color: #bcbec4;}
+.s3 { color: #cf8e6d;}
+.s4 { color: #2aacb8;}
+.s5 { color: #7a7e85;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Courses_Screen_Design.dart</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">'package:final_project/Models/user.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:final_project/utils/Widgets/Confirm_Del_UserCourse.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:flutter/material.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:shared_preferences/shared_preferences.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'../../Models/clientConfig.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'../../Models/course.dart'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'dart:convert'</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'package:http/http.dart' </span><span class="s0">as http</span><span class="s2">;</span>
+<span class="s0">import </span><span class="s1">'Confirm_Del_Course.dart'</span><span class="s2">;</span>
+
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">int</span><span class="s2">&gt; </span><span class="s0">getCourseStunum</span><span class="s2">(</span><span class="s0">int courseID</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s3">try </span><span class="s2">{</span>
+    <span class="s3">var </span><span class="s0">url </span><span class="s2">= </span><span class="s1">&quot;getCourseDetails/getCourseStunum.php?courseID=</span><span class="s2">$</span><span class="s0">courseID</span><span class="s1">&quot;</span><span class="s2">;</span>
+    <span class="s3">final </span><span class="s0">fullUrl </span><span class="s2">= </span><span class="s0">serverPath </span><span class="s2">+ </span><span class="s0">url</span><span class="s2">;</span>
+
+    <span class="s3">final </span><span class="s0">response </span><span class="s2">= </span><span class="s0">await http</span><span class="s2">.</span><span class="s0">get</span><span class="s2">(</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">parse</span><span class="s2">(</span><span class="s0">fullUrl</span><span class="s2">));</span>
+
+    <span class="s3">if </span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode </span><span class="s2">== </span><span class="s4">200</span><span class="s2">) {</span>
+      <span class="s3">var </span><span class="s0">jsonData </span><span class="s2">= </span><span class="s0">json</span><span class="s2">.</span><span class="s0">decode</span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">body</span><span class="s2">);</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">jsonData </span><span class="s2">== </span><span class="s3">null</span><span class="s2">) {</span>
+        <span class="s3">return </span><span class="s4">0</span><span class="s2">;</span>
+      <span class="s2">}</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">jsonData </span><span class="s3">is </span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt; &amp;&amp;</span>
+          <span class="s0">jsonData</span><span class="s2">.</span><span class="s0">containsKey</span><span class="s2">(</span><span class="s1">'studentCount'</span><span class="s2">)) {</span>
+        <span class="s3">var </span><span class="s0">count </span><span class="s2">= </span><span class="s0">jsonData</span><span class="s2">[</span><span class="s1">'studentCount'</span><span class="s2">];</span>
+        <span class="s3">if </span><span class="s2">(</span><span class="s0">count </span><span class="s3">is </span><span class="s0">int</span><span class="s2">) {</span>
+          <span class="s3">return </span><span class="s0">count</span><span class="s2">;</span>
+        <span class="s2">} </span><span class="s3">else if </span><span class="s2">(</span><span class="s0">count </span><span class="s3">is </span><span class="s0">String</span><span class="s2">) {</span>
+          <span class="s3">return </span><span class="s0">int</span><span class="s2">.</span><span class="s0">tryParse</span><span class="s2">(</span><span class="s0">count</span><span class="s2">) ?? </span><span class="s4">0</span><span class="s2">;</span>
+        <span class="s2">}</span>
+        <span class="s3">return </span><span class="s4">0</span><span class="s2">;</span>
+      <span class="s2">}</span>
+
+      <span class="s3">return </span><span class="s4">0</span><span class="s2">;</span>
+    <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+      <span class="s3">throw </span><span class="s0">Exception</span><span class="s2">(</span><span class="s1">&quot;Failed to load student count: </span><span class="s2">${</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+  <span class="s2">} </span><span class="s3">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s3">return </span><span class="s4">0</span><span class="s2">;</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">int</span><span class="s2">&gt; </span><span class="s0">getUserID</span><span class="s2">(</span><span class="s0">String email</span><span class="s2">, </span><span class="s0">String phoneNumber</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s3">try </span><span class="s2">{</span>
+    <span class="s3">var </span><span class="s0">url </span><span class="s2">= </span><span class="s1">&quot;users/getUserID.php?email=</span><span class="s2">$</span><span class="s0">email</span><span class="s1">&amp;phoneNumber=</span><span class="s2">$</span><span class="s0">phoneNumber</span><span class="s1">&quot;</span><span class="s2">;</span>
+
+    <span class="s3">final </span><span class="s0">response </span><span class="s2">= </span><span class="s0">await http</span><span class="s2">.</span><span class="s0">get</span><span class="s2">(</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">parse</span><span class="s2">(</span><span class="s0">serverPath </span><span class="s2">+ </span><span class="s0">url</span><span class="s2">));</span>
+
+    <span class="s3">if </span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode </span><span class="s2">== </span><span class="s4">200</span><span class="s2">) {</span>
+      <span class="s3">var </span><span class="s0">jsonData </span><span class="s2">= </span><span class="s0">json</span><span class="s2">.</span><span class="s0">decode</span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">body</span><span class="s2">);</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">jsonData </span><span class="s2">== </span><span class="s3">null</span><span class="s2">) {</span>
+        <span class="s3">return </span><span class="s4">0</span><span class="s2">;</span>
+      <span class="s2">}</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">jsonData </span><span class="s3">is </span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt;) {</span>
+        <span class="s3">var </span><span class="s0">userID </span><span class="s2">= </span><span class="s0">jsonData</span><span class="s2">[</span><span class="s1">'userID'</span><span class="s2">];</span>
+        <span class="s3">if </span><span class="s2">(</span><span class="s0">userID </span><span class="s3">is </span><span class="s0">int</span><span class="s2">) {</span>
+          <span class="s3">return </span><span class="s0">userID</span><span class="s2">;</span>
+        <span class="s2">} </span><span class="s3">else if </span><span class="s2">(</span><span class="s0">userID </span><span class="s3">is </span><span class="s0">String</span><span class="s2">) {</span>
+          <span class="s3">return </span><span class="s0">int</span><span class="s2">.</span><span class="s0">tryParse</span><span class="s2">(</span><span class="s0">userID</span><span class="s2">) ?? </span><span class="s4">0</span><span class="s2">;</span>
+        <span class="s2">}</span>
+        <span class="s3">return </span><span class="s4">0</span><span class="s2">;</span>
+      <span class="s2">}</span>
+
+      <span class="s3">return </span><span class="s4">0</span><span class="s2">;</span>
+    <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+      <span class="s3">throw </span><span class="s0">Exception</span><span class="s2">(</span><span class="s1">&quot;Failed to load user ID: </span><span class="s2">${</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">);</span>
+    <span class="s2">}</span>
+  <span class="s2">} </span><span class="s3">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Error getting user ID: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">&quot;</span><span class="s2">);</span>
+    <span class="s3">return </span><span class="s4">0</span><span class="s2">;</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">List</span><span class="s2">&lt;</span><span class="s0">User</span><span class="s2">&gt;&gt; </span><span class="s0">getCourseStudents</span><span class="s2">(</span><span class="s0">int courseID</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s0">List</span><span class="s2">&lt;</span><span class="s0">User</span><span class="s2">&gt; </span><span class="s0">arr </span><span class="s2">= [];</span>
+
+  <span class="s3">try </span><span class="s2">{</span>
+    <span class="s3">var </span><span class="s0">url </span><span class="s2">= </span><span class="s1">&quot;getCourseDetails/getCourseStudents.php?courseID=</span><span class="s2">$</span><span class="s0">courseID</span><span class="s1">&quot;</span><span class="s2">;</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Fetching Course Students with URL: </span><span class="s2">${</span><span class="s0">serverPath </span><span class="s2">+ </span><span class="s0">url</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">);</span>
+    <span class="s3">final </span><span class="s0">response </span><span class="s2">= </span><span class="s0">await http</span><span class="s2">.</span><span class="s0">get</span><span class="s2">(</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">parse</span><span class="s2">(</span><span class="s0">serverPath </span><span class="s2">+ </span><span class="s0">url</span><span class="s2">));</span>
+
+    <span class="s3">if </span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode </span><span class="s2">== </span><span class="s4">200</span><span class="s2">) {</span>
+      <span class="s3">var </span><span class="s0">jsonData </span><span class="s2">= </span><span class="s0">json</span><span class="s2">.</span><span class="s0">decode</span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">body</span><span class="s2">);</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">jsonData </span><span class="s2">== </span><span class="s3">null</span><span class="s2">) {</span>
+        <span class="s3">throw </span><span class="s0">Exception</span><span class="s2">(</span><span class="s1">&quot;Response body is null&quot;</span><span class="s2">);</span>
+      <span class="s2">}</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">jsonData </span><span class="s3">is </span><span class="s0">Map</span><span class="s2">&lt;</span><span class="s0">String</span><span class="s2">, </span><span class="s0">dynamic</span><span class="s2">&gt; &amp;&amp; </span><span class="s0">jsonData</span><span class="s2">.</span><span class="s0">containsKey</span><span class="s2">(</span><span class="s1">'users'</span><span class="s2">)) {</span>
+        <span class="s3">var </span><span class="s0">users </span><span class="s2">= </span><span class="s0">jsonData</span><span class="s2">[</span><span class="s1">'users'</span><span class="s2">];</span>
+
+        <span class="s3">if </span><span class="s2">(</span><span class="s0">users </span><span class="s3">is </span><span class="s0">List</span><span class="s2">) {</span>
+          <span class="s3">for </span><span class="s2">(</span><span class="s3">var </span><span class="s0">user </span><span class="s3">in </span><span class="s0">users</span><span class="s2">) {</span>
+            <span class="s0">arr</span><span class="s2">.</span><span class="s0">add</span><span class="s2">(</span><span class="s0">User</span><span class="s2">.</span><span class="s0">fromJson</span><span class="s2">(</span><span class="s0">user</span><span class="s2">));</span>
+          <span class="s2">}</span>
+        <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+          <span class="s3">throw </span><span class="s0">Exception</span><span class="s2">(</span><span class="s1">&quot;'users' is not a List. Received: </span><span class="s2">$</span><span class="s0">users</span><span class="s1">&quot;</span><span class="s2">);</span>
+        <span class="s2">}</span>
+      <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+        <span class="s3">throw </span><span class="s0">Exception</span><span class="s2">(</span>
+            <span class="s1">&quot;Response does not contain 'users' array. Received: </span><span class="s2">$</span><span class="s0">jsonData</span><span class="s1">&quot;</span><span class="s2">);</span>
+      <span class="s2">}</span>
+    <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+      <span class="s0">print</span><span class="s2">(</span>
+          <span class="s1">'Failed to load Course Students: </span><span class="s2">${</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode</span><span class="s2">}</span><span class="s1">, </span><span class="s2">${</span><span class="s0">response</span><span class="s2">.</span><span class="s0">body</span><span class="s2">}</span><span class="s1">'</span><span class="s2">);</span>
+    <span class="s2">}</span>
+  <span class="s2">} </span><span class="s3">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">'Error in get CourseStudents: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">);</span>
+  <span class="s2">}</span>
+  <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Returning </span><span class="s2">${</span><span class="s0">arr</span><span class="s2">.</span><span class="s0">length</span><span class="s2">} </span><span class="s1">course Students&quot;</span><span class="s2">);</span>
+  <span class="s3">return </span><span class="s0">arr</span><span class="s2">;</span>
+<span class="s2">}</span>
+
+<span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">bool</span><span class="s2">&gt; </span><span class="s0">InsertUserCourse</span><span class="s2">(</span><span class="s0">int userID</span><span class="s2">, </span><span class="s0">int courseID</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+  <span class="s3">try </span><span class="s2">{</span>
+    <span class="s3">var </span><span class="s0">url </span><span class="s2">=</span>
+        <span class="s1">&quot;https://darkgray-hummingbird-925566.hostingersite.com/watad/userCourses/insertUserCourse.php?&quot;</span>
+        <span class="s1">&quot;courseID=</span><span class="s2">$</span><span class="s0">courseID</span><span class="s1">&quot;</span>
+        <span class="s1">&quot;&amp;userID=</span><span class="s2">$</span><span class="s0">userID</span><span class="s1">&quot;</span><span class="s2">;</span>
+
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;InsertUserCourse - Final URL: </span><span class="s2">$</span><span class="s0">url</span><span class="s1">&quot;</span><span class="s2">);</span>
+
+    <span class="s3">final </span><span class="s0">response </span><span class="s2">= </span><span class="s0">await http</span><span class="s2">.</span><span class="s0">get</span><span class="s2">(</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">parse</span><span class="s2">(</span><span class="s0">url</span><span class="s2">));</span>
+
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;InsertUserCourse Response Status Code: </span><span class="s2">${</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">);</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;InsertUserCourse Response Body: </span><span class="s2">${</span><span class="s0">response</span><span class="s2">.</span><span class="s0">body</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">);</span>
+
+    <span class="s3">if </span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode </span><span class="s2">== </span><span class="s4">200</span><span class="s2">) {</span>
+      <span class="s3">var </span><span class="s0">data </span><span class="s2">= </span><span class="s0">json</span><span class="s2">.</span><span class="s0">decode</span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">body</span><span class="s2">);</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">data</span><span class="s2">[</span><span class="s1">'result'</span><span class="s2">] != </span><span class="s3">null</span><span class="s2">) {</span>
+        <span class="s3">try </span><span class="s2">{</span>
+          <span class="s0">int resultValue </span><span class="s2">= </span><span class="s0">int</span><span class="s2">.</span><span class="s0">parse</span><span class="s2">(</span><span class="s0">data</span><span class="s2">[</span><span class="s1">'result'</span><span class="s2">].</span><span class="s0">toString</span><span class="s2">());</span>
+          <span class="s3">return </span><span class="s0">resultValue </span><span class="s2">&gt; </span><span class="s4">0</span><span class="s2">;</span>
+        <span class="s2">} </span><span class="s3">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+          <span class="s3">return </span><span class="s0">data</span><span class="s2">[</span><span class="s1">'result'</span><span class="s2">] == </span><span class="s1">'1'</span><span class="s2">;</span>
+        <span class="s2">}</span>
+      <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+        <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Error: No result field in response&quot;</span><span class="s2">);</span>
+        <span class="s3">return false</span><span class="s2">;</span>
+      <span class="s2">}</span>
+    <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Error: Server returned </span><span class="s2">${</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">);</span>
+      <span class="s3">return false</span><span class="s2">;</span>
+    <span class="s2">}</span>
+  <span class="s2">} </span><span class="s3">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+    <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Error in InsertUserCourse: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">&quot;</span><span class="s2">);</span>
+    <span class="s3">return false</span><span class="s2">;</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+
+<span class="s3">class </span><span class="s0">CoursesScreenDesign </span><span class="s3">extends </span><span class="s0">StatefulWidget </span><span class="s2">{</span>
+  <span class="s3">final </span><span class="s0">Course courses</span><span class="s2">;</span>
+  <span class="s3">final </span><span class="s0">bool isStudent</span><span class="s2">;</span>
+  <span class="s3">final </span><span class="s0">Function</span><span class="s2">() </span><span class="s0">onTaskDeleted</span><span class="s2">;</span>
+  <span class="s3">final </span><span class="s0">bool isGridView</span><span class="s2">;</span>
+
+  <span class="s3">const </span><span class="s0">CoursesScreenDesign</span><span class="s2">({</span>
+    <span class="s0">Key</span><span class="s2">? </span><span class="s0">key</span><span class="s2">,</span>
+    <span class="s0">required </span><span class="s3">this</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">,</span>
+    <span class="s0">required </span><span class="s3">this</span><span class="s2">.</span><span class="s0">isStudent</span><span class="s2">,</span>
+    <span class="s0">required </span><span class="s3">this</span><span class="s2">.</span><span class="s0">onTaskDeleted</span><span class="s2">,</span>
+    <span class="s3">this</span><span class="s2">.</span><span class="s0">isGridView </span><span class="s2">= </span><span class="s3">true</span><span class="s2">,</span>
+  <span class="s2">}) : </span><span class="s3">super</span><span class="s2">(</span><span class="s0">key</span><span class="s2">: </span><span class="s0">key</span><span class="s2">);</span>
+
+  <span class="s0">@override</span>
+  <span class="s0">State</span><span class="s2">&lt;</span><span class="s0">CoursesScreenDesign</span><span class="s2">&gt; </span><span class="s0">createState</span><span class="s2">() =&gt; </span><span class="s0">CoursesScreenDesignState</span><span class="s2">();</span>
+<span class="s2">}</span>
+
+<span class="s3">class </span><span class="s0">CoursesScreenDesignState </span><span class="s3">extends </span><span class="s0">State</span><span class="s2">&lt;</span><span class="s0">CoursesScreenDesign</span><span class="s2">&gt; {</span>
+  <span class="s0">bool showNotes </span><span class="s2">= </span><span class="s3">false</span><span class="s2">;</span>
+  <span class="s0">late String notes</span><span class="s2">;</span>
+  <span class="s0">int</span><span class="s2">? </span><span class="s0">studentCount</span><span class="s2">;</span>
+  <span class="s0">bool isLoading </span><span class="s2">= </span><span class="s3">false</span><span class="s2">;</span>
+  <span class="s0">List</span><span class="s2">&lt;</span><span class="s0">User</span><span class="s2">&gt; </span><span class="s0">_courseStudents </span><span class="s2">= [];</span>
+  <span class="s0">bool _isLoadingStudents </span><span class="s2">= </span><span class="s3">false</span><span class="s2">;</span>
+
+  <span class="s0">TextEditingController _notesController </span><span class="s2">= </span><span class="s0">TextEditingController</span><span class="s2">();</span>
+  <span class="s0">TextEditingController _emailController </span><span class="s2">= </span><span class="s0">TextEditingController</span><span class="s2">();</span>
+  <span class="s0">TextEditingController _phoneNumberController </span><span class="s2">= </span><span class="s0">TextEditingController</span><span class="s2">();</span>
+  <span class="s0">TextEditingController _tutorController </span><span class="s2">= </span><span class="s0">TextEditingController</span><span class="s2">();</span>
+  <span class="s0">TextEditingController _courseController </span><span class="s2">= </span><span class="s0">TextEditingController</span><span class="s2">();</span>
+  <span class="s0">TextEditingController _locationController </span><span class="s2">= </span><span class="s0">TextEditingController</span><span class="s2">();</span>
+  <span class="s0">TextEditingController _dayController </span><span class="s2">= </span><span class="s0">TextEditingController</span><span class="s2">();</span>
+  <span class="s0">TextEditingController _timeController </span><span class="s2">= </span><span class="s0">TextEditingController</span><span class="s2">();</span>
+  <span class="s0">TextEditingController _descriptionController </span><span class="s2">= </span><span class="s0">TextEditingController</span><span class="s2">();</span>
+
+  <span class="s3">final </span><span class="s0">_formKey </span><span class="s2">= </span><span class="s0">GlobalKey</span><span class="s2">&lt;</span><span class="s0">FormState</span><span class="s2">&gt;();</span>
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s3">void</span><span class="s2">&gt; </span><span class="s0">_loadCourseNotes</span><span class="s2">() </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s3">final </span><span class="s0">prefs </span><span class="s2">= </span><span class="s0">await SharedPreferences</span><span class="s2">.</span><span class="s0">getInstance</span><span class="s2">();</span>
+    <span class="s3">final </span><span class="s0">savedNotes </span><span class="s2">=</span>
+        <span class="s0">prefs</span><span class="s2">.</span><span class="s0">getString</span><span class="s2">(</span><span class="s1">'course_</span><span class="s2">${</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">}</span><span class="s1">_notes'</span><span class="s2">);</span>
+
+    <span class="s0">setState</span><span class="s2">(() {</span>
+      <span class="s0">_notesController</span><span class="s2">.</span><span class="s0">text </span><span class="s2">= </span><span class="s0">savedNotes </span><span class="s2">?? </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">notes</span><span class="s2">;</span>
+    <span class="s2">});</span>
+  <span class="s2">}</span>
+
+  <span class="s0">@override</span>
+  <span class="s3">void </span><span class="s0">initState</span><span class="s2">() {</span>
+    <span class="s3">super</span><span class="s2">.</span><span class="s0">initState</span><span class="s2">();</span>
+    <span class="s3">if </span><span class="s2">(!</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">isStudent</span><span class="s2">) {</span>
+      <span class="s0">loadStudentCount</span><span class="s2">();</span>
+    <span class="s2">}</span>
+    <span class="s0">_loadCourseNotes</span><span class="s2">();</span>
+  <span class="s2">}</span>
+
+  <span class="s0">@override</span>
+  <span class="s3">void </span><span class="s0">dispose</span><span class="s2">() {</span>
+    <span class="s0">_notesController</span><span class="s2">.</span><span class="s0">dispose</span><span class="s2">();</span>
+    <span class="s0">_tutorController</span><span class="s2">.</span><span class="s0">dispose</span><span class="s2">();</span>
+    <span class="s0">_courseController</span><span class="s2">.</span><span class="s0">dispose</span><span class="s2">();</span>
+    <span class="s0">_locationController</span><span class="s2">.</span><span class="s0">dispose</span><span class="s2">();</span>
+    <span class="s0">_dayController</span><span class="s2">.</span><span class="s0">dispose</span><span class="s2">();</span>
+    <span class="s0">_timeController</span><span class="s2">.</span><span class="s0">dispose</span><span class="s2">();</span>
+    <span class="s0">_descriptionController</span><span class="s2">.</span><span class="s0">dispose</span><span class="s2">();</span>
+    <span class="s3">super</span><span class="s2">.</span><span class="s0">dispose</span><span class="s2">();</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s3">void</span><span class="s2">&gt; </span><span class="s0">loadStudentCount</span><span class="s2">() </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s0">setState</span><span class="s2">(() {</span>
+      <span class="s0">isLoading </span><span class="s2">= </span><span class="s3">true</span><span class="s2">;</span>
+    <span class="s2">});</span>
+
+    <span class="s3">try </span><span class="s2">{</span>
+      <span class="s3">final </span><span class="s0">count </span><span class="s2">= </span><span class="s0">await getCourseStunum</span><span class="s2">(</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">);</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">mounted</span><span class="s2">) {</span>
+        <span class="s0">setState</span><span class="s2">(() {</span>
+          <span class="s0">studentCount </span><span class="s2">= </span><span class="s0">count</span><span class="s2">;</span>
+          <span class="s0">isLoading </span><span class="s2">= </span><span class="s3">false</span><span class="s2">;</span>
+        <span class="s2">});</span>
+      <span class="s2">}</span>
+    <span class="s2">} </span><span class="s3">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">mounted</span><span class="s2">) {</span>
+        <span class="s0">setState</span><span class="s2">(() {</span>
+          <span class="s0">studentCount </span><span class="s2">= </span><span class="s4">0</span><span class="s2">;</span>
+          <span class="s0">isLoading </span><span class="s2">= </span><span class="s3">false</span><span class="s2">;</span>
+        <span class="s2">});</span>
+      <span class="s2">}</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s3">void</span><span class="s2">&gt; </span><span class="s0">showCourseStudents</span><span class="s2">() </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s0">setState</span><span class="s2">(() {</span>
+      <span class="s0">_isLoadingStudents </span><span class="s2">= </span><span class="s3">true</span><span class="s2">;</span>
+    <span class="s2">});</span>
+
+    <span class="s3">try </span><span class="s2">{</span>
+      <span class="s3">final </span><span class="s0">students </span><span class="s2">= </span><span class="s0">await getCourseStudents</span><span class="s2">(</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">);</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">mounted</span><span class="s2">) {</span>
+        <span class="s0">setState</span><span class="s2">(() {</span>
+          <span class="s0">_courseStudents </span><span class="s2">= </span><span class="s0">students</span><span class="s2">;</span>
+          <span class="s0">_isLoadingStudents </span><span class="s2">= </span><span class="s3">false</span><span class="s2">;</span>
+        <span class="s2">});</span>
+
+        <span class="s3">if </span><span class="s2">(</span><span class="s0">mounted</span><span class="s2">) {</span>
+          <span class="s0">showStudentsBottomSheet</span><span class="s2">();</span>
+        <span class="s2">}</span>
+      <span class="s2">}</span>
+    <span class="s2">} </span><span class="s3">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">mounted</span><span class="s2">) {</span>
+        <span class="s0">setState</span><span class="s2">(() {</span>
+          <span class="s0">_isLoadingStudents </span><span class="s2">= </span><span class="s3">false</span><span class="s2">;</span>
+        <span class="s2">});</span>
+
+        <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+          <span class="s0">SnackBar</span><span class="s2">(</span>
+            <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">&quot;Failed to load students: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">&quot;</span><span class="s2">),</span>
+            <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">red</span><span class="s2">,</span>
+          <span class="s2">),</span>
+        <span class="s2">);</span>
+      <span class="s2">}</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+  <span class="s3">void </span><span class="s0">showStudentsBottomSheet</span><span class="s2">() {</span>
+    <span class="s0">showModalBottomSheet</span><span class="s2">(</span>
+      <span class="s0">context</span><span class="s2">: </span><span class="s0">context</span><span class="s2">,</span>
+      <span class="s0">isScrollControlled</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+      <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">transparent</span><span class="s2">,</span>
+      <span class="s0">builder</span><span class="s2">: (</span><span class="s0">context</span><span class="s2">) {</span>
+        <span class="s3">return </span><span class="s0">Stack</span><span class="s2">(</span>
+          <span class="s0">children</span><span class="s2">: [</span>
+            <span class="s0">Container</span><span class="s2">(</span>
+              <span class="s0">height</span><span class="s2">: </span><span class="s0">MediaQuery</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">size</span><span class="s2">.</span><span class="s0">height </span><span class="s2">* </span><span class="s4">0.7</span><span class="s2">,</span>
+              <span class="s0">decoration</span><span class="s2">: </span><span class="s3">const </span><span class="s0">BoxDecoration</span><span class="s2">(</span>
+                <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">white</span><span class="s2">,</span>
+                <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">only</span><span class="s2">(</span>
+                  <span class="s0">topLeft</span><span class="s2">: </span><span class="s0">Radius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">20</span><span class="s2">),</span>
+                  <span class="s0">topRight</span><span class="s2">: </span><span class="s0">Radius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">20</span><span class="s2">),</span>
+                <span class="s2">),</span>
+              <span class="s2">),</span>
+              <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">all</span><span class="s2">(</span><span class="s4">20</span><span class="s2">),</span>
+              <span class="s0">child</span><span class="s2">: </span><span class="s0">Column</span><span class="s2">(</span>
+                <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">start</span><span class="s2">,</span>
+                <span class="s0">children</span><span class="s2">: [</span>
+                  <span class="s5">// Header</span>
+                  <span class="s0">Row</span><span class="s2">(</span>
+                    <span class="s0">mainAxisAlignment</span><span class="s2">: </span><span class="s0">MainAxisAlignment</span><span class="s2">.</span><span class="s0">spaceBetween</span><span class="s2">,</span>
+                    <span class="s0">children</span><span class="s2">: [</span>
+                      <span class="s0">Text</span><span class="s2">(</span>
+                        <span class="s1">'Course Students'</span><span class="s2">,</span>
+                        <span class="s0">style</span><span class="s2">: </span><span class="s3">const </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                          <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+                          <span class="s0">fontWeight</span><span class="s2">: </span><span class="s0">FontWeight</span><span class="s2">.</span><span class="s0">bold</span><span class="s2">,</span>
+                          <span class="s0">color</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF1F2937</span><span class="s2">),</span>
+                        <span class="s2">),</span>
+                      <span class="s2">),</span>
+                      <span class="s0">IconButton</span><span class="s2">(</span>
+                        <span class="s0">icon</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Icon</span><span class="s2">(</span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">close</span><span class="s2">, </span><span class="s0">color</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF6B7280</span><span class="s2">)),</span>
+                        <span class="s0">onPressed</span><span class="s2">: () =&gt; </span><span class="s0">Navigator</span><span class="s2">.</span><span class="s0">pop</span><span class="s2">(</span><span class="s0">context</span><span class="s2">),</span>
+                      <span class="s2">),</span>
+                    <span class="s2">],</span>
+                  <span class="s2">),</span>
+                  <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">16</span><span class="s2">),</span>
+
+                  <span class="s5">// Student count</span>
+                  <span class="s0">Text</span><span class="s2">(</span>
+                    <span class="s1">&quot;</span><span class="s2">${</span><span class="s0">_courseStudents</span><span class="s2">.</span><span class="s0">length</span><span class="s2">} </span><span class="s1">Students Enrolled&quot;</span><span class="s2">,</span>
+                    <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                      <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+                      <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+                      <span class="s0">fontWeight</span><span class="s2">: </span><span class="s0">FontWeight</span><span class="s2">.</span><span class="s0">w500</span><span class="s2">,</span>
+                    <span class="s2">),</span>
+                  <span class="s2">),</span>
+                  <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">16</span><span class="s2">),</span>
+
+                  <span class="s5">// Student list</span>
+                  <span class="s0">Expanded</span><span class="s2">(</span>
+                    <span class="s0">child</span><span class="s2">: </span><span class="s0">_courseStudents</span><span class="s2">.</span><span class="s0">isEmpty</span>
+                        <span class="s2">? </span><span class="s0">Center</span><span class="s2">(</span>
+                            <span class="s0">child</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span>
+                              <span class="s1">&quot;No students enrolled in this course yet&quot;</span><span class="s2">,</span>
+                              <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                                <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+                                <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+                              <span class="s2">),</span>
+                            <span class="s2">),</span>
+                          <span class="s2">)</span>
+                        <span class="s2">: </span><span class="s0">ListView</span><span class="s2">.</span><span class="s0">separated</span><span class="s2">(</span>
+                            <span class="s0">itemCount</span><span class="s2">: </span><span class="s0">_courseStudents</span><span class="s2">.</span><span class="s0">length</span><span class="s2">,</span>
+                            <span class="s0">separatorBuilder</span><span class="s2">: (</span><span class="s0">context</span><span class="s2">, </span><span class="s0">index</span><span class="s2">) =&gt;</span>
+                                <span class="s0">Divider</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">1</span><span class="s2">, </span><span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade200</span><span class="s2">),</span>
+                            <span class="s0">itemBuilder</span><span class="s2">: (</span><span class="s0">context</span><span class="s2">, </span><span class="s0">index</span><span class="s2">) {</span>
+                              <span class="s3">final </span><span class="s0">student </span><span class="s2">= </span><span class="s0">_courseStudents</span><span class="s2">[</span><span class="s0">index</span><span class="s2">];</span>
+                              <span class="s3">final </span><span class="s0">fullName </span><span class="s2">=</span>
+                                  <span class="s1">&quot;</span><span class="s2">${</span><span class="s0">student</span><span class="s2">.</span><span class="s0">firstName </span><span class="s2">?? </span><span class="s1">''</span><span class="s2">} ${</span><span class="s0">student</span><span class="s2">.</span><span class="s0">secondName </span><span class="s2">?? </span><span class="s1">''</span><span class="s2">}</span><span class="s1">&quot;</span>
+                                      <span class="s2">.</span><span class="s0">trim</span><span class="s2">();</span>
+                              <span class="s0">print</span><span class="s2">(</span><span class="s0">student</span><span class="s2">.</span><span class="s0">userID</span><span class="s2">);</span>
+
+                              <span class="s3">return </span><span class="s0">ListTile</span><span class="s2">(</span>
+                                <span class="s0">leading</span><span class="s2">: </span><span class="s0">CircleAvatar</span><span class="s2">(</span>
+                                  <span class="s0">backgroundColor</span><span class="s2">:</span>
+                                      <span class="s0">getCourseColor</span><span class="s2">(</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">),</span>
+                                  <span class="s0">child</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span>
+                                    <span class="s0">fullName</span><span class="s2">.</span><span class="s0">isNotEmpty</span>
+                                        <span class="s2">? </span><span class="s0">fullName</span><span class="s2">.</span><span class="s0">substring</span><span class="s2">(</span><span class="s4">0</span><span class="s2">, </span><span class="s4">1</span><span class="s2">).</span><span class="s0">toUpperCase</span><span class="s2">()</span>
+                                        <span class="s2">: </span><span class="s1">&quot;?&quot;</span><span class="s2">,</span>
+                                    <span class="s0">style</span><span class="s2">: </span><span class="s3">const </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                                      <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">white</span><span class="s2">,</span>
+                                      <span class="s0">fontWeight</span><span class="s2">: </span><span class="s0">FontWeight</span><span class="s2">.</span><span class="s0">bold</span><span class="s2">,</span>
+                                    <span class="s2">),</span>
+                                  <span class="s2">),</span>
+                                <span class="s2">),</span>
+                                <span class="s0">title</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span>
+                                  <span class="s0">fullName</span><span class="s2">,</span>
+                                  <span class="s0">style</span><span class="s2">: </span><span class="s3">const </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                                    <span class="s0">fontWeight</span><span class="s2">: </span><span class="s0">FontWeight</span><span class="s2">.</span><span class="s0">w500</span><span class="s2">,</span>
+                                    <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+                                  <span class="s2">),</span>
+                                <span class="s2">),</span>
+                                <span class="s0">subtitle</span><span class="s2">: </span><span class="s0">Column</span><span class="s2">(</span>
+                                  <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">start</span><span class="s2">,</span>
+                                  <span class="s0">children</span><span class="s2">: [</span>
+                                    <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">4</span><span class="s2">),</span>
+                                    <span class="s3">if </span><span class="s2">(</span><span class="s0">student</span><span class="s2">.</span><span class="s0">email</span><span class="s2">.</span><span class="s0">isNotEmpty</span><span class="s2">)</span>
+                                      <span class="s0">Text</span><span class="s2">(</span>
+                                        <span class="s1">&quot;Email: </span><span class="s2">${</span><span class="s0">student</span><span class="s2">.</span><span class="s0">email</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">,</span>
+                                        <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                                          <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+                                          <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">14</span><span class="s2">,</span>
+                                        <span class="s2">),</span>
+                                      <span class="s2">),</span>
+                                    <span class="s3">if </span><span class="s2">(</span><span class="s0">student</span><span class="s2">.</span><span class="s0">phoneNumber</span><span class="s2">.</span><span class="s0">isNotEmpty</span><span class="s2">)</span>
+                                      <span class="s0">Text</span><span class="s2">(</span>
+                                        <span class="s1">&quot;Phone: </span><span class="s2">${</span><span class="s0">student</span><span class="s2">.</span><span class="s0">phoneNumber</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">,</span>
+                                        <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                                          <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+                                          <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">14</span><span class="s2">,</span>
+                                        <span class="s2">),</span>
+                                      <span class="s2">),</span>
+                                  <span class="s2">],</span>
+                                <span class="s2">),</span>
+                                <span class="s0">trailing</span><span class="s2">: </span><span class="s0">GestureDetector</span><span class="s2">(</span>
+                                  <span class="s0">onTap</span><span class="s2">: () {</span>
+                                    <span class="s0">showDialog</span><span class="s2">(</span>
+                                      <span class="s0">context</span><span class="s2">: </span><span class="s0">context</span><span class="s2">,</span>
+                                      <span class="s0">builder</span><span class="s2">: (</span><span class="s0">dialogContext</span><span class="s2">) =&gt;</span>
+                                          <span class="s0">UserCourseDeleteAlert</span><span class="s2">(</span>
+                                        <span class="s0">userID</span><span class="s2">: </span><span class="s0">student</span><span class="s2">.</span><span class="s0">userID</span><span class="s2">,</span>
+                                        <span class="s0">courseID</span><span class="s2">: </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">,</span>
+                                        <span class="s0">onTaskDeleted</span><span class="s2">: () {</span>
+                                          <span class="s0">Navigator</span><span class="s2">.</span><span class="s0">pop</span><span class="s2">(</span><span class="s0">context</span><span class="s2">);</span>
+                                          <span class="s0">showCourseStudents</span><span class="s2">();</span>
+                                          <span class="s0">loadStudentCount</span><span class="s2">();</span>
+                                        <span class="s2">},</span>
+                                      <span class="s2">),</span>
+                                    <span class="s2">).</span><span class="s0">then</span><span class="s2">((</span><span class="s0">result</span><span class="s2">) {</span>
+                                      <span class="s3">if </span><span class="s2">(</span><span class="s0">result </span><span class="s2">!= </span><span class="s3">null</span><span class="s2">) {</span>
+                                        <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">)</span>
+                                            <span class="s2">.</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                                          <span class="s0">SnackBar</span><span class="s2">(</span>
+                                            <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span>
+                                              <span class="s0">result </span><span class="s2">== </span><span class="s3">true</span>
+                                                  <span class="s2">? </span><span class="s1">'Student removed successfully!'</span>
+                                                  <span class="s2">: </span><span class="s1">'Failed to remove student.'</span><span class="s2">,</span>
+                                            <span class="s2">),</span>
+                                            <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">result </span><span class="s2">== </span><span class="s3">true</span>
+                                                <span class="s2">? </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">green</span>
+                                                <span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">red</span><span class="s2">,</span>
+                                          <span class="s2">),</span>
+                                        <span class="s2">);</span>
+                                      <span class="s2">}</span>
+                                    <span class="s2">});</span>
+                                  <span class="s2">},</span>
+                                  <span class="s0">child</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Icon</span><span class="s2">(</span>
+                                    <span class="s0">Icons</span><span class="s2">.</span><span class="s0">delete_outline</span><span class="s2">,</span>
+                                    <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">red</span><span class="s2">,</span>
+                                    <span class="s0">size</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+                                  <span class="s2">),</span>
+                                <span class="s2">),</span>
+                                <span class="s0">contentPadding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">symmetric</span><span class="s2">(</span>
+                                    <span class="s0">horizontal</span><span class="s2">: </span><span class="s4">16</span><span class="s2">, </span><span class="s0">vertical</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+                              <span class="s2">);</span>
+                            <span class="s2">},</span>
+                          <span class="s2">),</span>
+                  <span class="s2">),</span>
+                <span class="s2">],</span>
+              <span class="s2">),</span>
+            <span class="s2">),</span>
+            <span class="s0">Positioned</span><span class="s2">(</span>
+              <span class="s0">right</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+              <span class="s0">bottom</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+              <span class="s0">child</span><span class="s2">: </span><span class="s0">FloatingActionButton</span><span class="s2">(</span>
+                <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">white</span><span class="s2">,</span>
+                <span class="s0">elevation</span><span class="s2">: </span><span class="s4">2</span><span class="s2">,</span>
+                <span class="s0">child</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Icon</span><span class="s2">(</span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">add</span><span class="s2">, </span><span class="s0">color</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF1F2937</span><span class="s2">)),</span>
+                <span class="s0">onPressed</span><span class="s2">: () {</span>
+                  <span class="s0">showAddStudentForm</span><span class="s2">(</span><span class="s0">context</span><span class="s2">);</span>
+                <span class="s2">},</span>
+              <span class="s2">),</span>
+            <span class="s2">),</span>
+          <span class="s2">],</span>
+        <span class="s2">);</span>
+      <span class="s2">},</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Future</span><span class="s2">&lt;</span><span class="s0">bool</span><span class="s2">&gt; </span><span class="s0">EditCourse</span><span class="s2">(</span><span class="s0">int courseID</span><span class="s2">, </span><span class="s0">String tutor</span><span class="s2">, </span><span class="s0">String course</span><span class="s2">,</span>
+      <span class="s0">String location</span><span class="s2">, </span><span class="s0">String day</span><span class="s2">, </span><span class="s0">String time</span><span class="s2">, </span><span class="s0">String description</span><span class="s2">) </span><span class="s0">async </span><span class="s2">{</span>
+    <span class="s3">try </span><span class="s2">{</span>
+      <span class="s3">var </span><span class="s0">url </span><span class="s2">= </span><span class="s1">&quot;</span><span class="s2">${</span><span class="s0">serverPath</span><span class="s2">}</span><span class="s1">courses/updateCourse.php?&quot;</span>
+          <span class="s1">&quot;courseID=</span><span class="s2">$</span><span class="s0">courseID</span><span class="s1">&quot;</span>
+          <span class="s1">&quot;&amp;tutor=</span><span class="s2">${</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">encodeComponent</span><span class="s2">(</span><span class="s0">tutor</span><span class="s2">)}</span><span class="s1">&quot;</span>
+          <span class="s1">&quot;&amp;course=</span><span class="s2">${</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">encodeComponent</span><span class="s2">(</span><span class="s0">course</span><span class="s2">)}</span><span class="s1">&quot;</span>
+          <span class="s1">&quot;&amp;location=</span><span class="s2">${</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">encodeComponent</span><span class="s2">(</span><span class="s0">location</span><span class="s2">)}</span><span class="s1">&quot;</span>
+          <span class="s1">&quot;&amp;day=</span><span class="s2">${</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">encodeComponent</span><span class="s2">(</span><span class="s0">day</span><span class="s2">)}</span><span class="s1">&quot;</span>
+          <span class="s1">&quot;&amp;time=</span><span class="s2">${</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">encodeComponent</span><span class="s2">(</span><span class="s0">time</span><span class="s2">)}</span><span class="s1">&quot;</span>
+          <span class="s1">&quot;&amp;description=</span><span class="s2">${</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">encodeComponent</span><span class="s2">(</span><span class="s0">description</span><span class="s2">)}</span><span class="s1">&quot;</span><span class="s2">;</span>
+
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;EditCourse - Final URL: </span><span class="s2">$</span><span class="s0">url</span><span class="s1">&quot;</span><span class="s2">);</span>
+
+      <span class="s3">final </span><span class="s0">response </span><span class="s2">= </span><span class="s0">await http</span><span class="s2">.</span><span class="s0">get</span><span class="s2">(</span><span class="s0">Uri</span><span class="s2">.</span><span class="s0">parse</span><span class="s2">(</span><span class="s0">url</span><span class="s2">));</span>
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;EditCourse Status Code: </span><span class="s2">${</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">);</span>
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;EditCourse Raw Response: </span><span class="s2">${</span><span class="s0">response</span><span class="s2">.</span><span class="s0">body</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">);</span>
+
+      <span class="s3">if </span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">statusCode </span><span class="s2">== </span><span class="s4">200</span><span class="s2">) {</span>
+        <span class="s3">var </span><span class="s0">data </span><span class="s2">= </span><span class="s0">json</span><span class="s2">.</span><span class="s0">decode</span><span class="s2">(</span><span class="s0">response</span><span class="s2">.</span><span class="s0">body</span><span class="s2">);</span>
+        <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Parsed response data: </span><span class="s2">$</span><span class="s0">data</span><span class="s1">&quot;</span><span class="s2">);</span>
+
+        <span class="s5">// Check if the result is a success indicator</span>
+        <span class="s3">if </span><span class="s2">(</span><span class="s0">data</span><span class="s2">[</span><span class="s1">'result'</span><span class="s2">] == </span><span class="s1">'1' </span><span class="s2">|| </span><span class="s0">data</span><span class="s2">[</span><span class="s1">'result'</span><span class="s2">] == </span><span class="s4">1</span><span class="s2">) {</span>
+          <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Successfully updated course with ID: </span><span class="s2">$</span><span class="s0">courseID</span><span class="s1">&quot;</span><span class="s2">);</span>
+          <span class="s3">return true</span><span class="s2">;</span>
+        <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+          <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;API returned unsuccessful result: </span><span class="s2">${</span><span class="s0">data</span><span class="s2">[</span><span class="s1">'result'</span><span class="s2">]}</span><span class="s1">&quot;</span><span class="s2">);</span>
+          <span class="s3">return false</span><span class="s2">;</span>
+        <span class="s2">}</span>
+      <span class="s2">}</span>
+      <span class="s3">return false</span><span class="s2">;</span>
+    <span class="s2">} </span><span class="s3">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+      <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;EditCourse Error: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">&quot;</span><span class="s2">);</span>
+      <span class="s3">return false</span><span class="s2">;</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Color getCourseColor</span><span class="s2">(</span><span class="s0">int courseId</span><span class="s2">) {</span>
+    <span class="s3">final </span><span class="s0">colors </span><span class="s2">= [</span>
+      <span class="s3">const </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF3B82F6</span><span class="s2">), </span><span class="s5">// blue</span>
+      <span class="s3">const </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF10B981</span><span class="s2">), </span><span class="s5">// green</span>
+      <span class="s3">const </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFFF59E0B</span><span class="s2">), </span><span class="s5">// orange</span>
+      <span class="s3">const </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF8B5CF6</span><span class="s2">), </span><span class="s5">// purple</span>
+      <span class="s3">const </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFFEC4899</span><span class="s2">), </span><span class="s5">// pink</span>
+      <span class="s3">const </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF14B8A6</span><span class="s2">), </span><span class="s5">// teal</span>
+    <span class="s2">];</span>
+    <span class="s3">return </span><span class="s0">colors</span><span class="s2">[</span><span class="s0">courseId </span><span class="s2">% </span><span class="s0">colors</span><span class="s2">.</span><span class="s0">length</span><span class="s2">];</span>
+  <span class="s2">}</span>
+
+  <span class="s0">@override</span>
+  <span class="s0">Widget build</span><span class="s2">(</span><span class="s0">BuildContext context</span><span class="s2">) {</span>
+    <span class="s3">return </span><span class="s0">Card</span><span class="s2">(</span>
+      <span class="s0">margin</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">symmetric</span><span class="s2">(</span><span class="s0">horizontal</span><span class="s2">: </span><span class="s4">16</span><span class="s2">, </span><span class="s0">vertical</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+      <span class="s0">shape</span><span class="s2">: </span><span class="s0">RoundedRectangleBorder</span><span class="s2">(</span>
+        <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">16</span><span class="s2">),</span>
+        <span class="s0">side</span><span class="s2">: </span><span class="s0">BorderSide</span><span class="s2">(</span><span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade200</span><span class="s2">),</span>
+      <span class="s2">),</span>
+      <span class="s0">elevation</span><span class="s2">: </span><span class="s4">1</span><span class="s2">,</span>
+      <span class="s0">child</span><span class="s2">: </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">isGridView </span><span class="s2">? </span><span class="s0">buildGridLayout</span><span class="s2">() : </span><span class="s0">buildListLayout</span><span class="s2">(),</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Widget buildGridLayout</span><span class="s2">() {</span>
+    <span class="s3">return </span><span class="s0">Column</span><span class="s2">(</span>
+      <span class="s0">mainAxisSize</span><span class="s2">: </span><span class="s0">MainAxisSize</span><span class="s2">.</span><span class="s0">min</span><span class="s2">,</span>
+      <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">start</span><span class="s2">,</span>
+      <span class="s0">children</span><span class="s2">: [</span>
+        <span class="s0">Container</span><span class="s2">(</span>
+          <span class="s0">height</span><span class="s2">: </span><span class="s4">8</span><span class="s2">,</span>
+          <span class="s0">width</span><span class="s2">: </span><span class="s0">double</span><span class="s2">.</span><span class="s0">infinity</span><span class="s2">,</span>
+          <span class="s0">decoration</span><span class="s2">: </span><span class="s0">BoxDecoration</span><span class="s2">(</span>
+            <span class="s0">color</span><span class="s2">: </span><span class="s0">getCourseColor</span><span class="s2">(</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">),</span>
+            <span class="s0">borderRadius</span><span class="s2">: </span><span class="s3">const </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">only</span><span class="s2">(</span>
+              <span class="s0">topLeft</span><span class="s2">: </span><span class="s0">Radius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">16</span><span class="s2">),</span>
+              <span class="s0">topRight</span><span class="s2">: </span><span class="s0">Radius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">16</span><span class="s2">),</span>
+            <span class="s2">),</span>
+          <span class="s2">),</span>
+        <span class="s2">),</span>
+        <span class="s0">buildCardContent</span><span class="s2">(),</span>
+      <span class="s2">],</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Widget buildListLayout</span><span class="s2">() {</span>
+    <span class="s3">return </span><span class="s0">IntrinsicHeight</span><span class="s2">(</span>
+      <span class="s0">child</span><span class="s2">: </span><span class="s0">Row</span><span class="s2">(</span>
+        <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">stretch</span><span class="s2">,</span>
+        <span class="s0">children</span><span class="s2">: [</span>
+          <span class="s0">Container</span><span class="s2">(</span>
+            <span class="s0">width</span><span class="s2">: </span><span class="s4">8</span><span class="s2">,</span>
+            <span class="s0">decoration</span><span class="s2">: </span><span class="s0">BoxDecoration</span><span class="s2">(</span>
+              <span class="s0">color</span><span class="s2">: </span><span class="s0">getCourseColor</span><span class="s2">(</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">),</span>
+              <span class="s0">borderRadius</span><span class="s2">: </span><span class="s3">const </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">only</span><span class="s2">(</span>
+                <span class="s0">topLeft</span><span class="s2">: </span><span class="s0">Radius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">16</span><span class="s2">),</span>
+                <span class="s0">bottomLeft</span><span class="s2">: </span><span class="s0">Radius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">16</span><span class="s2">),</span>
+              <span class="s2">),</span>
+            <span class="s2">),</span>
+          <span class="s2">),</span>
+          <span class="s0">Expanded</span><span class="s2">(</span><span class="s0">child</span><span class="s2">: </span><span class="s0">buildCardContent</span><span class="s2">()),</span>
+        <span class="s2">],</span>
+      <span class="s2">),</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Widget buildCardContent</span><span class="s2">() {</span>
+    <span class="s3">final </span><span class="s0">courseColor </span><span class="s2">= </span><span class="s0">getCourseColor</span><span class="s2">(</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">);</span>
+
+    <span class="s3">return </span><span class="s0">Padding</span><span class="s2">(</span>
+      <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">all</span><span class="s2">(</span><span class="s4">16</span><span class="s2">),</span>
+      <span class="s0">child</span><span class="s2">: </span><span class="s0">Column</span><span class="s2">(</span>
+        <span class="s0">mainAxisSize</span><span class="s2">: </span><span class="s0">MainAxisSize</span><span class="s2">.</span><span class="s0">min</span><span class="s2">,</span>
+        <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">start</span><span class="s2">,</span>
+        <span class="s0">children</span><span class="s2">: [</span>
+          <span class="s0">Row</span><span class="s2">(</span>
+            <span class="s0">mainAxisAlignment</span><span class="s2">: </span><span class="s0">MainAxisAlignment</span><span class="s2">.</span><span class="s0">spaceBetween</span><span class="s2">,</span>
+            <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">start</span><span class="s2">,</span>
+            <span class="s0">children</span><span class="s2">: [</span>
+              <span class="s0">Expanded</span><span class="s2">(</span>
+                <span class="s0">child</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span>
+                  <span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">course</span><span class="s2">,</span>
+                  <span class="s0">style</span><span class="s2">: </span><span class="s3">const </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                    <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">18</span><span class="s2">,</span>
+                    <span class="s0">fontWeight</span><span class="s2">: </span><span class="s0">FontWeight</span><span class="s2">.</span><span class="s0">bold</span><span class="s2">,</span>
+                    <span class="s0">color</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF1F2937</span><span class="s2">),</span>
+                  <span class="s2">),</span>
+                <span class="s2">),</span>
+              <span class="s2">),</span>
+              <span class="s3">if </span><span class="s2">(!</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">isStudent</span><span class="s2">) </span><span class="s0">...</span><span class="s2">{</span>
+                <span class="s0">GestureDetector</span><span class="s2">(</span>
+                  <span class="s0">onTap</span><span class="s2">: () {</span>
+                    <span class="s0">showDialog</span><span class="s2">(</span>
+                      <span class="s0">context</span><span class="s2">: </span><span class="s0">context</span><span class="s2">,</span>
+                      <span class="s0">builder</span><span class="s2">: (</span><span class="s0">dialogContext</span><span class="s2">) =&gt; </span><span class="s0">CourseDeleteAlert</span><span class="s2">(</span>
+                        <span class="s0">courseID</span><span class="s2">: </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">,</span>
+                        <span class="s0">onTaskDeleted</span><span class="s2">: () {</span>
+                          <span class="s0">widget</span><span class="s2">.</span><span class="s0">onTaskDeleted</span><span class="s2">();</span>
+                        <span class="s2">},</span>
+                      <span class="s2">),</span>
+                    <span class="s2">).</span><span class="s0">then</span><span class="s2">((</span><span class="s0">result</span><span class="s2">) {</span>
+                      <span class="s3">if </span><span class="s2">(</span><span class="s0">result </span><span class="s2">== </span><span class="s3">true</span><span class="s2">) {</span>
+                        <span class="s5">// Show success message</span>
+                        <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                          <span class="s3">const </span><span class="s0">SnackBar</span><span class="s2">(</span>
+                            <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">'Course deleted successfully!'</span><span class="s2">),</span>
+                            <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">green</span><span class="s2">,</span>
+                          <span class="s2">),</span>
+                        <span class="s2">);</span>
+                      <span class="s2">} </span><span class="s3">else if </span><span class="s2">(</span><span class="s0">result </span><span class="s2">== </span><span class="s3">false</span><span class="s2">) {</span>
+                        <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                          <span class="s3">const </span><span class="s0">SnackBar</span><span class="s2">(</span>
+                            <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">'Failed to delete course.'</span><span class="s2">),</span>
+                            <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">red</span><span class="s2">,</span>
+                          <span class="s2">),</span>
+                        <span class="s2">);</span>
+                      <span class="s2">}</span>
+                    <span class="s2">});</span>
+                  <span class="s2">},</span>
+                  <span class="s0">child</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Icon</span><span class="s2">(</span>
+                    <span class="s0">Icons</span><span class="s2">.</span><span class="s0">delete_outline</span><span class="s2">,</span>
+                    <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">red</span><span class="s2">,</span>
+                    <span class="s0">size</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+                  <span class="s2">),</span>
+                <span class="s2">),</span>
+              <span class="s2">},</span>
+            <span class="s2">],</span>
+          <span class="s2">),</span>
+          <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+          <span class="s0">Text</span><span class="s2">(</span>
+            <span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">description</span><span class="s2">,</span>
+            <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+              <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">14</span><span class="s2">,</span>
+              <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+            <span class="s2">),</span>
+          <span class="s2">),</span>
+          <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">12</span><span class="s2">),</span>
+          <span class="s0">buildInfoRow</span><span class="s2">(</span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">person_outline</span><span class="s2">, </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">tutor</span><span class="s2">),</span>
+          <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">6</span><span class="s2">),</span>
+          <span class="s0">buildInfoRow</span><span class="s2">(</span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">location_on_outlined</span><span class="s2">, </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">location</span><span class="s2">),</span>
+          <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">6</span><span class="s2">),</span>
+          <span class="s0">buildInfoRow</span><span class="s2">(</span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">calendar_today_outlined</span><span class="s2">,</span>
+              <span class="s1">&quot;</span><span class="s2">${</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">day</span><span class="s2">}</span><span class="s1">, </span><span class="s2">${</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">time</span><span class="s2">}</span><span class="s1">&quot;</span><span class="s2">),</span>
+          <span class="s3">if </span><span class="s2">(!</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">isStudent</span><span class="s2">)</span>
+            <span class="s0">Padding</span><span class="s2">(</span>
+              <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">only</span><span class="s2">(</span><span class="s0">top</span><span class="s2">: </span><span class="s4">6</span><span class="s2">),</span>
+              <span class="s0">child</span><span class="s2">: </span><span class="s0">buildStudentCountRow</span><span class="s2">(),</span>
+            <span class="s2">),</span>
+          <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">16</span><span class="s2">),</span>
+          <span class="s0">Row</span><span class="s2">(</span>
+            <span class="s0">children</span><span class="s2">: [</span>
+              <span class="s0">Expanded</span><span class="s2">(</span>
+                <span class="s0">child</span><span class="s2">: </span><span class="s0">ElevatedButton</span><span class="s2">(</span>
+                  <span class="s0">onPressed</span><span class="s2">: () {</span>
+                    <span class="s0">setState</span><span class="s2">(() {</span>
+                      <span class="s0">showNotes </span><span class="s2">= !</span><span class="s0">showNotes</span><span class="s2">;</span>
+                    <span class="s2">});</span>
+                  <span class="s2">},</span>
+                  <span class="s0">style</span><span class="s2">: </span><span class="s0">ElevatedButton</span><span class="s2">.</span><span class="s0">styleFrom</span><span class="s2">(</span>
+                    <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade100</span><span class="s2">,</span>
+                    <span class="s0">foregroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">black87</span><span class="s2">,</span>
+                    <span class="s0">elevation</span><span class="s2">: </span><span class="s4">0</span><span class="s2">,</span>
+                    <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">symmetric</span><span class="s2">(</span><span class="s0">vertical</span><span class="s2">: </span><span class="s4">12</span><span class="s2">),</span>
+                    <span class="s0">shape</span><span class="s2">: </span><span class="s0">RoundedRectangleBorder</span><span class="s2">(</span>
+                      <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">8</span><span class="s2">),</span>
+                    <span class="s2">),</span>
+                  <span class="s2">),</span>
+                  <span class="s0">child</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s0">showNotes </span><span class="s2">? </span><span class="s1">&quot;Hide Notes&quot; </span><span class="s2">: </span><span class="s1">&quot;Show Notes&quot;</span><span class="s2">),</span>
+                <span class="s2">),</span>
+              <span class="s2">),</span>
+              <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">width</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+              <span class="s3">if </span><span class="s2">(!</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">isStudent</span><span class="s2">)</span>
+                <span class="s0">Expanded</span><span class="s2">(</span>
+                  <span class="s0">child</span><span class="s2">: </span><span class="s0">ElevatedButton</span><span class="s2">(</span>
+                    <span class="s0">onPressed</span><span class="s2">: </span><span class="s0">_isLoadingStudents</span>
+                        <span class="s2">? </span><span class="s3">null</span>
+                        <span class="s2">: () {</span>
+                            <span class="s0">showCourseStudents</span><span class="s2">();</span>
+                          <span class="s2">},</span>
+                    <span class="s0">style</span><span class="s2">: </span><span class="s0">ElevatedButton</span><span class="s2">.</span><span class="s0">styleFrom</span><span class="s2">(</span>
+                      <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">.</span><span class="s0">lerp</span><span class="s2">(</span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade100</span><span class="s2">,</span>
+                          <span class="s0">getCourseColor</span><span class="s2">(</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">), </span><span class="s4">0.5</span><span class="s2">),</span>
+                      <span class="s0">foregroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">black87</span><span class="s2">,</span>
+                      <span class="s0">elevation</span><span class="s2">: </span><span class="s4">0</span><span class="s2">,</span>
+                      <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">symmetric</span><span class="s2">(</span><span class="s0">vertical</span><span class="s2">: </span><span class="s4">12</span><span class="s2">),</span>
+                      <span class="s0">shape</span><span class="s2">: </span><span class="s0">RoundedRectangleBorder</span><span class="s2">(</span>
+                        <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">8</span><span class="s2">),</span>
+                      <span class="s2">),</span>
+                      <span class="s0">disabledBackgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade200</span><span class="s2">,</span>
+                      <span class="s0">disabledForegroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade400</span><span class="s2">,</span>
+                    <span class="s2">),</span>
+                    <span class="s0">child</span><span class="s2">: </span><span class="s0">_isLoadingStudents</span>
+                        <span class="s2">? </span><span class="s0">SizedBox</span><span class="s2">(</span>
+                            <span class="s0">width</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+                            <span class="s0">height</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+                            <span class="s0">child</span><span class="s2">: </span><span class="s0">CircularProgressIndicator</span><span class="s2">(</span>
+                              <span class="s0">strokeWidth</span><span class="s2">: </span><span class="s4">2</span><span class="s2">,</span>
+                              <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade400</span><span class="s2">,</span>
+                            <span class="s2">),</span>
+                          <span class="s2">)</span>
+                        <span class="s2">: </span><span class="s3">const </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">&quot;Participants&quot;</span><span class="s2">),</span>
+                  <span class="s2">),</span>
+                <span class="s2">),</span>
+              <span class="s3">if </span><span class="s2">(!</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">isStudent</span><span class="s2">) </span><span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">width</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+              <span class="s3">if </span><span class="s2">(!</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">isStudent</span><span class="s2">)</span>
+                <span class="s0">Expanded</span><span class="s2">(</span>
+                  <span class="s0">child</span><span class="s2">: </span><span class="s0">ElevatedButton</span><span class="s2">(</span>
+                    <span class="s0">onPressed</span><span class="s2">: () {</span>
+                      <span class="s0">showEditCourseForm</span><span class="s2">();</span>
+                    <span class="s2">},</span>
+                    <span class="s0">style</span><span class="s2">: </span><span class="s0">ElevatedButton</span><span class="s2">.</span><span class="s0">styleFrom</span><span class="s2">(</span>
+                      <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">getCourseColor</span><span class="s2">(</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">),</span>
+                      <span class="s0">foregroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">black87</span><span class="s2">,</span>
+                      <span class="s0">elevation</span><span class="s2">: </span><span class="s4">0</span><span class="s2">,</span>
+                      <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">symmetric</span><span class="s2">(</span><span class="s0">vertical</span><span class="s2">: </span><span class="s4">12</span><span class="s2">),</span>
+                      <span class="s0">shape</span><span class="s2">: </span><span class="s0">RoundedRectangleBorder</span><span class="s2">(</span>
+                        <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">8</span><span class="s2">),</span>
+                      <span class="s2">),</span>
+                    <span class="s2">),</span>
+                    <span class="s0">child</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">&quot;Edit&quot;</span><span class="s2">),</span>
+                  <span class="s2">),</span>
+                <span class="s2">),</span>
+            <span class="s2">],</span>
+          <span class="s2">),</span>
+          <span class="s3">if </span><span class="s2">(</span><span class="s0">showNotes</span><span class="s2">)</span>
+            <span class="s0">Padding</span><span class="s2">(</span>
+              <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">only</span><span class="s2">(</span><span class="s0">top</span><span class="s2">: </span><span class="s4">16</span><span class="s2">),</span>
+              <span class="s0">child</span><span class="s2">: </span><span class="s0">Column</span><span class="s2">(</span>
+                <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">end</span><span class="s2">,</span>
+                <span class="s0">children</span><span class="s2">: [</span>
+                  <span class="s0">TextField</span><span class="s2">(</span>
+                    <span class="s0">decoration</span><span class="s2">: </span><span class="s0">InputDecoration</span><span class="s2">(</span>
+                      <span class="s0">hintText</span><span class="s2">: </span><span class="s1">&quot;&quot;</span><span class="s2">,</span>
+                      <span class="s0">border</span><span class="s2">: </span><span class="s0">OutlineInputBorder</span><span class="s2">(</span>
+                        <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">8</span><span class="s2">),</span>
+                      <span class="s2">),</span>
+                      <span class="s0">contentPadding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">all</span><span class="s2">(</span><span class="s4">12</span><span class="s2">),</span>
+                    <span class="s2">),</span>
+                    <span class="s0">maxLines</span><span class="s2">: </span><span class="s4">3</span><span class="s2">,</span>
+                    <span class="s0">minLines</span><span class="s2">: </span><span class="s4">3</span><span class="s2">,</span>
+                    <span class="s0">controller</span><span class="s2">: </span><span class="s0">_notesController</span><span class="s2">,</span>
+                    <span class="s0">readOnly</span><span class="s2">: </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">isStudent</span><span class="s2">,</span>
+                  <span class="s2">),</span>
+                  <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+                  <span class="s3">if </span><span class="s2">(!</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">isStudent</span><span class="s2">)</span>
+                    <span class="s0">ElevatedButton</span><span class="s2">(</span>
+                      <span class="s0">onPressed</span><span class="s2">: () </span><span class="s0">async </span><span class="s2">{</span>
+                        <span class="s3">final </span><span class="s0">prefs </span><span class="s2">= </span><span class="s0">await SharedPreferences</span><span class="s2">.</span><span class="s0">getInstance</span><span class="s2">();</span>
+                        <span class="s3">final </span><span class="s0">userNote </span><span class="s2">= </span><span class="s0">_notesController</span><span class="s2">.</span><span class="s0">text</span><span class="s2">.</span><span class="s0">trim</span><span class="s2">();</span>
+
+                        <span class="s0">await prefs</span><span class="s2">.</span><span class="s0">setString</span><span class="s2">(</span>
+                            <span class="s1">'course_</span><span class="s2">${</span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">}</span><span class="s1">_notes'</span><span class="s2">,</span>
+                            <span class="s0">userNote</span><span class="s2">);</span>
+
+                        <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                          <span class="s0">SnackBar</span><span class="s2">(</span><span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">'Notes saved successfully!'</span><span class="s2">)),</span>
+                        <span class="s2">);</span>
+                      <span class="s2">},</span>
+                      <span class="s0">style</span><span class="s2">: </span><span class="s0">ElevatedButton</span><span class="s2">.</span><span class="s0">styleFrom</span><span class="s2">(</span>
+                        <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">green</span><span class="s2">,</span>
+                        <span class="s0">foregroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">white</span><span class="s2">,</span>
+                        <span class="s0">elevation</span><span class="s2">: </span><span class="s4">0</span><span class="s2">,</span>
+                        <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">symmetric</span><span class="s2">(</span>
+                          <span class="s0">horizontal</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+                          <span class="s0">vertical</span><span class="s2">: </span><span class="s4">8</span><span class="s2">,</span>
+                        <span class="s2">),</span>
+                        <span class="s0">shape</span><span class="s2">: </span><span class="s0">RoundedRectangleBorder</span><span class="s2">(</span>
+                          <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">8</span><span class="s2">),</span>
+                        <span class="s2">),</span>
+                      <span class="s2">),</span>
+                      <span class="s0">child</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">&quot;Save Notes&quot;</span><span class="s2">),</span>
+                    <span class="s2">),</span>
+                <span class="s2">],</span>
+              <span class="s2">),</span>
+            <span class="s2">),</span>
+        <span class="s2">],</span>
+      <span class="s2">),</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Widget buildInfoRow</span><span class="s2">(</span><span class="s0">IconData icon</span><span class="s2">, </span><span class="s0">String text</span><span class="s2">) {</span>
+    <span class="s3">return </span><span class="s0">Row</span><span class="s2">(</span>
+      <span class="s0">children</span><span class="s2">: [</span>
+        <span class="s0">Icon</span><span class="s2">(</span>
+          <span class="s0">icon</span><span class="s2">,</span>
+          <span class="s0">size</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+          <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+        <span class="s2">),</span>
+        <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">width</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+        <span class="s0">Text</span><span class="s2">(</span>
+          <span class="s0">text</span><span class="s2">,</span>
+          <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+            <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">14</span><span class="s2">,</span>
+            <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+          <span class="s2">),</span>
+        <span class="s2">),</span>
+      <span class="s2">],</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Widget buildStudentCountRow</span><span class="s2">() {</span>
+    <span class="s3">if </span><span class="s2">(</span><span class="s0">isLoading</span><span class="s2">) {</span>
+      <span class="s0">loadStudentCount</span><span class="s2">();</span>
+
+      <span class="s3">return </span><span class="s0">Row</span><span class="s2">(</span>
+        <span class="s0">children</span><span class="s2">: [</span>
+          <span class="s0">Icon</span><span class="s2">(</span>
+            <span class="s0">Icons</span><span class="s2">.</span><span class="s0">group_outlined</span><span class="s2">,</span>
+            <span class="s0">size</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+            <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+          <span class="s2">),</span>
+          <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">width</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+          <span class="s0">SizedBox</span><span class="s2">(</span>
+            <span class="s0">width</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+            <span class="s0">height</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+            <span class="s0">child</span><span class="s2">: </span><span class="s0">CircularProgressIndicator</span><span class="s2">(</span>
+              <span class="s0">strokeWidth</span><span class="s2">: </span><span class="s4">2</span><span class="s2">,</span>
+              <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+            <span class="s2">),</span>
+          <span class="s2">),</span>
+          <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">width</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+        <span class="s2">],</span>
+      <span class="s2">);</span>
+    <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+      <span class="s3">return </span><span class="s0">Row</span><span class="s2">(</span>
+        <span class="s0">children</span><span class="s2">: [</span>
+          <span class="s0">Icon</span><span class="s2">(</span>
+            <span class="s0">Icons</span><span class="s2">.</span><span class="s0">group_outlined</span><span class="s2">,</span>
+            <span class="s0">size</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+            <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+          <span class="s2">),</span>
+          <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">width</span><span class="s2">: </span><span class="s4">8</span><span class="s2">),</span>
+          <span class="s3">if </span><span class="s2">(</span><span class="s0">studentCount </span><span class="s2">!= </span><span class="s4">0</span><span class="s2">) </span><span class="s0">...</span><span class="s2">{</span>
+            <span class="s0">Text</span><span class="s2">(</span>
+              <span class="s1">&quot;</span><span class="s2">${</span><span class="s0">studentCount</span><span class="s2">} </span><span class="s1">Students&quot;</span><span class="s2">,</span>
+              <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">14</span><span class="s2">,</span>
+                <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+              <span class="s2">),</span>
+            <span class="s2">),</span>
+          <span class="s2">} </span><span class="s3">else </span><span class="s0">...</span><span class="s2">{</span>
+            <span class="s0">Text</span><span class="s2">(</span>
+              <span class="s1">&quot;</span><span class="s2">${</span><span class="s0">studentCount </span><span class="s2">?? </span><span class="s4">0</span><span class="s2">} </span><span class="s1">Students&quot;</span><span class="s2">,</span>
+              <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">14</span><span class="s2">,</span>
+                <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade600</span><span class="s2">,</span>
+              <span class="s2">),</span>
+            <span class="s2">),</span>
+          <span class="s2">},</span>
+        <span class="s2">],</span>
+      <span class="s2">);</span>
+    <span class="s2">}</span>
+  <span class="s2">}</span>
+
+  <span class="s3">void </span><span class="s0">showEditCourseForm</span><span class="s2">() {</span>
+    <span class="s0">_tutorController</span><span class="s2">.</span><span class="s0">text </span><span class="s2">= </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">tutor</span><span class="s2">;</span>
+    <span class="s0">_courseController</span><span class="s2">.</span><span class="s0">text </span><span class="s2">= </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">course</span><span class="s2">;</span>
+    <span class="s0">_locationController</span><span class="s2">.</span><span class="s0">text </span><span class="s2">= </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">location</span><span class="s2">;</span>
+    <span class="s0">_dayController</span><span class="s2">.</span><span class="s0">text </span><span class="s2">= </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">day</span><span class="s2">;</span>
+    <span class="s0">_timeController</span><span class="s2">.</span><span class="s0">text </span><span class="s2">= </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">time</span><span class="s2">;</span>
+    <span class="s0">_descriptionController</span><span class="s2">.</span><span class="s0">text </span><span class="s2">= </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">description</span><span class="s2">;</span>
+
+    <span class="s0">showModalBottomSheet</span><span class="s2">(</span>
+      <span class="s0">context</span><span class="s2">: </span><span class="s0">context</span><span class="s2">,</span>
+      <span class="s0">isScrollControlled</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+      <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">transparent</span><span class="s2">,</span>
+      <span class="s0">builder</span><span class="s2">: (</span><span class="s0">context</span><span class="s2">) {</span>
+        <span class="s3">return </span><span class="s0">StatefulBuilder</span><span class="s2">(</span>
+          <span class="s0">builder</span><span class="s2">: (</span><span class="s0">BuildContext context</span><span class="s2">, </span><span class="s0">StateSetter setState</span><span class="s2">) {</span>
+            <span class="s3">return </span><span class="s0">Container</span><span class="s2">(</span>
+              <span class="s0">height</span><span class="s2">: </span><span class="s0">MediaQuery</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">size</span><span class="s2">.</span><span class="s0">height </span><span class="s2">* </span><span class="s4">0.85</span><span class="s2">,</span>
+              <span class="s0">decoration</span><span class="s2">: </span><span class="s3">const </span><span class="s0">BoxDecoration</span><span class="s2">(</span>
+                <span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">white</span><span class="s2">,</span>
+                <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">only</span><span class="s2">(</span>
+                  <span class="s0">topLeft</span><span class="s2">: </span><span class="s0">Radius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">20</span><span class="s2">),</span>
+                  <span class="s0">topRight</span><span class="s2">: </span><span class="s0">Radius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">20</span><span class="s2">),</span>
+                <span class="s2">),</span>
+              <span class="s2">),</span>
+              <span class="s0">padding</span><span class="s2">: </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">only</span><span class="s2">(</span>
+                <span class="s0">bottom</span><span class="s2">: </span><span class="s0">MediaQuery</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">viewInsets</span><span class="s2">.</span><span class="s0">bottom</span><span class="s2">,</span>
+                <span class="s0">left</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+                <span class="s0">right</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+                <span class="s0">top</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+              <span class="s2">),</span>
+              <span class="s0">child</span><span class="s2">: </span><span class="s0">Form</span><span class="s2">(</span>
+                <span class="s0">key</span><span class="s2">: </span><span class="s0">_formKey</span><span class="s2">,</span>
+                <span class="s0">child</span><span class="s2">: </span><span class="s0">Column</span><span class="s2">(</span>
+                  <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">start</span><span class="s2">,</span>
+                  <span class="s0">children</span><span class="s2">: [</span>
+                    <span class="s5">// Header</span>
+                    <span class="s0">Row</span><span class="s2">(</span>
+                      <span class="s0">mainAxisAlignment</span><span class="s2">: </span><span class="s0">MainAxisAlignment</span><span class="s2">.</span><span class="s0">spaceBetween</span><span class="s2">,</span>
+                      <span class="s0">children</span><span class="s2">: [</span>
+                        <span class="s3">const </span><span class="s0">Text</span><span class="s2">(</span>
+                          <span class="s1">'Edit Course'</span><span class="s2">,</span>
+                          <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                            <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+                            <span class="s0">fontWeight</span><span class="s2">: </span><span class="s0">FontWeight</span><span class="s2">.</span><span class="s0">bold</span><span class="s2">,</span>
+                            <span class="s0">color</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF1F2937</span><span class="s2">),</span>
+                          <span class="s2">),</span>
+                        <span class="s2">),</span>
+                        <span class="s0">IconButton</span><span class="s2">(</span>
+                          <span class="s0">icon</span><span class="s2">:</span>
+                              <span class="s3">const </span><span class="s0">Icon</span><span class="s2">(</span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">close</span><span class="s2">, </span><span class="s0">color</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF6B7280</span><span class="s2">)),</span>
+                          <span class="s0">onPressed</span><span class="s2">: () =&gt; </span><span class="s0">Navigator</span><span class="s2">.</span><span class="s0">pop</span><span class="s2">(</span><span class="s0">context</span><span class="s2">),</span>
+                        <span class="s2">),</span>
+                      <span class="s2">],</span>
+                    <span class="s2">),</span>
+                    <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">16</span><span class="s2">),</span>
+
+                    <span class="s0">Expanded</span><span class="s2">(</span>
+                      <span class="s0">child</span><span class="s2">: </span><span class="s0">SingleChildScrollView</span><span class="s2">(</span>
+                        <span class="s0">child</span><span class="s2">: </span><span class="s0">Column</span><span class="s2">(</span>
+                          <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">start</span><span class="s2">,</span>
+                          <span class="s0">children</span><span class="s2">: [</span>
+                            <span class="s0">buildFormField</span><span class="s2">(</span>
+                              <span class="s0">label</span><span class="s2">: </span><span class="s1">'Tutor'</span><span class="s2">,</span>
+                              <span class="s0">controller</span><span class="s2">: </span><span class="s0">_tutorController</span><span class="s2">,</span>
+                              <span class="s0">hint</span><span class="s2">: </span><span class="s1">'Enter tutor name'</span><span class="s2">,</span>
+                              <span class="s0">icon</span><span class="s2">: </span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">person_outline</span><span class="s2">,</span>
+                              <span class="s0">isRequired</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+                            <span class="s2">),</span>
+                            <span class="s0">buildFormField</span><span class="s2">(</span>
+                              <span class="s0">label</span><span class="s2">: </span><span class="s1">'Course'</span><span class="s2">,</span>
+                              <span class="s0">controller</span><span class="s2">: </span><span class="s0">_courseController</span><span class="s2">,</span>
+                              <span class="s0">hint</span><span class="s2">: </span><span class="s1">'Enter course name'</span><span class="s2">,</span>
+                              <span class="s0">icon</span><span class="s2">: </span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">school_outlined</span><span class="s2">,</span>
+                              <span class="s0">isRequired</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+                            <span class="s2">),</span>
+                            <span class="s0">buildFormField</span><span class="s2">(</span>
+                              <span class="s0">label</span><span class="s2">: </span><span class="s1">'Location'</span><span class="s2">,</span>
+                              <span class="s0">controller</span><span class="s2">: </span><span class="s0">_locationController</span><span class="s2">,</span>
+                              <span class="s0">hint</span><span class="s2">: </span><span class="s1">'Enter location'</span><span class="s2">,</span>
+                              <span class="s0">icon</span><span class="s2">: </span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">location_on_outlined</span><span class="s2">,</span>
+                              <span class="s0">isRequired</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+                            <span class="s2">),</span>
+                            <span class="s0">buildFormField</span><span class="s2">(</span>
+                              <span class="s0">label</span><span class="s2">: </span><span class="s1">'Day'</span><span class="s2">,</span>
+                              <span class="s0">controller</span><span class="s2">: </span><span class="s0">_dayController</span><span class="s2">,</span>
+                              <span class="s0">hint</span><span class="s2">: </span><span class="s1">'Enter a day'</span><span class="s2">,</span>
+                              <span class="s0">icon</span><span class="s2">: </span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">calendar_today_outlined</span><span class="s2">,</span>
+                              <span class="s0">isRequired</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+                            <span class="s2">),</span>
+                            <span class="s0">buildFormField</span><span class="s2">(</span>
+                              <span class="s0">label</span><span class="s2">: </span><span class="s1">'Time'</span><span class="s2">,</span>
+                              <span class="s0">controller</span><span class="s2">: </span><span class="s0">_timeController</span><span class="s2">,</span>
+                              <span class="s0">hint</span><span class="s2">: </span><span class="s1">'Enter time'</span><span class="s2">,</span>
+                              <span class="s0">icon</span><span class="s2">: </span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">access_time_outlined</span><span class="s2">,</span>
+                              <span class="s0">isRequired</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+                            <span class="s2">),</span>
+                            <span class="s0">buildFormField</span><span class="s2">(</span>
+                              <span class="s0">label</span><span class="s2">: </span><span class="s1">'Description (optional)'</span><span class="s2">,</span>
+                              <span class="s0">controller</span><span class="s2">: </span><span class="s0">_descriptionController</span><span class="s2">,</span>
+                              <span class="s0">hint</span><span class="s2">: </span><span class="s1">'Enter course description'</span><span class="s2">,</span>
+                              <span class="s0">icon</span><span class="s2">: </span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">description_outlined</span><span class="s2">,</span>
+                              <span class="s0">isRequired</span><span class="s2">: </span><span class="s3">false</span><span class="s2">,</span>
+                              <span class="s0">maxLines</span><span class="s2">: </span><span class="s4">3</span><span class="s2">,</span>
+                            <span class="s2">),</span>
+                          <span class="s2">],</span>
+                        <span class="s2">),</span>
+                      <span class="s2">),</span>
+                    <span class="s2">),</span>
+
+                    <span class="s0">Container</span><span class="s2">(</span>
+                      <span class="s0">margin</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">symmetric</span><span class="s2">(</span><span class="s0">vertical</span><span class="s2">: </span><span class="s4">16</span><span class="s2">),</span>
+                      <span class="s0">width</span><span class="s2">: </span><span class="s0">double</span><span class="s2">.</span><span class="s0">infinity</span><span class="s2">,</span>
+                      <span class="s0">child</span><span class="s2">: </span><span class="s0">ElevatedButton</span><span class="s2">(</span>
+                        <span class="s0">style</span><span class="s2">: </span><span class="s0">ElevatedButton</span><span class="s2">.</span><span class="s0">styleFrom</span><span class="s2">(</span>
+                          <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF1F2937</span><span class="s2">),</span>
+                          <span class="s0">foregroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">white</span><span class="s2">,</span>
+                          <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">symmetric</span><span class="s2">(</span><span class="s0">vertical</span><span class="s2">: </span><span class="s4">16</span><span class="s2">),</span>
+                          <span class="s0">shape</span><span class="s2">: </span><span class="s0">RoundedRectangleBorder</span><span class="s2">(</span>
+                            <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">8</span><span class="s2">),</span>
+                          <span class="s2">),</span>
+                        <span class="s2">),</span>
+                        <span class="s0">onPressed</span><span class="s2">: () </span><span class="s0">async </span><span class="s2">{</span>
+                          <span class="s3">if </span><span class="s2">(</span><span class="s0">_formKey</span><span class="s2">.</span><span class="s0">currentState</span><span class="s2">!.</span><span class="s0">validate</span><span class="s2">()) {</span>
+                            <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                              <span class="s3">const </span><span class="s0">SnackBar</span><span class="s2">(</span>
+                                <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">'Updating course...'</span><span class="s2">),</span>
+                                <span class="s0">duration</span><span class="s2">: </span><span class="s0">Duration</span><span class="s2">(</span><span class="s0">seconds</span><span class="s2">: </span><span class="s4">1</span><span class="s2">),</span>
+                                <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF1F2937</span><span class="s2">),</span>
+                              <span class="s2">),</span>
+                            <span class="s2">);</span>
+
+                            <span class="s3">try </span><span class="s2">{</span>
+                              <span class="s0">bool success </span><span class="s2">= </span><span class="s0">await EditCourse</span><span class="s2">(</span>
+                                <span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">,</span>
+                                <span class="s0">_tutorController</span><span class="s2">.</span><span class="s0">text</span><span class="s2">,</span>
+                                <span class="s0">_courseController</span><span class="s2">.</span><span class="s0">text</span><span class="s2">,</span>
+                                <span class="s0">_locationController</span><span class="s2">.</span><span class="s0">text</span><span class="s2">,</span>
+                                <span class="s0">_dayController</span><span class="s2">.</span><span class="s0">text</span><span class="s2">,</span>
+                                <span class="s0">_timeController</span><span class="s2">.</span><span class="s0">text</span><span class="s2">,</span>
+                                <span class="s0">_descriptionController</span><span class="s2">.</span><span class="s0">text</span><span class="s2">,</span>
+                              <span class="s2">);</span>
+
+                              <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Course updated: </span><span class="s2">$</span><span class="s0">success</span><span class="s1">&quot;</span><span class="s2">);</span>
+
+                              <span class="s3">if </span><span class="s2">(</span><span class="s0">success</span><span class="s2">) {</span>
+                                <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">clearSnackBars</span><span class="s2">();</span>
+
+                                <span class="s0">Navigator</span><span class="s2">.</span><span class="s0">pop</span><span class="s2">(</span><span class="s0">context</span><span class="s2">);</span>
+
+                                <span class="s0">widget</span><span class="s2">.</span><span class="s0">onTaskDeleted</span><span class="s2">();</span>
+
+                                <span class="s0">Future</span><span class="s2">.</span><span class="s0">delayed</span><span class="s2">(</span>
+                                    <span class="s3">const </span><span class="s0">Duration</span><span class="s2">(</span><span class="s0">milliseconds</span><span class="s2">: </span><span class="s4">300</span><span class="s2">), () {</span>
+                                  <span class="s3">if </span><span class="s2">(</span><span class="s0">mounted</span><span class="s2">) {</span>
+                                    <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                                      <span class="s3">const </span><span class="s0">SnackBar</span><span class="s2">(</span>
+                                        <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span>
+                                            <span class="s1">'Course successfully updated!'</span><span class="s2">),</span>
+                                        <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF1F2937</span><span class="s2">),</span>
+                                      <span class="s2">),</span>
+                                    <span class="s2">);</span>
+                                  <span class="s2">}</span>
+                                <span class="s2">});</span>
+                              <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+                                <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                                  <span class="s3">const </span><span class="s0">SnackBar</span><span class="s2">(</span>
+                                    <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span>
+                                        <span class="s1">'Failed to update course. Please try again.'</span><span class="s2">),</span>
+                                    <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">red</span><span class="s2">,</span>
+                                  <span class="s2">),</span>
+                                <span class="s2">);</span>
+                              <span class="s2">}</span>
+                            <span class="s2">} </span><span class="s3">catch </span><span class="s2">(</span><span class="s0">e</span><span class="s2">) {</span>
+                              <span class="s0">print</span><span class="s2">(</span><span class="s1">&quot;Error in form submission: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">&quot;</span><span class="s2">);</span>
+                              <span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">).</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                                <span class="s0">SnackBar</span><span class="s2">(</span>
+                                  <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">'Error: </span><span class="s2">$</span><span class="s0">e</span><span class="s1">'</span><span class="s2">),</span>
+                                  <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">red</span><span class="s2">,</span>
+                                <span class="s2">),</span>
+                              <span class="s2">);</span>
+                            <span class="s2">}</span>
+                          <span class="s2">}</span>
+                        <span class="s2">},</span>
+                        <span class="s0">child</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Text</span><span class="s2">(</span>
+                          <span class="s1">'Save Changes'</span><span class="s2">,</span>
+                          <span class="s0">style</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span>
+                            <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">16</span><span class="s2">,</span>
+                            <span class="s0">fontWeight</span><span class="s2">: </span><span class="s0">FontWeight</span><span class="s2">.</span><span class="s0">w500</span><span class="s2">,</span>
+                          <span class="s2">),</span>
+                        <span class="s2">),</span>
+                      <span class="s2">),</span>
+                    <span class="s2">),</span>
+                  <span class="s2">],</span>
+                <span class="s2">),</span>
+              <span class="s2">),</span>
+            <span class="s2">);</span>
+          <span class="s2">},</span>
+        <span class="s2">);</span>
+      <span class="s2">},</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s0">Widget buildFormField</span><span class="s2">({</span>
+    <span class="s0">required String label</span><span class="s2">,</span>
+    <span class="s0">required TextEditingController controller</span><span class="s2">,</span>
+    <span class="s0">required String hint</span><span class="s2">,</span>
+    <span class="s0">required IconData icon</span><span class="s2">,</span>
+    <span class="s0">required bool isRequired</span><span class="s2">,</span>
+    <span class="s0">int maxLines </span><span class="s2">= </span><span class="s4">1</span><span class="s2">,</span>
+  <span class="s2">}) {</span>
+    <span class="s3">return </span><span class="s0">Padding</span><span class="s2">(</span>
+      <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">only</span><span class="s2">(</span><span class="s0">bottom</span><span class="s2">: </span><span class="s4">16</span><span class="s2">),</span>
+      <span class="s0">child</span><span class="s2">: </span><span class="s0">Column</span><span class="s2">(</span>
+        <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">start</span><span class="s2">,</span>
+        <span class="s0">children</span><span class="s2">: [</span>
+          <span class="s0">Text</span><span class="s2">(</span>
+            <span class="s0">label</span><span class="s2">,</span>
+            <span class="s0">style</span><span class="s2">: </span><span class="s3">const </span><span class="s0">TextStyle</span><span class="s2">(</span>
+              <span class="s0">fontSize</span><span class="s2">: </span><span class="s4">14</span><span class="s2">,</span>
+              <span class="s0">fontWeight</span><span class="s2">: </span><span class="s0">FontWeight</span><span class="s2">.</span><span class="s0">w500</span><span class="s2">,</span>
+              <span class="s0">color</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF4B5563</span><span class="s2">),</span>
+            <span class="s2">),</span>
+          <span class="s2">),</span>
+          <span class="s3">const </span><span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">height</span><span class="s2">: </span><span class="s4">6</span><span class="s2">),</span>
+          <span class="s0">TextFormField</span><span class="s2">(</span>
+            <span class="s0">controller</span><span class="s2">: </span><span class="s0">controller</span><span class="s2">,</span>
+            <span class="s0">maxLines</span><span class="s2">: </span><span class="s0">maxLines</span><span class="s2">,</span>
+            <span class="s0">decoration</span><span class="s2">: </span><span class="s0">InputDecoration</span><span class="s2">(</span>
+              <span class="s0">hintText</span><span class="s2">: </span><span class="s0">hint</span><span class="s2">,</span>
+              <span class="s0">hintStyle</span><span class="s2">: </span><span class="s0">TextStyle</span><span class="s2">(</span><span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade400</span><span class="s2">),</span>
+              <span class="s0">prefixIcon</span><span class="s2">: </span><span class="s0">Icon</span><span class="s2">(</span><span class="s0">icon</span><span class="s2">, </span><span class="s0">color</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF6B7280</span><span class="s2">), </span><span class="s0">size</span><span class="s2">: </span><span class="s4">20</span><span class="s2">),</span>
+              <span class="s0">filled</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+              <span class="s0">fillColor</span><span class="s2">: </span><span class="s3">const </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFFF9FAFB</span><span class="s2">),</span>
+              <span class="s0">border</span><span class="s2">: </span><span class="s0">OutlineInputBorder</span><span class="s2">(</span>
+                <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">8</span><span class="s2">),</span>
+                <span class="s0">borderSide</span><span class="s2">: </span><span class="s0">BorderSide</span><span class="s2">(</span><span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade300</span><span class="s2">),</span>
+              <span class="s2">),</span>
+              <span class="s0">enabledBorder</span><span class="s2">: </span><span class="s0">OutlineInputBorder</span><span class="s2">(</span>
+                <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">8</span><span class="s2">),</span>
+                <span class="s0">borderSide</span><span class="s2">: </span><span class="s0">BorderSide</span><span class="s2">(</span><span class="s0">color</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">grey</span><span class="s2">.</span><span class="s0">shade200</span><span class="s2">),</span>
+              <span class="s2">),</span>
+              <span class="s0">focusedBorder</span><span class="s2">: </span><span class="s0">OutlineInputBorder</span><span class="s2">(</span>
+                <span class="s0">borderRadius</span><span class="s2">: </span><span class="s0">BorderRadius</span><span class="s2">.</span><span class="s0">circular</span><span class="s2">(</span><span class="s4">8</span><span class="s2">),</span>
+                <span class="s0">borderSide</span><span class="s2">: </span><span class="s3">const </span><span class="s0">BorderSide</span><span class="s2">(</span><span class="s0">color</span><span class="s2">: </span><span class="s0">Color</span><span class="s2">(</span><span class="s4">0xFF9CA3AF</span><span class="s2">)),</span>
+              <span class="s2">),</span>
+              <span class="s0">contentPadding</span><span class="s2">:</span>
+                  <span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">symmetric</span><span class="s2">(</span><span class="s0">horizontal</span><span class="s2">: </span><span class="s4">16</span><span class="s2">, </span><span class="s0">vertical</span><span class="s2">: </span><span class="s4">12</span><span class="s2">),</span>
+            <span class="s2">),</span>
+            <span class="s0">validator</span><span class="s2">: </span><span class="s0">isRequired</span>
+                <span class="s2">? (</span><span class="s0">value</span><span class="s2">) {</span>
+                    <span class="s3">if </span><span class="s2">(</span><span class="s0">value </span><span class="s2">== </span><span class="s3">null </span><span class="s2">|| </span><span class="s0">value</span><span class="s2">.</span><span class="s0">isEmpty</span><span class="s2">) {</span>
+                      <span class="s3">return </span><span class="s1">'This field is required'</span><span class="s2">;</span>
+                    <span class="s2">}</span>
+                    <span class="s3">return null</span><span class="s2">;</span>
+                  <span class="s2">}</span>
+                <span class="s2">: </span><span class="s3">null</span><span class="s2">,</span>
+          <span class="s2">),</span>
+        <span class="s2">],</span>
+      <span class="s2">),</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+
+  <span class="s3">void </span><span class="s0">showAddStudentForm</span><span class="s2">(</span><span class="s0">BuildContext context</span><span class="s2">) {</span>
+    <span class="s3">final </span><span class="s0">scaffoldContext </span><span class="s2">= </span><span class="s0">ScaffoldMessenger</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">context</span><span class="s2">);</span>
+
+    <span class="s0">showDialog</span><span class="s2">(</span>
+      <span class="s0">context</span><span class="s2">: </span><span class="s0">context</span><span class="s2">,</span>
+      <span class="s0">builder</span><span class="s2">: (</span><span class="s0">BuildContext dialogContext</span><span class="s2">) {</span>
+        <span class="s0">_emailController</span><span class="s2">.</span><span class="s0">clear</span><span class="s2">();</span>
+        <span class="s0">_phoneNumberController</span><span class="s2">.</span><span class="s0">clear</span><span class="s2">();</span>
+        <span class="s0">bool isLoading </span><span class="s2">= </span><span class="s3">false</span><span class="s2">;</span>
+
+        <span class="s3">return </span><span class="s0">StatefulBuilder</span><span class="s2">(</span><span class="s0">builder</span><span class="s2">: (</span><span class="s0">context</span><span class="s2">, </span><span class="s0">setState</span><span class="s2">) {</span>
+          <span class="s3">return </span><span class="s0">AlertDialog</span><span class="s2">(</span>
+            <span class="s0">title</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">'Add New Student'</span><span class="s2">),</span>
+            <span class="s0">content</span><span class="s2">: </span><span class="s0">SingleChildScrollView</span><span class="s2">(</span>
+              <span class="s0">child</span><span class="s2">: </span><span class="s0">Column</span><span class="s2">(</span>
+                <span class="s0">crossAxisAlignment</span><span class="s2">: </span><span class="s0">CrossAxisAlignment</span><span class="s2">.</span><span class="s0">start</span><span class="s2">,</span>
+                <span class="s0">mainAxisSize</span><span class="s2">: </span><span class="s0">MainAxisSize</span><span class="s2">.</span><span class="s0">min</span><span class="s2">,</span>
+                <span class="s0">children</span><span class="s2">: [</span>
+                  <span class="s0">buildFormField</span><span class="s2">(</span>
+                    <span class="s0">label</span><span class="s2">: </span><span class="s1">'Student e-Mail'</span><span class="s2">,</span>
+                    <span class="s0">controller</span><span class="s2">: </span><span class="s0">_emailController</span><span class="s2">,</span>
+                    <span class="s0">hint</span><span class="s2">: </span><span class="s1">'Enter Student e-Mail'</span><span class="s2">,</span>
+                    <span class="s0">icon</span><span class="s2">: </span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">person_outline</span><span class="s2">,</span>
+                    <span class="s0">isRequired</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+                  <span class="s2">),</span>
+                  <span class="s0">buildFormField</span><span class="s2">(</span>
+                    <span class="s0">label</span><span class="s2">: </span><span class="s1">'Student PhoneNumber'</span><span class="s2">,</span>
+                    <span class="s0">controller</span><span class="s2">: </span><span class="s0">_phoneNumberController</span><span class="s2">,</span>
+                    <span class="s0">hint</span><span class="s2">: </span><span class="s1">'Enter Student PhoneNumber'</span><span class="s2">,</span>
+                    <span class="s0">icon</span><span class="s2">: </span><span class="s0">Icons</span><span class="s2">.</span><span class="s0">school_outlined</span><span class="s2">,</span>
+                    <span class="s0">isRequired</span><span class="s2">: </span><span class="s3">true</span><span class="s2">,</span>
+                  <span class="s2">),</span>
+                  <span class="s3">if </span><span class="s2">(</span><span class="s0">isLoading</span><span class="s2">)</span>
+                    <span class="s0">Padding</span><span class="s2">(</span>
+                      <span class="s0">padding</span><span class="s2">: </span><span class="s3">const </span><span class="s0">EdgeInsets</span><span class="s2">.</span><span class="s0">only</span><span class="s2">(</span><span class="s0">top</span><span class="s2">: </span><span class="s4">16</span><span class="s2">),</span>
+                      <span class="s0">child</span><span class="s2">: </span><span class="s0">Row</span><span class="s2">(</span>
+                        <span class="s0">children</span><span class="s2">: [</span>
+                          <span class="s0">SizedBox</span><span class="s2">(</span>
+                            <span class="s0">width</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+                            <span class="s0">height</span><span class="s2">: </span><span class="s4">20</span><span class="s2">,</span>
+                            <span class="s0">child</span><span class="s2">: </span><span class="s0">CircularProgressIndicator</span><span class="s2">(</span><span class="s0">strokeWidth</span><span class="s2">: </span><span class="s4">2</span><span class="s2">),</span>
+                          <span class="s2">),</span>
+                          <span class="s0">SizedBox</span><span class="s2">(</span><span class="s0">width</span><span class="s2">: </span><span class="s4">12</span><span class="s2">),</span>
+                          <span class="s0">Text</span><span class="s2">(</span><span class="s1">'Processing...'</span><span class="s2">),</span>
+                        <span class="s2">],</span>
+                      <span class="s2">),</span>
+                    <span class="s2">),</span>
+                <span class="s2">],</span>
+              <span class="s2">),</span>
+            <span class="s2">),</span>
+            <span class="s0">actions</span><span class="s2">: [</span>
+              <span class="s0">TextButton</span><span class="s2">(</span>
+                <span class="s0">child</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">'Cancel'</span><span class="s2">),</span>
+                <span class="s0">onPressed</span><span class="s2">: </span><span class="s0">isLoading</span>
+                    <span class="s2">? </span><span class="s3">null</span>
+                    <span class="s2">: () {</span>
+                        <span class="s0">Navigator</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">dialogContext</span><span class="s2">).</span><span class="s0">pop</span><span class="s2">();</span>
+                      <span class="s2">},</span>
+              <span class="s2">),</span>
+              <span class="s0">TextButton</span><span class="s2">(</span>
+                <span class="s0">child</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">'Add'</span><span class="s2">),</span>
+                <span class="s0">onPressed</span><span class="s2">: </span><span class="s0">isLoading</span>
+                    <span class="s2">? </span><span class="s3">null</span>
+                    <span class="s2">: () </span><span class="s0">async </span><span class="s2">{</span>
+                        <span class="s0">setState</span><span class="s2">(() {</span>
+                          <span class="s0">isLoading </span><span class="s2">= </span><span class="s3">true</span><span class="s2">;</span>
+                        <span class="s2">});</span>
+
+                        <span class="s0">int uID </span><span class="s2">= </span><span class="s0">await getUserID</span><span class="s2">(</span>
+                            <span class="s0">_emailController</span><span class="s2">.</span><span class="s0">text</span><span class="s2">, </span><span class="s0">_phoneNumberController</span><span class="s2">.</span><span class="s0">text</span><span class="s2">);</span>
+
+                        <span class="s3">if </span><span class="s2">(</span><span class="s0">uID </span><span class="s2">== </span><span class="s4">0</span><span class="s2">) {</span>
+                          <span class="s0">Navigator</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">dialogContext</span><span class="s2">).</span><span class="s0">pop</span><span class="s2">();</span>
+                          <span class="s0">Navigator</span><span class="s2">.</span><span class="s0">pop</span><span class="s2">(</span><span class="s0">context</span><span class="s2">);</span>
+
+                          <span class="s0">scaffoldContext</span><span class="s2">.</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                            <span class="s3">const </span><span class="s0">SnackBar</span><span class="s2">(</span>
+                              <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span>
+                                  <span class="s1">'No student found with the matching credentials'</span><span class="s2">),</span>
+                              <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">red</span><span class="s2">,</span>
+                              <span class="s0">duration</span><span class="s2">: </span><span class="s0">Duration</span><span class="s2">(</span><span class="s0">seconds</span><span class="s2">: </span><span class="s4">3</span><span class="s2">),</span>
+                            <span class="s2">),</span>
+                          <span class="s2">);</span>
+                        <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+                          <span class="s0">bool success </span><span class="s2">= </span><span class="s0">await InsertUserCourse</span><span class="s2">(</span>
+                              <span class="s0">uID</span><span class="s2">, </span><span class="s0">widget</span><span class="s2">.</span><span class="s0">courses</span><span class="s2">.</span><span class="s0">courseID</span><span class="s2">);</span>
+
+                          <span class="s0">Navigator</span><span class="s2">.</span><span class="s0">of</span><span class="s2">(</span><span class="s0">dialogContext</span><span class="s2">).</span><span class="s0">pop</span><span class="s2">();</span>
+                          <span class="s0">Navigator</span><span class="s2">.</span><span class="s0">pop</span><span class="s2">(</span><span class="s0">context</span><span class="s2">);</span>
+
+                          <span class="s3">if </span><span class="s2">(</span><span class="s0">success</span><span class="s2">) {</span>
+                            <span class="s0">scaffoldContext</span><span class="s2">.</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                              <span class="s3">const </span><span class="s0">SnackBar</span><span class="s2">(</span>
+                                <span class="s0">content</span><span class="s2">: </span><span class="s0">Text</span><span class="s2">(</span><span class="s1">'Added Student successfully'</span><span class="s2">),</span>
+                                <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">green</span><span class="s2">,</span>
+                                <span class="s0">duration</span><span class="s2">: </span><span class="s0">Duration</span><span class="s2">(</span><span class="s0">seconds</span><span class="s2">: </span><span class="s4">3</span><span class="s2">),</span>
+                              <span class="s2">),</span>
+                            <span class="s2">);</span>
+
+                            <span class="s3">if </span><span class="s2">(</span><span class="s0">mounted</span><span class="s2">) {</span>
+                              <span class="s0">showCourseStudents</span><span class="s2">();</span>
+                              <span class="s0">loadStudentCount</span><span class="s2">();</span>
+                            <span class="s2">}</span>
+                            <span class="s2">;</span>
+                          <span class="s2">} </span><span class="s3">else </span><span class="s2">{</span>
+                            <span class="s0">scaffoldContext</span><span class="s2">.</span><span class="s0">showSnackBar</span><span class="s2">(</span>
+                              <span class="s3">const </span><span class="s0">SnackBar</span><span class="s2">(</span>
+                                <span class="s0">content</span><span class="s2">:</span>
+                                    <span class="s0">Text</span><span class="s2">(</span><span class="s1">'Failed to add student to course'</span><span class="s2">),</span>
+                                <span class="s0">backgroundColor</span><span class="s2">: </span><span class="s0">Colors</span><span class="s2">.</span><span class="s0">red</span><span class="s2">,</span>
+                                <span class="s0">duration</span><span class="s2">: </span><span class="s0">Duration</span><span class="s2">(</span><span class="s0">seconds</span><span class="s2">: </span><span class="s4">3</span><span class="s2">),</span>
+                              <span class="s2">),</span>
+                            <span class="s2">);</span>
+                          <span class="s2">}</span>
+                        <span class="s2">}</span>
+                      <span class="s2">},</span>
+              <span class="s2">),</span>
+            <span class="s2">],</span>
+          <span class="s2">);</span>
+        <span class="s2">});</span>
+      <span class="s2">},</span>
+    <span class="s2">);</span>
+  <span class="s2">}</span>
+<span class="s2">}</span>
+</pre>
+</body>
+</html>
