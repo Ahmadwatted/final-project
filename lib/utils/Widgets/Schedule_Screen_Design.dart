@@ -15,12 +15,12 @@ class ScheduleScreenDesign extends StatelessWidget {
 
   Color getCourseColor(int courseId) {
     const colors = [
-      Color(0xFF3B82F6), // blue
-      Color(0xFF10B981), // green
-      Color(0xFFF59E0B), // orange
-      Color(0xFF8B5CF6), // purple
-      Color(0xFFEC4899), // pink
-      Color(0xFF14B8A6), // teal
+      Color(0xFF3B82F6),
+      Color(0xFF10B981),
+      Color(0xFFF59E0B),
+      Color(0xFF8B5CF6),
+      Color(0xFFEC4899),
+      Color(0xFF14B8A6),
     ];
 
     return colors[courseId % colors.length];
