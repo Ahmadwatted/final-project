@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
 import '../../utils/Widgets/Courses_Screen_Design.dart';
@@ -9,9 +8,7 @@ import '../../utils/Widgets/Courses_Screen_Design.dart';
 class TeacherCoursesScreen extends StatefulWidget {
   final String title;
   final String userID;
-
   const TeacherCoursesScreen({Key? key, required this.title, required this.userID}) : super(key: key);
-
   @override
   State<TeacherCoursesScreen> createState() => _TeacherCoursesScreen();
 }
@@ -20,21 +17,19 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
   late Future<List<Course>> _CoursesFuture;
   bool isStudent = false;
   String searchTerm = '';
-
   final TextEditingController _tutorController = TextEditingController();
   final TextEditingController _courseController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _dayController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     _CoursesFuture = Future.value([]);
-    Future.microtask(() => _refreshTasks());
+    Future.microtask(() => refreshTasks());
   }
 
   @override
@@ -56,18 +51,14 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
         "&day=${Uri.encodeComponent(day)}"
         "&time=${Uri.encodeComponent(time)}"
         "&description=${Uri.encodeComponent(description)}";
-
     print("InsertCourse - Final URL: $url");
-
     try {
       final response = await http.get(Uri.parse(url));
       print("InsertCourse Status Code: ${response.statusCode}");
       print("InsertCourse Raw Response: ${response.body}");
-
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         print("Parsed response data: $data");
-
         if (data['result'] == '1' && data['id'] != null) {
           print("Successfully created course with ID: ${data['id']}");
           return int.parse(data['id'].toString());
@@ -82,9 +73,9 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
       return null;
     }
   }
-  Future<void> _refreshTasks() async {
-    final courses = await getUserCourses();
 
+  Future<void> refreshTasks() async {
+    final courses = await getUserCourses();
     if (mounted) {
       setState(() {
         _CoursesFuture = Future.value(courses);
@@ -94,47 +85,35 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
 
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
-
     try {
-      // Make sure your URL is fully qualified
       var url = "${serverPath}userCourses/getUserCourses.php?userID=${widget.userID}";
       print("Fetching user courses from: $url");
-
       final response = await http.get(Uri.parse(url));
-
       print("Response Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
-
       if (response.statusCode == 200) {
-        // Handle empty response
         if (response.body.trim().isEmpty) {
           print("Empty response received");
           return [];
         }
-
         try {
           var jsonData = json.decode(response.body);
-
           if (jsonData == null) {
             print("Response body decoded to null");
             return [];
           }
-
           if (jsonData is! List) {
             print("Response is not a List. Received: $jsonData");
-            // Try to handle the case where it's an object with an error message
             if (jsonData is Map && jsonData.containsKey('error')) {
               print("Error from API: ${jsonData['error']}");
             }
             return [];
           }
-
           for (var i in jsonData) {
             try {
               arr.add(Course.fromJson(i));
             } catch (e) {
               print('Error parsing course data: $e');
-              // Continue with next item instead of failing completely
             }
           }
         } catch (e) {
@@ -146,36 +125,26 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
     } catch (e) {
       print('Network error: $e');
     }
-
     return arr;
   }
 
   Future<bool> InsertUserCourse(int courseID) async {
     try {
       String userID = widget.userID;
-
       var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/userCourses/insertUserCourse.php?"
           "courseID=$courseID"
           "&userID=$userID";
-
       print("InsertUserCourse - Final URL: $url");
-
       final response = await http.get(Uri.parse(url));
-
       print("InsertUserCourse Response Status Code: ${response.statusCode}");
       print("InsertUserCourse Response Body: ${response.body}");
-
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-
-        // Check if the result is a non-zero number (meaning success)
         if (data['result'] != null) {
-          // Try parsing as int first to check if it's a numeric value
           try {
             int resultValue = int.parse(data['result'].toString());
-            return resultValue > 0; // Consider any positive number a success
+            return resultValue > 0;
           } catch (e) {
-            // If it can't be parsed as int, check if it's "1" (the original success condition)
             return data['result'] == '1';
           }
         } else {
@@ -192,14 +161,13 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
     }
   }
 
-  void _showAddCourseForm() {
+  void showAddCourseForm() {
     _tutorController.clear();
     _courseController.clear();
     _locationController.clear();
     _dayController.clear();
     _timeController.clear();
     _descriptionController.clear();
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -227,7 +195,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -246,49 +213,47 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-
-                    // Form fields
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildFormField(
+                            buildFormField(
                               label: 'Tutor',
                               controller: _tutorController,
                               hint: 'Enter tutor name',
                               icon: Icons.person_outline,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Course',
                               controller: _courseController,
                               hint: 'Enter course name',
                               icon: Icons.school_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Location',
                               controller: _locationController,
                               hint: 'Enter location',
                               icon: Icons.location_on_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Day',
                               controller: _dayController,
                               hint: 'Enter a day',
                               icon: Icons.calendar_today_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Time',
                               controller: _timeController,
                               hint: 'Enter time',
                               icon: Icons.access_time_outlined,
                               isRequired: true,
                             ),
-                            _buildFormField(
+                            buildFormField(
                               label: 'Description (optional)',
                               controller: _descriptionController,
                               hint: 'Enter course description',
@@ -300,8 +265,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                         ),
                       ),
                     ),
-
-                    // Submit button
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 16),
                       width: double.infinity,
@@ -316,7 +279,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // Show loading indicator
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Adding course...'),
@@ -324,7 +286,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                                 backgroundColor: Color(0xFF1F2937),
                               ),
                             );
-
                             try {
                               int? newCourseID = await InsertCourse(
                                 _tutorController.text,
@@ -334,22 +295,14 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                                 _timeController.text,
                                 _descriptionController.text,
                               );
-
                               print("Course created with ID: $newCourseID");
-
                               if (newCourseID != null) {
                                 bool success = await InsertUserCourse(newCourseID);
                                 print("User added to course: $success");
-
                                 if (success) {
                                   ScaffoldMessenger.of(context).clearSnackBars();
-
-                                  await _refreshTasks();
-
-                                  // Close the form
+                                  await refreshTasks();
                                   Navigator.pop(context);
-
-                                  // Show success message with a slight delay
                                   Future.delayed(const Duration(milliseconds: 300), () {
                                     if (mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
@@ -360,12 +313,9 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                                       );
                                     }
                                   });
-
-
                                   WidgetsBinding.instance.addPostFrameCallback((_) {
                                     if (mounted) {
-                                      setState(() {
-                                      });
+                                      setState(() {});
                                     }
                                   });
                                 } else {
@@ -414,7 +364,7 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
     );
   }
 
-  Widget _buildFormField({
+  Widget buildFormField({
     required String label,
     required TextEditingController controller,
     required String hint,
@@ -484,7 +434,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
       ),
       body: Column(
         children: [
-          // Search Row
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
             child: TextField(
@@ -504,8 +453,6 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
               },
             ),
           ),
-
-          // Course list
           Expanded(
             child: FutureBuilder<List<Course>>(
               future: _CoursesFuture,
@@ -526,14 +473,14 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         TextButton(
-                          onPressed: _refreshTasks,
+                          onPressed: refreshTasks,
                           child: const Text('Try Again'),
                         ),
                       ],
                     ),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return _buildEmptyState();
+                  return buildEmptyState();
                 } else {
                   final filteredCourses = snapshot.data!
                       .where((course) =>
@@ -541,11 +488,9 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                       course.course.toLowerCase().contains(searchTerm.toLowerCase()) ||
                       course.day.toLowerCase().contains(searchTerm.toLowerCase())
                   ).toList();
-
                   if (filteredCourses.isEmpty) {
-                    return _buildEmptyState();
+                    return buildEmptyState();
                   }
-
                   return ListView.builder(
                     itemCount: filteredCourses.length,
                     padding: const EdgeInsets.all(16),
@@ -554,7 +499,7 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
                       return CoursesScreenDesign(
                         courses: course,
                         isStudent: false,
-                        onTaskDeleted: _refreshTasks,
+                        onTaskDeleted: refreshTasks,
                         isGridView: false,
                       );
                     },
@@ -569,16 +514,15 @@ class _TeacherCoursesScreen extends State<TeacherCoursesScreen> {
         backgroundColor: Colors.white,
         elevation: 2,
         child: const Icon(Icons.add, color: Color(0xFF1F2937)),
-        onPressed: _showAddCourseForm,
+        onPressed: showAddCourseForm,
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget buildEmptyState() {
     String message = searchTerm.isNotEmpty
         ? 'No courses matching "$searchTerm"'
         : 'You haven\'t created any courses yet.';
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
