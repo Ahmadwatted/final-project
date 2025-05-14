@@ -7,7 +7,6 @@ class Task {
   final bool isCompleted;
   final String dueDate;
   final description;
-
   Task({
     required this.taskID,
     required this.tutor,
@@ -18,7 +17,6 @@ class Task {
     this.dueDate = '',
     this.description='',
   });
-
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       taskID: int.parse(json['taskID'].toString()),
@@ -31,7 +29,6 @@ class Task {
       description: json['description'] ?? '',
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       'taskID': taskID,

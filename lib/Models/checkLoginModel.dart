@@ -6,20 +6,15 @@ class checkLoginModel {
   String? secondName;
   String? phoneNumber;
   String? email;
-
-
   checkLoginModel({
     this.result,
-     required this.userID,
+    required this.userID,
     this.userTypeID,
     this.phoneNumber,
     this.email,
     this.secondName,
     this.firstName,
-
   });
-
-
   factory checkLoginModel.fromJson(Map<String, dynamic> json) {
     return checkLoginModel(
       result: json['result'],

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
-import '../../Models/schedule.dart';
 import '../../Models/task.dart';
 import 'TeacherCoursesScreen.dart';
 import 'TeacherScheduleScreen.dart';
@@ -27,13 +26,11 @@ class MainTeacherScreen extends StatefulWidget {
 class _MainTeacherScreenState extends State<MainTeacherScreen> {
   late Future<List<Task>> _tasksFuture;
   late Future<List<Course>> _coursesFuture;
-  late Future<List<Schedule>> _scheduleFuture;
   @override
   void initState() {
     super.initState();
     refreshTasks();
     refreshCourses();
-    refreshSchedule();
   }
   void refreshCourses() {
     setState(() {
@@ -45,11 +42,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
       _tasksFuture = getUserTasks();
     });
   }
-  void refreshSchedule() {
-    setState(() {
-      _scheduleFuture = getUserSchedule();
-    });
-  }
+
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
     try {
@@ -94,28 +87,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
     }
     return arr;
   }
-  Future<List<Schedule>> getUserSchedule() async {
-    List<Schedule> arr = [];
-    try {
-      var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
-      final response = await http.get(Uri.parse(serverPath + url));
-      if (response.statusCode == 200) {
-        var jsonData = json.decode(response.body);
-        if (jsonData == null) {
-          throw Exception("Response body is null");
-        }
-        if (jsonData is! List) {
-          throw Exception("Response is not a List. Received: $jsonData");
-        }
-        for (var i in jsonData) {
-          arr.add(Schedule.fromJson(i));
-        }
-      }
-    } catch (e) {
-      print('Error in getUserSchedule: $e');
-    }
-    return arr;
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -290,7 +262,7 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
                 return ScheduleCard(
                   course: course,
                   isStudent: false,
-                  onTaskDeleted: refreshSchedule,
+                  onTaskDeleted: refreshCourses,
                 );
               },
             );

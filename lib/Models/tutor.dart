@@ -4,7 +4,6 @@ class Tutor {
   final String secondName;
   final String email;
   final String phoneNumber;
-
   Tutor({
     required this.tutorID,
     required this.firstName,
@@ -12,7 +11,6 @@ class Tutor {
     required this.email,
     required this.phoneNumber,
   });
-
   factory Tutor.fromJson(Map<String, dynamic> json) {
     return Tutor(
       tutorID: json['tutorID'] as int,
@@ -22,7 +20,6 @@ class Tutor {
       email: json['email'],
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       "tutorID": tutorID,
@@ -32,6 +29,4 @@ class Tutor {
       "email": email,
     };
   }
-
-
 }

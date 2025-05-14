@@ -8,8 +8,6 @@ class Course {
   final description;
   String notes;
    int? stunum;
-
-
   Course({
     required this.courseID,
     required this.tutor,
@@ -21,7 +19,6 @@ class Course {
     this.notes= '',
     this.stunum
   });
-
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
       courseID: json['courseID'] as int,
@@ -32,10 +29,8 @@ class Course {
       time: json['time'] as String,
       description: json['description'] as String,
       notes: json['notes'] ?? '',
-
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       'courseID': courseID,

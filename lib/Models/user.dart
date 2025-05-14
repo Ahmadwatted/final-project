@@ -1,4 +1,3 @@
-
 class User {
   final int userID;
   final int userTypeID;
@@ -7,7 +6,6 @@ class User {
   final String email;
   final String password;
   final String phoneNumber;
-
   User({
     required this.userTypeID,
     required this.userID,
@@ -17,7 +15,6 @@ class User {
     required this.phoneNumber,
     required this.email,
   });
-
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       userID: json['userID'] ?? 0,
@@ -29,7 +26,6 @@ class User {
       email: json['email'] ?? '',
     );
   }
-
   Map<String, dynamic> toJson() {
     return {
       "firstName": firstName,

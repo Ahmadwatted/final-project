@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
-import '../../Models/schedule.dart';
 import '../../Models/task.dart';
 import 'MyCoursesScreen.dart';
 import 'MyScheduleScreen.dart';
@@ -27,13 +26,11 @@ class MainStudentScreen extends StatefulWidget {
 class _MainStudentScreenState extends State<MainStudentScreen> {
   late Future<List<Task>> tasksFuture;
   late Future<List<Course>> coursesFuture;
-  late Future<List<Schedule>> scheduleFuture;
   @override
   void initState() {
     super.initState();
     refreshTasks();
     refreshCourses();
-    refreshSchedule();
   }
   void refreshCourses() {
     setState(() {
@@ -45,11 +42,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
       tasksFuture = getUserTasks();
     });
   }
-  void refreshSchedule() {
-    setState(() {
-      scheduleFuture = getUserSchedule();
-    });
-  }
+
 
   Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
@@ -106,34 +99,6 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
     print("Returning ${arr.length} courses");
     return arr;
   }
-  Future<List<Schedule>> getUserSchedule() async {
-    List<Schedule> arr = [];
-    try {
-      var url = "userSchedule/getUserSchedule.php?userID=${widget.userID}";
-      print("Fetching schedule with URL: ${serverPath + url}");
-      final response = await http.get(Uri.parse(serverPath + url));
-      if (response.statusCode == 200) {
-        print("Schedule response body: ${response.body}");
-        var jsonData = json.decode(response.body);
-        if (jsonData == null) {
-          throw Exception("Response body is null");
-        }
-        if (jsonData is! List) {
-          throw Exception("Response is not a List. Received: $jsonData");
-        }
-        for (var i in jsonData) {
-          arr.add(Schedule.fromJson(i));
-        }
-      } else {
-        print('Failed to load schedule: ${response.statusCode}, ${response.body}');
-      }
-    } catch (e) {
-      print('Error in getUserSchedule: $e');
-    }
-    print("Returning ${arr.length} schedule items");
-    return arr;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -302,7 +267,7 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final course = snapshot.data![index];
-                return ScheduleCard(course: course, isStudent: true, onTaskDeleted: refreshSchedule);
+                return ScheduleCard(course: course, isStudent: true, onTaskDeleted: refreshCourses);
               },
             );
           }
