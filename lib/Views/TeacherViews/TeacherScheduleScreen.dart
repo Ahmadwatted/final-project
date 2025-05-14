@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:final_project/utils/Widgets/Schedule_Screen_Design.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/Models/course.dart';
@@ -11,27 +10,24 @@ import '../../Models/clientConfig.dart';
 class TeacherScheduleScreen extends StatelessWidget {
   final String title;
   final String userID;
-
   const TeacherScheduleScreen({super.key, required this.title, required this.userID});
 
   @override
   Widget build(BuildContext context) {
-    return  _TeacherScheduleScreen(title: title, userID: userID);
-
+    return _TeacherScheduleScreen(title: title, userID: userID);
   }
 }
 
 class _TeacherScheduleScreen extends StatefulWidget {
   final String title;
   final String userID;
-
   const _TeacherScheduleScreen({required this.title, required this.userID});
 
   @override
-  State<_TeacherScheduleScreen> createState() => _MyCoursesScreenState();
+  State<_TeacherScheduleScreen> createState() => _TeacherScheduleScreenState();
 }
 
-class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
+class _TeacherScheduleScreenState extends State<_TeacherScheduleScreen> {
   late Future<List<Course>> _CoursesFuture;
   bool isStudent = true;
   String activeTab = 'all';
@@ -39,10 +35,10 @@ class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
   @override
   void initState() {
     super.initState();
-    _refreshTasks();
+    refreshTasks();
   }
 
-  void _refreshTasks() {
+  void refreshTasks() {
     setState(() {
       _CoursesFuture = getUserCourses();
     });
@@ -50,24 +46,19 @@ class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
 
   Future<List<Course>> getUserCourses() async {
     List<Course> arr = [];
-
     try {
       var url = "userCourses/getUserCourses.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
-
       print("Response Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
-
       if (response.statusCode == 200) {
         var jsonData = json.decode(response.body);
-
         if (jsonData == null) {
           throw Exception("Response body is null");
         }
         if (jsonData is! List) {
           throw Exception("Response is not a List. Received: $jsonData");
         }
-
         for (var i in jsonData) {
           arr.add(Course.fromJson(i));
         }
@@ -80,7 +71,6 @@ class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color(0xFFE3DFD6),
       appBar: AppBar(
@@ -90,26 +80,22 @@ class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
       ),
       body: Column(
         children: [
-          // Day filter tabs
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
             child: Row(
               children: [
-                _buildFilterTab('all', 'All Courses'),
-                _buildFilterTab('sunday', 'Sunday'),
-                _buildFilterTab('monday', 'Monday'),
-                _buildFilterTab('tuesday', 'Tuesday'),
-                _buildFilterTab('wednesday', 'Wednesday'),
-                _buildFilterTab('thursday', 'Thursday'),
-                _buildFilterTab('friday', 'Friday'),
-                _buildFilterTab('saturday', 'Saturday'),
-
+                buildFilterTab('all', 'All Courses'),
+                buildFilterTab('sunday', 'Sunday'),
+                buildFilterTab('monday', 'Monday'),
+                buildFilterTab('tuesday', 'Tuesday'),
+                buildFilterTab('wednesday', 'Wednesday'),
+                buildFilterTab('thursday', 'Thursday'),
+                buildFilterTab('friday', 'Friday'),
+                buildFilterTab('saturday', 'Saturday'),
               ],
             ),
           ),
-
-          // Course list
           Expanded(
             child: FutureBuilder<List<Course>>(
               future: _CoursesFuture,
@@ -126,28 +112,24 @@ class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
                     ),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return _buildEmptyState();
+                  return buildEmptyState();
                 } else {
-                  // Filter courses based on selected day
                   final filteredCourses = activeTab == 'all'
                       ? snapshot.data!
                       : snapshot.data!.where((course) =>
                       course.day.toLowerCase().contains(activeTab)).toList();
-
                   if (filteredCourses.isEmpty) {
-                    return _buildEmptyState();
+                    return buildEmptyState();
                   }
-
                   return ListView.builder(
                     itemCount: filteredCourses.length,
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     itemBuilder: (context, index) {
                       final course = filteredCourses[index];
-
                       return ScheduleScreenDesign(
                         courses: course,
                         isStudent: isStudent,
-                        onTaskDeleted: _refreshTasks,
+                        onTaskDeleted: refreshTasks,
                       );
                     },
                   );
@@ -160,7 +142,7 @@ class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
     );
   }
 
-  Widget _buildFilterTab(String tabId, String label) {
+  Widget buildFilterTab(String tabId, String label) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Material(
@@ -198,7 +180,7 @@ class _MyCoursesScreenState extends State<_TeacherScheduleScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget buildEmptyState() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),

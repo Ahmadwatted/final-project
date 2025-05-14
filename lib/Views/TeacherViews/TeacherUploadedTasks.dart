@@ -17,58 +17,50 @@ class TeacherTasksScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<TeacherTasksScreen> createState() => _TeacherTasksScreenState();
+  State<TeacherTasksScreen> createState() => TeacherTasksScreenState();
 }
 
-
-class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
-  final _formKey = GlobalKey<FormState>();
-
-  late Future<List<Task>> _tasksFuture;
-  String _searchTerm = '';
-  String _filterStatus = 'all';
-  String _sortBy = 'dueDate';
-  bool _isAscending = true;
-  final TextEditingController _tutorController = TextEditingController();
-  final TextEditingController _courseController = TextEditingController();
-  final TextEditingController _dueDateController = TextEditingController();
-  final TextEditingController _dayController = TextEditingController();
-  final TextEditingController _timeController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+class TeacherTasksScreenState extends State<TeacherTasksScreen> {
+  final formKey = GlobalKey<FormState>();
+  late Future<List<Task>> tasksFuture;
+  String searchTerm = '';
+  String filterStatus = 'all';
+  String sortBy = 'dueDate';
+  bool isAscending = true;
+  final TextEditingController tutorController = TextEditingController();
+  final TextEditingController courseController = TextEditingController();
+  final TextEditingController dueDateController = TextEditingController();
+  final TextEditingController dayController = TextEditingController();
+  final TextEditingController timeController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _refreshTasks();
+    refreshTasks();
   }
 
-  void _refreshTasks() {
+  void refreshTasks() {
     setState(() {
-      _tasksFuture = getUserTasks();
+      tasksFuture = getUserTasks();
     });
   }
 
-
   Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
-
     try {
       var url = "userTasks/getUserTasks.php?userID=${widget.userID}";
       final response = await http.get(Uri.parse(serverPath + url));
-
       print("Response Status Code: ${response.statusCode}");
       print("Response Body: ${response.body}");
-
       if (response.statusCode == 200) {
         var jsonData = json.decode(response.body);
-
         if (jsonData == null) {
           throw Exception("Response body is null");
         }
         if (jsonData is! List) {
           throw Exception("Response is not a List. Received: $jsonData");
         }
-
         for (var i in jsonData) {
           arr.add(Task.fromJson(i));
         }
@@ -78,16 +70,11 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     }
     return arr;
   }
-  Future<int?> InsertTask(
-      String tutor,
-      String course,
-      String time,
-      String day,
-      String isCompleted,
-      String dueDate,
-      String description) async {
 
-    var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/tasks/insertTask.php?"
+  Future<int?> InsertTask(String tutor, String course, String time, String day,
+      String isCompleted, String dueDate, String description) async {
+    var url =
+        "https://darkgray-hummingbird-925566.hostingersite.com/watad/tasks/insertTask.php?"
         "tutor=${Uri.encodeComponent(tutor)}"
         "&course=${Uri.encodeComponent(course)}"
         "&time=${Uri.encodeComponent(time)}"
@@ -95,18 +82,14 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
         "&isCompleted=${Uri.encodeComponent(isCompleted)}"
         "&dueDate=${Uri.encodeComponent(dueDate)}"
         "&description=${Uri.encodeComponent(description)}";
-
     print("InsertTask - Final URL: $url");
-
     try {
       final response = await http.get(Uri.parse(url));
       print("InsertTask Status Code: ${response.statusCode}");
       print("InsertTask Raw Response: ${response.body}");
-
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         print("Parsed response data: $data");
-
         if (data['result'] == '1' && data['taskID'] != null) {
           print("Successfully created task with ID: ${data['taskID']}");
           return int.parse(data['taskID'].toString());
@@ -121,24 +104,20 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
       return null;
     }
   }
+
   Future<bool> InsertUserTask(int taskID) async {
     try {
       String userID = widget.userID;
-
-      var url = "https://darkgray-hummingbird-925566.hostingersite.com/watad/userTasks/insertUserTask.php?"
+      var url =
+          "https://darkgray-hummingbird-925566.hostingersite.com/watad/userTasks/insertUserTask.php?"
           "taskID=$taskID"
           "&userID=$userID";
-
       print("InsertUserTask - Final URL: $url");
-
       final response = await http.get(Uri.parse(url));
-
       print("InsertUserCourse Response Status Code: ${response.statusCode}");
       print("InsertUserCourse Response Body: ${response.body}");
-
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-
         if (data['result'] != null) {
           try {
             int resultValue = int.parse(data['result'].toString());
@@ -160,50 +139,43 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
     }
   }
 
-
-
   List<Task> filterAndSortTasks(List<Task> tasks) {
     var filteredTasks = tasks.where((task) {
-      if (_filterStatus == 'Completed') return task.isCompleted;
-      if (_filterStatus == 'Pending') return !task.isCompleted;
-      return true; //
+      if (filterStatus == 'Completed') return task.isCompleted;
+      if (filterStatus == 'Pending') return !task.isCompleted;
+      return true;
     }).toList();
-
-    if (_searchTerm.isNotEmpty) {
+    if (searchTerm.isNotEmpty) {
       filteredTasks = filteredTasks.where((task) {
-        return task.course.toLowerCase().contains(_searchTerm.toLowerCase()) ||
-            task.tutor.toLowerCase().contains(_searchTerm.toLowerCase());
+        return task.course.toLowerCase().contains(searchTerm.toLowerCase()) ||
+            task.tutor.toLowerCase().contains(searchTerm.toLowerCase());
       }).toList();
     }
-
     filteredTasks.sort((a, b) {
       int comparison;
-
-      if (_sortBy == 'dueDate') {
+      if (sortBy == 'dueDate') {
         if (a.dueDate.isEmpty || b.dueDate.isEmpty) {
           return a.dueDate.isEmpty && b.dueDate.isEmpty
               ? 0
-              : a.dueDate.isEmpty ? 1 : -1;
+              : a.dueDate.isEmpty
+              ? 1
+              : -1;
         }
-
         try {
-          comparison = DateTime.parse(a.dueDate).compareTo(DateTime.parse(b.dueDate));
+          comparison =
+              DateTime.parse(a.dueDate).compareTo(DateTime.parse(b.dueDate));
         } catch (e) {
           comparison = 0;
         }
-      } else if (_sortBy == 'course') {
+      } else if (sortBy == 'course') {
         comparison = a.course.compareTo(b.course);
       } else {
         comparison = 0;
       }
-
-      return _isAscending ? comparison : -comparison;
+      return isAscending ? comparison : -comparison;
     });
-
     return filteredTasks;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +188,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -231,12 +202,11 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
               ),
               onChanged: (value) {
                 setState(() {
-                  _searchTerm = value;
+                  searchTerm = value;
                 });
               },
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -251,14 +221,11 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                   ),
                 ],
               ),
-
             ),
           ),
-
-
           Expanded(
             child: FutureBuilder<List<Task>>(
-              future: _tasksFuture,
+              future: tasksFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -286,7 +253,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          _searchTerm.isNotEmpty
+                          searchTerm.isNotEmpty
                               ? 'No tasks found for this search'
                               : 'No tasks available',
                           style: const TextStyle(
@@ -299,7 +266,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                   );
                 } else {
                   final filteredTasks = filterAndSortTasks(snapshot.data!);
-
                   if (filteredTasks.isEmpty) {
                     return Center(
                       child: Column(
@@ -322,7 +288,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                       ),
                     );
                   }
-
                   return ListView.builder(
                     itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
@@ -330,7 +295,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                       return TeacherTasksScreenDesign(
                         task: task,
                         isStudent: false,
-                        onTaskDeleted: _refreshTasks,
+                        onTaskDeleted: refreshTasks,
                       );
                     },
                   );
@@ -344,37 +309,32 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
         backgroundColor: Colors.white,
         elevation: 2,
         child: const Icon(Icons.add, color: Color(0xFF1F2937)),
-        onPressed: (){
-
+        onPressed: () {
           showAddTaskForm();
-
         },
       ),
     );
-
-
   }
 
   Color getCourseColor(int courseId) {
     final colors = [
-      const Color(0xFF3B82F6), // blue
-      const Color(0xFF10B981), // green
-      const Color(0xFFF59E0B), // orange
-      const Color(0xFF8B5CF6), // purple
-      const Color(0xFFEC4899), // pink
-      const Color(0xFF14B8A6), // teal
+      const Color(0xFF3B82F6),
+      const Color(0xFF10B981),
+      const Color(0xFFF59E0B),
+      const Color(0xFF8B5CF6),
+      const Color(0xFFEC4899),
+      const Color(0xFF14B8A6),
     ];
     return colors[courseId % colors.length];
   }
 
   void showAddTaskForm() {
-    _tutorController.clear();
-    _courseController.clear();
-    _timeController.clear();
-    _dayController.clear();
-    _dueDateController.clear();
-    _descriptionController.clear();
-
+    tutorController.clear();
+    courseController.clear();
+    timeController.clear();
+    dayController.clear();
+    dueDateController.clear();
+    descriptionController.clear();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -398,11 +358,10 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                 top: 20,
               ),
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -415,13 +374,13 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Color(0xFF6B7280)),
+                          icon:
+                          const Icon(Icons.close, color: Color(0xFF6B7280)),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
-
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
@@ -429,43 +388,42 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                           children: [
                             buildFormField(
                               label: 'Tutor',
-                              controller: _tutorController,
+                              controller: tutorController,
                               hint: 'Enter Tutor name',
                               icon: Icons.person_2_outlined,
                               isRequired: true,
                             ),
-
                             buildFormField(
                               label: 'Course',
-                              controller: _courseController,
+                              controller: courseController,
                               hint: 'Enter course name',
                               icon: Icons.school_outlined,
                               isRequired: true,
                             ),
                             buildFormField(
                               label: 'Time',
-                              controller: _timeController,
+                              controller: timeController,
                               hint: 'Enter time',
                               icon: Icons.access_time_outlined,
                               isRequired: true,
                             ),
                             buildFormField(
                               label: 'Day',
-                              controller: _dayController,
+                              controller: dayController,
                               hint: 'Enter a day',
                               icon: Icons.calendar_today_outlined,
                               isRequired: true,
                             ),
                             buildFormField(
                               label: 'Due Date',
-                              controller: _dueDateController,
+                              controller: dueDateController,
                               hint: 'Enter due date (DD/MM/YYYY)',
                               icon: Icons.event_outlined,
                               isRequired: true,
                             ),
                             buildFormField(
                               label: 'Description (optional)',
-                              controller: _descriptionController,
+                              controller: descriptionController,
                               hint: 'Enter task description',
                               icon: Icons.description_outlined,
                               isRequired: false,
@@ -475,8 +433,6 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                         ),
                       ),
                     ),
-
-                    // Submit button
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 16),
                       width: double.infinity,
@@ -490,8 +446,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                           ),
                         ),
                         onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            // Show loading indicator
+                          if (formKey.currentState!.validate()) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Adding task...'),
@@ -499,54 +454,50 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                                 backgroundColor: Color(0xFF1F2937),
                               ),
                             );
-
                             try {
                               String isCompleted = "0";
-
                               int? newTaskID = await InsertTask(
-                                _tutorController.text,
-                                _courseController.text,
-                                _timeController.text,
-                                _dayController.text,
+                                tutorController.text,
+                                courseController.text,
+                                timeController.text,
+                                dayController.text,
                                 isCompleted,
-                                _dueDateController.text,
-                                _descriptionController.text,
+                                dueDateController.text,
+                                descriptionController.text,
                               );
-
                               print("Task created with ID: $newTaskID");
-
                               if (newTaskID != null) {
                                 bool success = await InsertUserTask(newTaskID);
                                 print("User added to task: $success");
-
                                 if (success) {
-                                  ScaffoldMessenger.of(context).clearSnackBars();
-
-                                   _refreshTasks();
-
+                                  ScaffoldMessenger.of(context)
+                                      .clearSnackBars();
+                                  refreshTasks();
                                   Navigator.pop(context);
-
-                                  Future.delayed(const Duration(milliseconds: 300), () {
+                                  Future.delayed(
+                                      const Duration(milliseconds: 300), () {
                                     if (mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         const SnackBar(
-                                          content: Text('Task successfully added!'),
+                                          content:
+                                          Text('Task successfully added!'),
                                           backgroundColor: Color(0xFF1F2937),
                                         ),
                                       );
                                     }
                                   });
-
-                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  WidgetsBinding.instance
+                                      .addPostFrameCallback((_) {
                                     if (mounted) {
-                                      setState(() {
-                                      });
+                                      setState(() {});
                                     }
                                   });
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Failed to add user to task. Please try again.'),
+                                      content: Text(
+                                          'Failed to add user to task. Please try again.'),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
@@ -554,7 +505,8 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Failed to add task. Please try again.'),
+                                    content: Text(
+                                        'Failed to add task. Please try again.'),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -588,6 +540,7 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
       },
     );
   }
+
   Widget buildFormField({
     required String label,
     required TextEditingController controller,
@@ -631,7 +584,8 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Color(0xFF9CA3AF)),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             validator: isRequired
                 ? (value) {
@@ -646,5 +600,4 @@ class _TeacherTasksScreenState extends State<TeacherTasksScreen> {
       ),
     );
   }
-
 }

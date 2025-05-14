@@ -35,10 +35,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginPage> createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final TextEditingController _txtemail = TextEditingController();
   final TextEditingController _txtpassword = TextEditingController();
   bool _isLoading = false;
@@ -68,11 +68,13 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    bool isLoginSuccessful = await checkLogin(context, _txtemail.text, _txtpassword.text);
+    bool isLoginSuccessful =
+        await checkLogin(context, _txtemail.text, _txtpassword.text);
 
     if (isLoginSuccessful) {
       try {
-        var url = "checkLogins/checkLogin.php?email=${_txtemail.text}&password=${_txtpassword.text}";
+        var url =
+            "checkLogins/checkLogin.php?email=${_txtemail.text}&password=${_txtpassword.text}";
         final response = await http.get(Uri.parse(serverPath + url));
 
         if (response.statusCode == 200) {
@@ -113,9 +115,7 @@ class _LoginPageState extends State<LoginPage> {
         print("Error routing user: $e");
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => const LoginPage()
-          ),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       }
     } else {
@@ -142,7 +142,8 @@ class _LoginPageState extends State<LoginPage> {
     } on SocketException catch (_) {
       print('not connected to internet');
       var uti = new Utils();
-      uti.showMyDialog2(context, "لا يوجد اتصال بالانترنت", "لا يوجد اتصال بالانترنت. يرجى التأكد من اتصالك بالإنترنت والمحاولة مرة أخرى.");
+      uti.showMyDialog2(context, "لا يوجد اتصال بالانترنت",
+          "لا يوجد اتصال بالانترنت. يرجى التأكد من اتصالك بالإنترنت والمحاولة مرة أخرى.");
     }
   }
 
@@ -154,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: Center(
-          child:SingleChildScrollView(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -189,7 +190,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
-
                       CustomTextField(
                         controller: _txtemail,
                         label: 'Email',
@@ -197,7 +197,6 @@ class _LoginPageState extends State<LoginPage> {
                         keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 24),
-
                       CustomTextField(
                         controller: _txtpassword,
                         label: 'Password',
@@ -205,7 +204,6 @@ class _LoginPageState extends State<LoginPage> {
                         isPassword: true,
                       ),
                       const SizedBox(height: 32),
-
                       Container(
                         width: double.infinity,
                         height: 56,
@@ -235,25 +233,23 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           child: _isLoading
                               ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
                               : const Text(
-                            'Sign In',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-
+                                  'Sign In',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 24),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -292,7 +288,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-Future<bool> checkLogin(BuildContext context, String email, String password) async {
+Future<bool> checkLogin(
+    BuildContext context, String email, String password) async {
   var url = "checkLogins/checkLogin.php?email=$email&password=$password";
   final response = await http.get(Uri.parse(serverPath + url));
 
