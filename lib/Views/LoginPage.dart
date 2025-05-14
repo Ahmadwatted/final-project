@@ -10,11 +10,9 @@ import '../utils/Utils.dart';
 import '../utils/Widgets/Custom_Text_Field.dart';
 import 'RegisterPage.dart';
 import 'TeacherViews/MainTeacherScreen.dart';
-
 void main() {
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
@@ -30,39 +28,31 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
-
   @override
   State<LoginPage> createState() => LoginPageState();
 }
-
 class LoginPageState extends State<LoginPage> {
   final TextEditingController _txtemail = TextEditingController();
   final TextEditingController _txtpassword = TextEditingController();
   bool _isLoading = false;
-
   @override
   void initState() {
     super.initState();
     fillSavedPars();
   }
-
   Future<void> fillSavedPars() async {
     setState(() {
       _isLoading = true;
     });
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _txtemail.text = prefs.getString("Email") ?? "";
     _txtpassword.text = prefs.getString("password") ?? "";
-
     setState(() {
       _isLoading = false;
     });
   }
-
   Future<void> processLogin(BuildContext context) async {
     setState(() {
       _isLoading = true;

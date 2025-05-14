@@ -9,18 +9,18 @@ class RegisterPage extends StatefulWidget {
   RegisterPage({Key? key}) : super(key: key);
 
   @override
-  _RegisterPageState createState() => _RegisterPageState();
+  RegisterPageState createState() => RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _txtfirstName = TextEditingController();
   final TextEditingController _txtsecondName = TextEditingController();
   final TextEditingController _txtpassword = TextEditingController();
   final TextEditingController _txtphoneNumber = TextEditingController();
   final TextEditingController _txtemail = TextEditingController();
-  bool _isLoading = false;
+  bool isLoading = false;
 
-  void _showErrorDialog(String message) {
+  void showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -140,71 +140,75 @@ class _RegisterPageState extends State<RegisterPage> {
                           ],
                         ),
                         child: ElevatedButton(
-                          onPressed: _isLoading
+                          onPressed: isLoading
                               ? null
                               : () async {
-                            // Validate inputs first
-                            if (_txtfirstName.text.isEmpty ||
-                                _txtsecondName.text.isEmpty ||
-                                _txtemail.text.isEmpty ||
-                                _txtpassword.text.isEmpty ||
-                                _txtphoneNumber.text.isEmpty) {
-                              _showErrorDialog('Please fill in all required fields.');
-                              return;
-                            }
+                                  // Validate inputs first
+                                  if (_txtfirstName.text.isEmpty ||
+                                      _txtsecondName.text.isEmpty ||
+                                      _txtemail.text.isEmpty ||
+                                      _txtpassword.text.isEmpty ||
+                                      _txtphoneNumber.text.isEmpty) {
+                                    showErrorDialog(
+                                        'Please fill in all required fields.');
+                                    return;
+                                  }
 
+                                  setState(() {
+                                    isLoading = true;
+                                  });
 
+                                  try {
+                                    final result = await insertUser(
+                                        context,
+                                        2,
+                                        _txtfirstName.text,
+                                        _txtsecondName.text,
+                                        _txtemail.text,
+                                        _txtpassword.text,
+                                        _txtphoneNumber.text);
 
-                            setState(() {
-                              _isLoading = true;
-                            });
+                                    setState(() {
+                                      isLoading = false;
+                                    });
 
-                            try {
-                              final result = await insertUser(
-                                  context,
-                                  2,
-                                  _txtfirstName.text,
-                                  _txtsecondName.text,
-                                  _txtemail.text,
-                                  _txtpassword.text,
-                                  _txtphoneNumber.text
-                              );
+                                    if (result['success']) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              'Account created successfully!'),
+                                          backgroundColor: Colors.green,
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
 
-                              setState(() {
-                                _isLoading = false;
-                              });
+                                      await Future.delayed(
+                                          Duration(milliseconds: 500));
 
-                              if (result['success']) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Account created successfully!'),
-                                    backgroundColor: Colors.green,
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-
-                                await Future.delayed(Duration(milliseconds: 500));
-
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MainStudentScreen(
-                                      title: 'Student Dashboard',
-                                      userID: result['userID'],
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                _showErrorDialog(result['message']);
-                              }
-                            } catch (e) {
-                              print("Exception in registration button: $e");
-                              setState(() {
-                                _isLoading = false;
-                              });
-                              _showErrorDialog('An unexpected error occurred: ${e.toString()}');
-                            }
-                          },
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              MainStudentScreen(
+                                            title: 'Student Dashboard',
+                                            userID: result['userID'],
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      showErrorDialog(result['message']);
+                                    }
+                                  } catch (e) {
+                                    print(
+                                        "Exception in registration button: $e");
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    showErrorDialog(
+                                        'An unexpected error occurred: ${e.toString()}');
+                                  }
+                                },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -212,15 +216,15 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          child: _isLoading
+                          child: isLoading
                               ? CircularProgressIndicator(color: Colors.white)
                               : const Text(
-                            'Create Account',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                                  'Create Account',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -307,8 +311,7 @@ class _RegisterPageState extends State<RegisterPage> {
       String secondName,
       String email,
       String password,
-      String phoneNumber
-      ) async {
+      String phoneNumber) async {
     var url = "users/insertUser.php?"
         "firstName=$firstName"
         "&secondName=$secondName"
@@ -323,19 +326,18 @@ class _RegisterPageState extends State<RegisterPage> {
     if (data['message'] == 'Email already registered') {
       return {
         'success': false,
-        'message': 'An account with this email already exists. Please use a different email.'
+        'message':
+            'An account with this email already exists. Please use a different email.'
       };
     }
 
     if (data['result'] == '1' && data['userID'] != null) {
-      return {
-        'success': true,
-        'userID': data['userID'].toString()
-      };
+      return {'success': true, 'userID': data['userID'].toString()};
     } else {
       return {
         'success': false,
-        'message': data['message'] ?? 'Failed to create account. Please try again.'
+        'message':
+            data['message'] ?? 'Failed to create account. Please try again.'
       };
     }
   }
