@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
 import '../../Models/task.dart';
+import '../LoginPage.dart';
 import 'TeacherCoursesScreen.dart';
 import 'TeacherScheduleScreen.dart';
 import 'TeacherUploadedTasks.dart';
@@ -102,6 +103,22 @@ class _MainTeacherScreenState extends State<MainTeacherScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.red
+            ),
+            onPressed: () {
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginPage(),
+                ),
+              );            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(

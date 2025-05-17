@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:final_project/Views/LoginPage.dart';
 import 'package:final_project/utils/Widgets/Course_Card.dart';
 import 'package:final_project/utils/Widgets/Schedule_Card.dart';
 import 'package:final_project/utils/Widgets/Task_Card.dart';
@@ -107,13 +108,32 @@ class _MainStudentScreenState extends State<MainStudentScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         title: const Text(
-          'Student Dashboard',
+          'My Dashboard',
           style: TextStyle(
             color: Color(0xFF1A1F36),
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.red,
+            ),
+            onPressed: () {
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginPage(),
+                ),
+              );            },
+            tooltip: 'Sign Out',
+          ),
+        ],
       ),
+
+
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
