@@ -58,7 +58,6 @@ class CourseCard extends StatelessWidget {
               ),
             ),
           ),
-          // Content section
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(

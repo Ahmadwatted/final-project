@@ -22,20 +22,20 @@ class MyTasksScreenState extends State<MyTasksScreen> {
   late Future<List<Task>> tasksFuture;
   String searchTerm = '';
   String filterStatus = 'all';
-  String sortBy = 'dueDate';
-  bool isAscending = true;
-  bool isFilterMenuOpen = false;
   Map<int, bool> taskCompletionStatus = {};
+
   @override
   void initState() {
     super.initState();
     refreshTasks();
   }
+
   void refreshTasks() {
     setState(() {
       tasksFuture = getUserTasks();
     });
   }
+
   void toggleTaskCompletion(int taskId) async {
     try {
       taskCompletionStatus[taskId] = !(taskCompletionStatus[taskId] ?? false);
@@ -46,6 +46,7 @@ class MyTasksScreenState extends State<MyTasksScreen> {
       print("Error toggling task completion: $e");
     }
   }
+
   List<Task> filterAndSortTasks(List<Task> tasks) {
     var filteredTasks = tasks.where((task) {
       bool isCompleted = taskCompletionStatus.containsKey(task.taskID)
@@ -55,17 +56,17 @@ class MyTasksScreenState extends State<MyTasksScreen> {
       if (filterStatus == 'pending') return !isCompleted;
       return true;
     }).toList();
+
     if (searchTerm.isNotEmpty) {
       filteredTasks = filteredTasks.where((task) {
         return task.course.toLowerCase().contains(searchTerm.toLowerCase()) ||
             task.tutor.toLowerCase().contains(searchTerm.toLowerCase());
       }).toList();
     }
-    filteredTasks.sort((a, b) {
-      return 0;
-    });
+
     return filteredTasks;
   }
+
   Future<List<Task>> getUserTasks() async {
     List<Task> arr = [];
     taskCompletionStatus.clear();
@@ -95,16 +96,7 @@ class MyTasksScreenState extends State<MyTasksScreen> {
     }
     return arr;
   }
-  void toggleSort(String field) {
-    setState(() {
-      if (sortBy == field) {
-        isAscending = !isAscending;
-      } else {
-        sortBy = field;
-        isAscending = true;
-      }
-    });
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -158,24 +150,6 @@ class MyTasksScreenState extends State<MyTasksScreen> {
               ),
             ),
           ),
-          if (isFilterMenuOpen)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-              ),
-            ),
           const SizedBox(height: 8),
           Expanded(
             child: FutureBuilder<List<Task>>(
@@ -273,6 +247,7 @@ class MyTasksScreenState extends State<MyTasksScreen> {
       ),
     );
   }
+
   Widget buildFilterTab(String title, String value, Color activeColor) {
     bool isActive = filterStatus == value;
     return Expanded(
@@ -297,29 +272,6 @@ class MyTasksScreenState extends State<MyTasksScreen> {
               color: isActive ? Colors.white : Colors.black54,
             ),
           ),
-        ),
-      ),
-    );
-  }
-  Widget buildSortOption(String title, String value) {
-    return InkWell(
-      onTap: () => toggleSort(value),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 14),
-            ),
-            if (sortBy == value)
-              Icon(
-                isAscending ? Icons.arrow_upward : Icons.arrow_downward,
-                size: 16,
-                color: const Color(0xFF3B82F6),
-              ),
-          ],
         ),
       ),
     );
