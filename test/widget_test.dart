@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:final_project/Views/LoginPage.dart';
+import 'package:final_project/Views/main.dart';
 
 void main() {
   testWidgets('Login page renders correctly', (WidgetTester tester) async {

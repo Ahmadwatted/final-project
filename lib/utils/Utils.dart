@@ -1,4 +1,4 @@
-import 'package:final_project/Views/LoginPage.dart';
+import 'package:final_project/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

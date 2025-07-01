@@ -4,12 +4,12 @@ import 'package:final_project/Views/StudentViews/MainStudentScreen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../Models/checkLoginModel.dart';
-import '../Models/clientConfig.dart';
-import '../utils/Utils.dart';
-import '../utils/Widgets/Custom_Text_Field.dart';
-import 'RegisterPage.dart';
-import 'TeacherViews/MainTeacherScreen.dart';
+import 'Models/checkLoginModel.dart';
+import 'Models/clientConfig.dart';
+import 'utils/Utils.dart';
+import 'utils/Widgets/Custom_Text_Field.dart';
+import 'Views/RegisterPage.dart';
+import 'Views/TeacherViews/MainTeacherScreen.dart';
 void main() {
   runApp(const MyApp());
 }

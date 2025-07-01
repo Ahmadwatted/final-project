@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../Models/clientConfig.dart';
 import '../../Models/course.dart';
 import '../../Models/task.dart';
-import '../LoginPage.dart';
+import '../../main.dart';
 import 'TeacherCoursesScreen.dart';
 import 'TeacherScheduleScreen.dart';
 import 'TeacherUploadedTasks.dart';

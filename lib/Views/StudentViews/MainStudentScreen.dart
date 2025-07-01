@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:final_project/Views/LoginPage.dart';
+import 'package:final_project/main.dart';
 import 'package:final_project/utils/Widgets/Course_Card.dart';
 import 'package:final_project/utils/Widgets/Schedule_Card.dart';
 import 'package:final_project/utils/Widgets/Task_Card.dart';
